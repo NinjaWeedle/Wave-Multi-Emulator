@@ -1,0 +1,1 @@
+This is the Sprite for the CHIP-8 emulator created for Wave, WAVE-8.
