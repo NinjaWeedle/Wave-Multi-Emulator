@@ -1,0 +1,6 @@
+A brief Guide on importing Binaries in scratch
+
+As you may know, Scratch 3 has basically no File I/O Capabilities, besides the ability to import/export lists in Unicode from within the editor, which isn't very useful.
+
+To get around these limitaions, Wave has users convert their ROM to a hexadecimal (or Base-64 for GBA- no specific reasoning behind this) string, then input that string into
+an "ask" box. Depending on the type of rom, Wave then puts that hex string into a format that the specified console's emulator can use.
