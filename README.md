@@ -9,6 +9,13 @@ If you are looking for information on the HyperWaveCHIP-64 extension for CHIP-8,
 
 Changelog:
 
+V0.7.X:
+
+V0.7: Added Cool NES Emulator by @GenericHeroGuy, added 1s1s Bytepusher by @52525rr,
+added 2 new options for themes, fixed WAVE-8 crashing in vanilla scratch occasionally,
+fixed theme switch crash, added sounds when clicking the on screen arrows in the menu,
+removed N64 icon, added GUI to rom importer, fixed GBA rom importing.
+
 V0.6.X:
 
 0.6.20: bugfixes, add 00F2, F100, F200, F300, 8XYF
