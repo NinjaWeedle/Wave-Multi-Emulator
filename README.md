@@ -11,7 +11,11 @@ Changelog:
 
 V0.7.X:
 
-V0.7: Added Cool NES Emulator by @GenericHeroGuy, added 1s1s Bytepusher by @52525rr,
+0.7.4: Major GUI overhaul, add BBC micro:bit integration. CHIP8: Change 00F0 to 00E1. Goddess A: Minor updates to CPU structure. GBA: ROM importer fixed.
+0.7.3: GUI update by @Executec
+0.7.2: bugfixes
+0.7.1: CHIP-8 FFT speedup, Bugfix on edge case with DXYN VF collision, fix 8XYD/8XYF
+0.7: Added Cool NES Emulator by @GenericHeroGuy, added 1s1s Bytepusher by @52525rr,
 added 2 new options for themes, fixed WAVE-8 crashing in vanilla scratch occasionally,
 fixed theme switch crash, added sounds when clicking the on screen arrows in the menu,
 removed N64 icon, added GUI to rom importer, fixed GBA rom importing.
