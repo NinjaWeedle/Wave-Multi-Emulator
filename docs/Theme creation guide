@@ -1,0 +1,21 @@
+Wave Multi-Emulator Theme Creation guide
+V0.7.X edition
+
+Theme codes in Wave are 8-digit strings that allow the user to customize the menu to their liking. 
+
+To load a theme in Wave, select the "Import Theme" icon and type in your theme code. Leaving this box blank will revert to the default theme.
+
+A theme creator tool is availiable at https://scratch.mit.edu/projects/612227275/.
+
+GUIDE TO THEME CODES:
+-Letter 1: Chooses music track 1-9. (Ex: 1 = play 2nd sound in Stage, 2 = play 3rd sound in Stage)
+-Letter 2: Chooses backdrop for main menu. (Ex. 1 = Backdrop #1 [Which is "Gradient"])
+-Letter 3: Sets the Y position of the tiles:  ([value]*50) - 230
+-Letter 4: If this is 0, the logo does not appear. Any other value will cause it to display (does not affect height like in Executec's Wave Menu Customizer)
+-Letter 5: The first digit of the color value used for the logo and menu tiles
+-Letter 6: The second digit of the color value used for the logo and menu tiles
+-Letter 7: Special menu flag - changes how icons move when selected. 
+-Letter 8: Special Emu flag - 0 for normal emulator layout, 1 for alt. Currently only used for an alternate keypad in WAVE-8.
+
+Some Community made theme codes:
+WDS Theme V3 by @NinjaWeedle: 22230010
