@@ -1,0 +1,89 @@
+//----- Sprite clicked events -----------------------------------------------------------------------------------------
+
+WhenThisSpriteClicked()
+{
+    Sound.Play((1 + Menu Theme[7]));
+    Repeat ((4 * (is compiled? + 1)))
+    {
+        MenuScroll += (( - (Costume.GetNumberName(name) / 4)) / (is compiled? + 1));
+    }
+    If ((MenuScroll > 200) Or (Not (((MenuScroll % 100) == 0))))
+    {
+        MenuScroll = -1800;
+    }
+    If ((-1800 > MenuScroll) Or (Not (((MenuScroll % 100) == 0))))
+    {
+        MenuScroll = 200;
+    }
+    Control.Wait(0.1);
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(exit emulator)
+{
+    Looks.Hide();
+    Motion.PointInDirection(90);
+    Motion.SetRotationStyle(left-right);
+    Control.Wait(1.5);
+    Looks.SwitchCostumeTo(200);
+    Motion.GoToXY(200, 0);
+    Control.CreateCloneOf(_myself_);
+    Looks.SwitchCostumeTo(-200);
+    Motion.GoToXY(-200, 0);
+    Control.CreateCloneOf(_myself_);
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(un-needed broadcast)
+{
+    Control.DeleteThisClone();
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Looks.SetEffectTo(GHOST, 100);
+    Looks.Show();
+    Repeat (10)
+    {
+        Looks.ChangeEffectBy(GHOST, -10);
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        If (Sensing.MouseDown() And Sensing.TouchingObject(_mouse_))
+        {
+            Sound.Play(Press WDS);
+            Looks.SetEffectTo(BRIGHTNESS, -20);
+            Looks.SetSizeTo(90);
+            Wait Until (Not (Sensing.MouseDown()));
+            Sound.Play(Release WDS);
+        }
+        Else
+        {
+            Looks.SetSizeTo(100);
+            Looks.SetEffectTo(BRIGHTNESS, 0);
+        }
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+-200.svg
+200.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+ping-bing.wav
+Press WDS.wav
+Release WDS.wav
+Slide WDS.wav

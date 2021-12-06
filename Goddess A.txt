@@ -1,0 +1,854 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+GA.A = 0
+GA.dummy = 1
+GA.E = 0
+GA.P = 0
+GA.U = 5
+GA.V = 4
+GA.X = 0
+GA.Y = 0
+P = 0
+U = 0
+V = 0
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+GA.L1 = { 
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+}
+GA.L2 = { 
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+}
+GA.L3 = { 
+    0
+    0
+    0
+    0
+}
+GA.RAM = { 
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+}
+GA.ROM = { 
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+}
+Goddess A: RAM = { }
+Goddess A: ROM = { }
+Goddess A: VRAM = { }
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(exit emulator)
+{
+    Looks.Hide();
+    List.Hide(GA.ROM);
+}
+
+WhenBroadcastReceived(Goddess A)
+{
+    Call GA.Initialize;
+    Forever
+    {
+        Call GA.get_keyboard;
+        List.ReplaceItem(GA.L3, 4, ((GA.L3[4] - 1) + (4 * (Not (GA.L3[4])))));
+        If (Not (GA.L3[4]))
+        {
+            GA.P = ((GA.P + 1) - (256 * (GA.P == 256)));
+            GA.E = GA.ROM[GA.P];
+        }
+        If ((GA.E * (Not (GA.L3[1]))) > 0)
+        {
+            Call GA.CPU cycle;
+        }
+        Call GA.draw;
+    }
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define GA.CPU cycle (warp=true)
+{
+    If ((0 < GA.E) And (GA.E < 33))
+    {
+        If ((0 < GA.E) And (GA.E < 17))
+        {
+            If ((0 < GA.E) And (GA.E < 9))
+            {
+                If ((0 < GA.E) And (GA.E < 5))
+                {
+                    If ((0 < GA.E) And (GA.E < 3))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+                Else
+                {
+                    If ((4 < GA.E) And (GA.E < 7))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+            }
+            Else
+            {
+                If ((8 < GA.E) And (GA.E < 13))
+                {
+                    If ((8 < GA.E) And (GA.E < 11))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+                Else
+                {
+                    If ((12 < GA.E) And (GA.E < 15))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+            }
+        }
+        Else
+        {
+            If ((16 < GA.E) And (GA.E < 25))
+            {
+                If ((16 < GA.E) And (GA.E < 21))
+                {
+                    If ((16 < GA.E) And (GA.E < 19))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+                Else
+                {
+                    If ((20 < GA.E) And (GA.E < 23))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+            }
+            Else
+            {
+                If ((24 < GA.E) And (GA.E < 29))
+                {
+                    If ((24 < GA.E) And (GA.E < 27))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+                Else
+                {
+                    If ((28 < GA.E) And (GA.E < 31))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Else
+    {
+        If ((32 < GA.E) And (GA.E < 49))
+        {
+            If ((32 < GA.E) And (GA.E < 41))
+            {
+                If ((32 < GA.E) And (GA.E < 37))
+                {
+                    If ((32 < GA.E) And (GA.E < 35))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+                Else
+                {
+                    If ((36 < GA.E) And (GA.E < 39))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+            }
+            Else
+            {
+                If ((40 < GA.E) And (GA.E < 45))
+                {
+                    If ((40 < GA.E) And (GA.E < 43))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+                Else
+                {
+                    If ((44 < GA.E) And (GA.E < 47))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+            }
+        }
+        Else
+        {
+            If ((48 < GA.E) And (GA.E < 57))
+            {
+                If ((48 < GA.E) And (GA.E < 53))
+                {
+                    If ((48 < GA.E) And (GA.E < 51))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+                Else
+                {
+                    If ((52 < GA.E) And (GA.E < 55))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+            }
+            Else
+            {
+                If ((56 < GA.E) And (GA.E < 61))
+                {
+                    If ((56 < GA.E) And (GA.E < 59))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+                Else
+                {
+                    If ((60 < GA.E) And (GA.E < 63))
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                    Else
+                    {
+                        If 
+                        {
+                        }
+                        Else
+                        {
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+Define GA.draw (warp=true)
+{
+    Pen.Clear();
+    Motion.GoToXY(-50, 120);
+    Repeat (5)
+    {
+        Motion.SetX(-50);
+        Repeat (5)
+        {
+            Pen.Stamp();
+            Motion.ChangeXBy(25);
+        }
+        Motion.ChangeYBy(-25);
+    }
+}
+
+Define GA.get_keyboard (warp=true)
+{
+}
+
+Define GA.Initialize (warp=true)
+{
+    Pen.Clear();
+    microbit_displayClear ?? - probably legacy function from Scratch 2.0;
+    List.DeleteAll(GA.ROM);
+    GA.dummy = 1;
+    Repeat (List.Length(_rom))
+    {
+        List.Add(GA.ROM, _rom[GA.dummy]);
+        GA.dummy += 1;
+    }
+    Repeat ((256 - List.Length(GA.ROM)))
+    {
+        List.Add(GA.ROM, 0);
+    }
+    List.DeleteAll(GA.L1);
+    List.DeleteAll(GA.L2);
+    List.DeleteAll(GA.L3);
+    List.DeleteAll(GA.RAM);
+    List.DeleteAll(GA.VRAM);
+    Repeat (8)
+    {
+        List.Add(GA.L1, 0);
+    }
+    Repeat (8)
+    {
+        List.Add(GA.L2, 0);
+    }
+    Repeat (3)
+    {
+        List.Add(GA.L3, 0);
+    }
+    List.Add(GA.L3, 4);
+    Repeat (57)
+    {
+        List.Add(GA.RAM, 0);
+    }
+    Repeat (57)
+    {
+        List.Add(GA.VRAM, 0);
+    }
+    GA.P = 0;
+    GA.U = 0;
+    GA.V = 0;
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+GA.P = 0
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+costume2.png

@@ -1,0 +1,317 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+_id = 1
+_pitch = 0
+
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(exit emulator)
+{
+    Stop(other scripts in sprite);
+    Event.Broadcast("prune");
+    Sound.StopAllSounds();
+}
+
+WhenBroadcastReceived(prune)
+{
+    List.DeleteAll(wave);
+    List.DeleteAll(FT.re);
+    List.DeleteAll(FT.im);
+    List.DeleteAll(vol);
+    List.DeleteAll(temp.0);
+    List.DeleteAll(temp.1);
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(sound.updatech8buffer)
+{
+    Call convert buffer to bits;
+    Call put Input;
+    Call FFT();
+    Call apply to vol;
+}
+
+WhenBroadcastReceived(wave)
+{
+    Forever
+    {
+        If (pitch == (-1 / 0))
+        {
+            If (Not ((Sound.Volume() == 0)))
+            {
+                Sound.SetVolumeTo(0);
+                Sound.StopAllSounds();
+            }
+            Wait Until (pitch > (-1 / 0));
+        }
+        If (_id > q)
+        {
+            If (Sound.Volume() > 0)
+            {
+                Sound.SetVolumeTo(0);
+            }
+        }
+        Else
+        {
+            If (Not ((Sound.Volume() == vol[_id])))
+            {
+                Sound.SetVolumeTo(vol[_id]);
+            }
+        }
+    }
+}
+
+WhenBroadcastReceived(wave)
+{
+    Sound.SetVolumeTo(0);
+    Forever
+    {
+        If (Sound.Volume() == 0)
+        {
+            Wait Until (Sound.Volume() > 0);
+        }
+        Sound.PlayUntilDone(_id);
+    }
+}
+
+WhenBroadcastReceived(wave)
+{
+    Forever
+    {
+        If (pitch == (-1 / 0))
+        {
+        }
+        Else
+        {
+            If (Not ((_pitch == pitch)))
+            {
+                _pitch = pitch;
+                Sound.SetEffectTo(PITCH, pitch);
+            }
+        }
+    }
+}
+
+WhenBroadcastReceived(wave create)
+{
+    Call instant;
+    Event.Broadcast("wave");
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define apply to vol (warp=true)
+{
+    r.0 = 1;
+    List.DeleteAll(vol);
+    Repeat (List.Length(FT.im))
+    {
+        r.0 += 1;
+        r.1 = FT.re[r.0];
+        r.2 = FT.im[r.0];
+        List.Add(vol, (3 * sqrt(((r.1 * r.1) + (r.2 * r.2)))));
+    }
+}
+
+Define convert buffer to bits (warp=true)
+{
+    List.DeleteAll(wave);
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
+    Repeat (16)
+    {
+        r.1 = 256;
+        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+        Repeat (8)
+        {
+            r.1 = (r.1 / 2);
+            List.Add(wave, (12 * (floor((chip8.audiobuffer[control_get_counter ?? - probably legacy function from Scratch 2.0] / r.1)) % 2)));
+        }
+    }
+}
+
+Define FFT(bool I) (warp=true)
+{
+    List.DeleteItem(temp.0, all);
+    List.DeleteItem(temp.1, all);
+    If (List.Length(FT.re) < List.Length(FT.im))
+    {
+        r.0 = List.Length(FT.im);
+    }
+    Else
+    {
+        r.0 = List.Length(FT.re);
+    }
+    r.0 += -1;
+    r.2 = 1;
+    r.3 = 0;
+    Repeat Until (r.2 > r.0)
+    {
+        r.2 += r.2;
+        r.3 += 1;
+    }
+    Repeat (r.2)
+    {
+        r.0 = List.Length(temp.0);
+        r.1 = 0;
+        Repeat (r.3)
+        {
+            r.1 = (r.1 * 2);
+            r.1 += (r.0 % 2);
+            r.0 = floor((r.0 / 2));
+        }
+        r.1 += 1;
+        List.Add(temp.0, (FT.re[r.1] + 0));
+        List.Add(temp.1, (FT.im[r.1] + 0));
+    }
+    r.1 = 1;
+    Repeat (r.3)
+    {
+        r.0 = 1;
+        r.2 = (r.2 / 2);
+        Repeat (r.2)
+        {
+            r.8 = 0;
+            If I
+            {
+                r.9 = (180 / r.1);
+            }
+            Else
+            {
+                r.9 = (-180 / r.1);
+            }
+            Repeat (r.1)
+            {
+                r.0 += r.1;
+                r.4 = cos(r.8);
+                r.5 = sin(r.8);
+                r.3 = temp.0[r.0];
+                r.7 = temp.1[r.0];
+                r.6 = ((r.3 * r.4) - (r.7 * r.5));
+                r.7 = ((r.3 * r.5) + (r.7 * r.4));
+                r.0 += (0 - r.1);
+                r.4 = temp.0[r.0];
+                r.5 = temp.1[r.0];
+                List.ReplaceItem(temp.0, r.0, (r.4 + r.6));
+                List.ReplaceItem(temp.1, r.0, (r.5 + r.7));
+                r.0 += r.1;
+                List.ReplaceItem(temp.0, r.0, (r.4 - r.6));
+                List.ReplaceItem(temp.1, r.0, (r.5 - r.7));
+                r.0 += (1 - r.1);
+                r.8 += r.9;
+            }
+            r.0 += r.1;
+        }
+        r.1 += r.1;
+    }
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
+    List.DeleteItem(FT.re, all);
+    List.DeleteItem(FT.im, all);
+    r.1 = sqrt(List.Length(temp.0));
+    Repeat (List.Length(temp.0))
+    {
+        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+        List.Add(FT.re, (temp.0[control_get_counter ?? - probably legacy function from Scratch 2.0] / r.1));
+        List.Add(FT.im, (temp.1[control_get_counter ?? - probably legacy function from Scratch 2.0] / r.1));
+    }
+}
+
+Define instant (warp=true)
+{
+    _pitch = 0;
+    q = 64;
+    _id = 64;
+    Repeat (63)
+    {
+        Control.CreateCloneOf(_myself_);
+        _id += -1;
+    }
+}
+
+Define put Input (warp=true)
+{
+    List.DeleteAll(FT.re);
+    List.DeleteAll(FT.im);
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
+    Repeat (128)
+    {
+        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+        List.Add(FT.re, (wave[control_get_counter ?? - probably legacy function from Scratch 2.0] / 15));
+        List.Add(FT.re, (wave[control_get_counter ?? - probably legacy function from Scratch 2.0] / 15));
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+vsine1.wav
+vsine2.wav
+vsine3.wav
+vsine4.wav
+vsine5.wav
+vsine6.wav
+vsine7.wav
+vsine8.wav
+vsine9.wav
+vsine10.wav
+vsine11.wav
+vsine12.wav
+vsine13.wav
+vsine14.wav
+vsine15.wav
+vsine16.wav
+vsine17.wav
+vsine18.wav
+vsine19.wav
+vsine20.wav
+vsine21.wav
+vsine22.wav
+vsine23.wav
+vsine24.wav
+vsine25.wav
+vsine26.wav
+vsine27.wav
+vsine28.wav
+vsine29.wav
+vsine30.wav
+vsine31.wav
+vsine32.wav
+vsine33.wav
+vsine34.wav
+vsine35.wav
+vsine36.wav
+vsine37.wav
+vsine38.wav
+vsine39.wav
+vsine40.wav
+vsine41.wav
+vsine42.wav
+vsine43.wav
+vsine44.wav
+vsine45.wav
+vsine46.wav
+vsine47.wav
+vsine48.wav
+vsine49.wav
+vsine50.wav
+vsine51.wav
+vsine52.wav
+vsine53.wav
+vsine54.wav
+vsine55.wav
+vsine56.wav
+vsine57.wav
+vsine58.wav
+vsine59.wav
+vsine60.wav
+vsine61.wav
+vsine62.wav
+vsine63.wav
+vsine64.wav

@@ -1,0 +1,2037 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+arm7.pc = 140197
+arm7.read_return = 0x00000000
+arm9.pc = 140201
+arm9.read_return = 0x00000000
+core.byte_return = 31
+core.condition_test = false
+core.dummy = 192
+core.dummy2 = 49183
+core.dummy_op = 0
+core.instruction_format = 0
+core.little_endian = 0
+core.op.dummy = 4294967295
+core.op.dummy2 = 0
+core.read_return = 3
+core.rotate_return = 20
+core.shift_return = 0
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+arm7.registers = { 
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+    0x00000000
+}
+arm9.flags = { 
+    false
+    false
+    false
+    false
+}
+arm9.registers = { }
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(Project not saving fix)
+{
+    List.DeleteAll(display.screen);
+    List.DeleteAll(arm7.memory1);
+    List.DeleteAll(arm7.memory2);
+    List.DeleteAll(arm7.memory3);
+    List.DeleteAll(arm7.memory4);
+    List.DeleteAll(arm7.memory5);
+    List.DeleteAll(arm7.memory6);
+    List.DeleteAll(core.shared_wram);
+    List.DeleteAll(arm7.wram);
+    List.DeleteAll(arm7.vwram);
+    List.DeleteAll(arm7.io_ports);
+    List.DeleteAll(arm7.wireless.state_0);
+    List.DeleteAll(arm7.wireless.state_1);
+    List.DeleteAll(arm9.memory1);
+    List.DeleteAll(arm9.memory2);
+    List.DeleteAll(arm9.memory3);
+    List.DeleteAll(arm9.memory4);
+    List.DeleteAll(arm9.memory5);
+    List.DeleteAll(arm9.memory6);
+    List.DeleteAll(arm9.registers);
+    List.DeleteAll(arm9.standard_palettes);
+    List.DeleteAll(arm9.io_ports);
+    List.DeleteAll(vram.engine_a.bg);
+    List.DeleteAll(vram.engine_a.obj);
+    List.DeleteAll(vram.engine_b.bg);
+    List.DeleteAll(vram.engine_b.obj);
+    List.DeleteAll(vram.lcdc);
+    List.DeleteAll(oam);
+}
+
+WhenBroadcastReceived(start game)
+{
+    Variable.Show(rom.title);
+    Call core.reset_memory;
+    arm7.pc = 1;
+    arm9.pc = 1;
+    arm7.cycles = 0;
+    arm9.cycles = 0;
+    Sensing.ResetTimer();
+    Call emulate_frame;
+    Event.Broadcast("render_screen");
+    Forever
+    {
+        Call emulate_frame;
+        Event.Broadcast("render_screen");
+    }
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define (string x) <<(string y) (warp=true)
+{
+    core.shift_return = (x * Operator.Round(e ^((y * 0.6931471805599453))));
+}
+
+Define (string x) >>(string y) (warp=true)
+{
+    core.shift_return = floor((x / Operator.Round(e ^((y * 0.6931471805599453)))));
+}
+
+Define arm7.check_condition(string cond) (warp=true)
+{
+    If (cond < 8)
+    {
+        If (cond < 4)
+        {
+            If (cond < 2)
+            {
+                If (cond < 1)
+                {
+                    core.condition_test = arm7.flags[1];
+                }
+                Else
+                {
+                    core.condition_test = (1 - arm7.flags[1]);
+                }
+            }
+            Else
+            {
+                If (cond < 3)
+                {
+                    core.condition_test = arm7.flags[2];
+                }
+                Else
+                {
+                    core.condition_test = (1 - arm7.flags[2]);
+                }
+            }
+        }
+        Else
+        {
+            If (cond < 6)
+            {
+                If (cond < 5)
+                {
+                    core.condition_test = arm7.flags[3];
+                }
+                Else
+                {
+                    core.condition_test = (1 - arm7.flags[3]);
+                }
+            }
+            Else
+            {
+                If (cond < 7)
+                {
+                    core.condition_test = arm7.flags[4];
+                }
+                Else
+                {
+                    core.condition_test = (1 - arm7.flags[4]);
+                }
+            }
+        }
+    }
+    Else
+    {
+        If (cond < 12)
+        {
+            If (cond < 10)
+            {
+                If (cond < 9)
+                {
+                    core.condition_test = ((arm7.flags[2] - arm7.flags[1]) > 0);
+                }
+                Else
+                {
+                    core.condition_test = ((arm7.flags[1] - arm7.flags[2]) > 0);
+                }
+            }
+            Else
+            {
+                If (cond < 11)
+                {
+                    core.condition_test = (arm7.flags[3] == arm7.flags[4]);
+                }
+                Else
+                {
+                    core.condition_test = (Not ((arm7.flags[3] == arm7.flags[4])));
+                }
+            }
+        }
+        Else
+        {
+            If (cond < 14)
+            {
+                If (cond < 13)
+                {
+                    core.condition_test = ((1 - arm7.flags[1]) * (arm7.flags[3] == arm7.flags[4]));
+                }
+                Else
+                {
+                    core.condition_test = ((arm7.flags[1] + (Not ((arm7.flags[3] == arm7.flags[4])))) > 0);
+                }
+            }
+            Else
+            {
+                If (cond < 15)
+                {
+                    core.condition_test = "true";
+                }
+                Else
+                {
+                    core.condition_test = "true";
+                }
+            }
+        }
+    }
+}
+
+Define arm7.instruction(string opcode) (warp=true)
+{
+    arm7.cycles += 1;
+    Call arm7.check_condition((floor((opcode / 16)) % 16));
+    If (core.condition_test == 0)
+    {
+        Stop(this script);
+    }
+    Call core.get_format(opcode);
+    If (core.instruction_format < 8)
+    {
+        If (core.instruction_format < 4)
+        {
+            If (core.instruction_format < 2)
+            {
+                If (core.instruction_format < 1)
+                {
+                    If ((core.little_endian % 0x04000000) > "0x01FFFFFF")
+                    {
+                        Call core.rotate_right((core.little_endian % 256))((2 * (floor((core.little_endian / 256)) % 16)));
+                        core.op.dummy2 = core.rotate_return;
+                    }
+                    Else
+                    {
+                        Call arm7.read_register((core.little_endian % 16));
+                        Call (arm7.read_return) <<((floor((core.little_endian / 16)) % 256));
+                        core.op.dummy2 = core.shift_return;
+                    }
+                    core.dummy_op = floor(((core.little_endian % 0x02000000) / 0x00200000));
+                    If (core.dummy_op < 8)
+                    {
+                        If (core.dummy_op < 4)
+                        {
+                            If (core.dummy_op < 2)
+                            {
+                                If (core.dummy_op < 1)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 3)
+                                {
+                                    Call arm7.read_register((floor((core.little_endian / 0x10000)) % 16));
+                                    core.op.dummy = (arm7.read_return - core.op.dummy2);
+                                    If ((core.little_endian % 0x00200000) > "0x000FFFFF")
+                                    {
+                                        List.ReplaceItem(arm7.flags, 1, (core.op.dummy < 0));
+                                    }
+                                    If (core.op.dummy < 0)
+                                    {
+                                        core.op.dummy += 0x100000000;
+                                    }
+                                    Call arm7.write_register((floor((core.little_endian / 0x1000)) % 16))(core.op.dummy);
+                                }
+                                Else
+                                {
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            If (core.dummy_op < 6)
+                            {
+                                If (core.dummy_op < 5)
+                                {
+                                    Call arm7.read_register((floor((core.little_endian / 0x10000)) % 16));
+                                    core.op.dummy = (arm7.read_return + core.op.dummy2);
+                                    If (core.op.dummy > "0xFFFFFFFF")
+                                    {
+                                        core.op.dummy += -0x100000000;
+                                    }
+                                    Call arm7.write_register((floor((core.little_endian / 0x1000)) % 16))(core.op.dummy);
+                                }
+                                Else
+                                {
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 7)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                        }
+                    }
+                    Else
+                    {
+                        If (core.dummy_op < 12)
+                        {
+                            If (core.dummy_op < 10)
+                            {
+                                If (core.dummy_op < 9)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 11)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            If (core.dummy_op < 14)
+                            {
+                                If (core.dummy_op < 13)
+                                {
+                                }
+                                Else
+                                {
+                                    Call arm7.write_register((floor((core.little_endian / 0x1000)) % 16))(core.op.dummy2);
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 15)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                        }
+                    }
+                    arm7.cycles += 1;
+                }
+                Else
+                {
+                    arm7.cycles += 1;
+                }
+            }
+            Else
+            {
+                If (core.instruction_format < 3)
+                {
+                    arm7.cycles += 3;
+                }
+                Else
+                {
+                }
+            }
+        }
+        Else
+        {
+            If (core.instruction_format < 6)
+            {
+                If (core.instruction_format < 5)
+                {
+                }
+                Else
+                {
+                }
+            }
+            Else
+            {
+                If (core.instruction_format < 7)
+                {
+                    core.op.dummy2 = ( - ((16 * (floor((core.little_endian / 256)) % 16)) + (core.little_endian % 16)));
+                    If ((core.little_endian % 0x01000000) > "0x007FFFFF")
+                    {
+                        core.op.dummy2 = ( - core.op.dummy2);
+                    }
+                    Call arm7.read_register((floor((core.little_endian / 0x10000)) % 16));
+                    core.op.dummy2 += arm7.read_return;
+                    If ((core.little_endian % 0x00400000) > "0x001FFFFF")
+                    {
+                        Call arm7.write_register((floor((core.little_endian / 0x10000)) % 16))(core.op.dummy2);
+                    }
+                    If ((core.little_endian % 0x00200000) > "0x000FFFFF")
+                    {
+                        Call arm7.read_memory(core.op.dummy2);
+                        Call arm7.write_register((floor((core.little_endian / 0x1000)) % 16))(arm9.read_return);
+                    }
+                    Else
+                    {
+                        Call arm7.read_register((floor((core.little_endian / 0x1000)) % 16));
+                        core.op.dummy = arm7.read_return;
+                        Call arm7.write_byte(core.op.dummy2)(floor((core.op.dummy / 256)));
+                        Call arm7.write_byte((core.op.dummy2 + 1))((core.op.dummy % 256));
+                    }
+                    arm7.cycles += 1;
+                }
+                Else
+                {
+                    If ((core.little_endian % 0x04000000) > "0x01FFFFFF")
+                    {
+                        Call arm7.read_register((core.little_endian % 16));
+                        Call (arm7.read_return) <<((floor((core.little_endian / 16)) % 256));
+                        core.op.dummy2 = core.shift_return;
+                    }
+                    Else
+                    {
+                        core.op.dummy2 = (core.little_endian % 4096);
+                    }
+                    If ((core.little_endian % 0x01000000) > "0x00FFFFFF")
+                    {
+                        core.op.dummy2 = ( - core.op.dummy2);
+                    }
+                    If ((core.little_endian % 0x00200000) > "0x000FFFFF")
+                    {
+                        Call arm7.read_register((floor((core.little_endian / 0x10000)) % 16));
+                        Call arm7.read_memory((arm9.read_return + core.op.dummy2));
+                        Call arm7.write_register((floor((core.little_endian / 0x1000)) % 16))(arm9.read_return);
+                    }
+                    Else
+                    {
+                        Call arm7.read_register((floor((core.little_endian / 0x10000)) % 16));
+                        core.op.dummy = arm7.read_return;
+                        Call arm7.read_register((floor((core.little_endian / 0x1000)) % 16));
+                        Call arm7.write_memory((core.op.dummy + core.op.dummy2))(arm9.read_return);
+                    }
+                }
+            }
+        }
+    }
+    Else
+    {
+        If (core.instruction_format < 12)
+        {
+            If (core.instruction_format < 10)
+            {
+                If (core.instruction_format < 9)
+                {
+                }
+                Else
+                {
+                }
+            }
+            Else
+            {
+                If (core.instruction_format < 11)
+                {
+                    If ((core.little_endian % 0x02000000) > "0x00FFFFFF")
+                    {
+                        Call arm7.write_register(14)((arm7.pc - 1));
+                    }
+                    If ((core.little_endian % 0x01000000) > "0x008FFFFF")
+                    {
+                        arm7.pc += (-1 * (0x00FFFFFF - (core.little_endian % 0x01000000)));
+                    }
+                    Else
+                    {
+                        arm7.pc += (core.little_endian % 0x01000000);
+                    }
+                    arm7.cycles += 3;
+                }
+                Else
+                {
+                }
+            }
+        }
+        Else
+        {
+            If (core.instruction_format < 14)
+            {
+                If (core.instruction_format < 13)
+                {
+                }
+                Else
+                {
+                }
+            }
+            Else
+            {
+                If (core.instruction_format < 15)
+                {
+                }
+                Else
+                {
+                }
+            }
+        }
+    }
+}
+
+Define arm7.list_read_memory(string addr) (warp=true)
+{
+    If (addr > "0x05FFFFFF")
+    {
+        If (addr > "0x07FFFFFF")
+        {
+            If (addr > "0x09FFFFFF")
+            {
+            }
+            Else
+            {
+            }
+        }
+        Else
+        {
+            arm7.read_return = arm7.vwram[(1 + floor(((addr - 0x06000000) / 4)))];
+        }
+    }
+    Else
+    {
+        If (addr > "0x037FFFFF")
+        {
+            If (addr > "0x03FFFFFF")
+            {
+                If (addr > "0x047FFFFF")
+                {
+                    If (addr > "0x04807FFF")
+                    {
+                        arm7.read_return = arm7.wireless.state_1[(1 + floor(((addr - 0x04808000) / 4)))];
+                    }
+                    Else
+                    {
+                        arm7.read_return = arm7.wireless.state_0[(1 + floor(((addr - 0x04800000) / 4)))];
+                    }
+                }
+                Else
+                {
+                    arm7.read_return = arm7.io_ports[(1 + floor(((addr - 0x04000000) / 4)))];
+                }
+            }
+            Else
+            {
+                arm7.read_return = arm7.wram[(1 + floor(((addr - 0x03800000) / 4)))];
+            }
+        }
+        Else
+        {
+            If (addr > "0x02FFFFFF")
+            {
+                arm7.read_return = core.shared_wram[(1 + floor(((addr - 0x03000000) / 4)))];
+            }
+            Else
+            {
+                If (addr > "0x020C34FF")
+                {
+                    If (addr > "0x020F423F")
+                    {
+                        If (addr > "0x02124F7F")
+                        {
+                            arm7.read_return = arm7.memory6[(1 + floor(((addr - 0x02124F80) / 4)))];
+                        }
+                        Else
+                        {
+                            arm7.read_return = arm7.memory5[(1 + floor(((addr - 0x020F4240) / 4)))];
+                        }
+                    }
+                    Else
+                    {
+                        arm7.read_return = arm7.memory4[(1 + floor(((addr - 0x020C3500) / 4)))];
+                    }
+                }
+                Else
+                {
+                    If (addr > "0x02030D3F")
+                    {
+                        If (addr > "0x020927BF")
+                        {
+                            arm7.read_return = arm7.memory3[(1 + floor(((addr - 0x020927C0) / 4)))];
+                        }
+                        Else
+                        {
+                            arm7.read_return = arm7.memory2[(1 + floor(((addr - 0x02030D40) / 4)))];
+                        }
+                    }
+                    Else
+                    {
+                        arm7.read_return = arm7.memory1[(1 + floor(((addr - 0x02000000) / 4)))];
+                    }
+                }
+            }
+        }
+    }
+}
+
+Define arm7.list_write_memory(string addr)(string value) (warp=true)
+{
+    If (addr > "0x05FFFFFF")
+    {
+        If (addr > "0x07FFFFFF")
+        {
+            If (addr > "0x09FFFFFF")
+            {
+            }
+            Else
+            {
+            }
+        }
+        Else
+        {
+            List.ReplaceItem(arm7.vwram, (1 + floor(((addr - 0x06000000) / 4))), value);
+        }
+    }
+    Else
+    {
+        If (addr > "0x037FFFFF")
+        {
+            If (addr > "0x03FFFFFF")
+            {
+                If (addr > "0x047FFFFF")
+                {
+                    If (addr > "0x04807FFF")
+                    {
+                        List.ReplaceItem(arm7.wireless.state_1, (1 + floor(((addr - 0x04808000) / 4))), value);
+                    }
+                    Else
+                    {
+                        List.ReplaceItem(arm7.wireless.state_0, (1 + floor(((addr - 0x04800000) / 4))), value);
+                    }
+                }
+                Else
+                {
+                    List.ReplaceItem(arm7.io_ports, (1 + floor(((addr - 0x04000000) / 4))), value);
+                }
+            }
+            Else
+            {
+                List.ReplaceItem(arm7.wram, (1 + floor(((addr - 0x03800000) / 4))), value);
+            }
+        }
+        Else
+        {
+            If (addr > "0x02FFFFFF")
+            {
+                List.ReplaceItem(core.shared_wram, (1 + floor(((addr - 0x03000000) / 4))), value);
+            }
+            Else
+            {
+                If (addr > "0x020C34FF")
+                {
+                    If (addr > "0x020F423F")
+                    {
+                        If (addr > "0x02124F7F")
+                        {
+                            List.ReplaceItem(arm7.memory6, (1 + floor(((addr - 0x02124F80) / 4))), value);
+                        }
+                        Else
+                        {
+                            List.ReplaceItem(arm7.memory5, (1 + floor(((addr - 0x020F4240) / 4))), value);
+                        }
+                    }
+                    Else
+                    {
+                        List.ReplaceItem(arm7.memory4, (1 + floor(((addr - 0x020C3500) / 4))), value);
+                    }
+                }
+                Else
+                {
+                    If (addr > "0x02030D3F")
+                    {
+                        If (addr > "0x020927BF")
+                        {
+                            List.ReplaceItem(arm7.memory3, (1 + floor(((addr - 0x020927C0) / 4))), value);
+                        }
+                        Else
+                        {
+                            List.ReplaceItem(arm7.memory2, (1 + floor(((addr - 0x02030D40) / 4))), value);
+                        }
+                    }
+                    Else
+                    {
+                        List.ReplaceItem(arm7.memory1, (1 + floor(((addr - 0x02000000) / 4))), value);
+                    }
+                }
+            }
+        }
+    }
+}
+
+Define arm7.read_byte(string addr) (warp=true)
+{
+    Call arm7.list_read_memory(addr);
+    Call core.get_byte(arm7.read_return)((addr % 4));
+    arm7.read_return = core.byte_return;
+}
+
+Define arm7.read_memory(string addr) (warp=true)
+{
+    Call arm7.list_read_memory(addr);
+    If ((addr % 4) > 0)
+    {
+        core.dummy2 = Operator.Round(e ^((5.545177444479562 * (3 - (addr % 4)))));
+        core.dummy = (arm7.read_return % core.dummy2);
+        Call arm7.list_read_memory((addr + 4));
+        arm7.read_return = ((core.dummy * (16777216 / core.dummy2)) + floor((arm7.read_return / core.dummy2)));
+    }
+}
+
+Define arm7.read_register(string register) (warp=true)
+{
+    If (register < 15)
+    {
+        arm7.read_return = arm7.registers[(register + 1)];
+    }
+    Else
+    {
+        arm7.read_return = (arm7.pc - 1);
+    }
+}
+
+Define arm7.write_byte(string addr)(string value) (warp=true)
+{
+    core.dummy = 0;
+    core.dummy2 = 0;
+    Repeat (4)
+    {
+        If (core.dummy == (addr % 4))
+        {
+            core.dummy2 = ((256 * core.dummy2) + value);
+        }
+        Else
+        {
+            Call arm7.read_byte(((4 * floor((addr / 4))) + core.dummy));
+            core.dummy2 = ((256 * core.dummy2) + arm7.read_return);
+        }
+        core.dummy += 1;
+    }
+    Call arm7.write_memory((4 * floor((addr / 4))))(core.dummy2);
+}
+
+Define arm7.write_memory(string addr)(string value) (warp=true)
+{
+    If ((addr % 4) == 0)
+    {
+        Call arm7.list_write_memory(addr)(value);
+    }
+    Else
+    {
+        core.dummy = Operator.Round(e ^((5.545177444479562 * (addr % 4))));
+        core.dummy2 = Operator.Round(e ^((5.545177444479562 * (3 - ((addr - 1) % 4)))));
+        Call arm7.list_read_memory(addr);
+        Call arm7.list_write_memory(addr)(((core.dummy * floor((arm7.read_return / core.dummy))) + floor((value / core.dummy2))));
+        Call arm7.list_read_memory((addr + 4));
+        Call arm7.list_write_memory((addr + 4))(((arm7.read_return % core.dummy) + (core.dummy * (value % core.dummy2))));
+    }
+}
+
+Define arm7.write_register(string register)(string value) (warp=true)
+{
+    List.ReplaceItem(arm7.registers, (register + 1), value);
+}
+
+Define arm9.check_condition(string cond) (warp=true)
+{
+    If (cond < 8)
+    {
+        If (cond < 4)
+        {
+            If (cond < 2)
+            {
+                If (cond < 1)
+                {
+                    core.condition_test = arm9.flags[1];
+                }
+                Else
+                {
+                    core.condition_test = (1 - arm9.flags[1]);
+                }
+            }
+            Else
+            {
+                If (cond < 3)
+                {
+                    core.condition_test = arm9.flags[2];
+                }
+                Else
+                {
+                    core.condition_test = (1 - arm9.flags[2]);
+                }
+            }
+        }
+        Else
+        {
+            If (cond < 6)
+            {
+                If (cond < 5)
+                {
+                    core.condition_test = arm9.flags[3];
+                }
+                Else
+                {
+                    core.condition_test = (1 - arm9.flags[3]);
+                }
+            }
+            Else
+            {
+                If (cond < 7)
+                {
+                    core.condition_test = arm9.flags[4];
+                }
+                Else
+                {
+                    core.condition_test = (1 - arm9.flags[4]);
+                }
+            }
+        }
+    }
+    Else
+    {
+        If (cond < 12)
+        {
+            If (cond < 10)
+            {
+                If (cond < 9)
+                {
+                    core.condition_test = ((arm9.flags[2] - arm9.flags[1]) > 0);
+                }
+                Else
+                {
+                    core.condition_test = ((arm9.flags[1] - arm9.flags[2]) > 0);
+                }
+            }
+            Else
+            {
+                If (cond < 11)
+                {
+                    core.condition_test = (arm9.flags[3] == arm9.flags[4]);
+                }
+                Else
+                {
+                    core.condition_test = (Not ((arm9.flags[3] == arm9.flags[4])));
+                }
+            }
+        }
+        Else
+        {
+            If (cond < 14)
+            {
+                If (cond < 13)
+                {
+                    core.condition_test = ((1 - arm9.flags[1]) * (arm9.flags[3] == arm9.flags[4]));
+                }
+                Else
+                {
+                    core.condition_test = ((arm9.flags[1] + (Not ((arm9.flags[3] == arm9.flags[4])))) > 0);
+                }
+            }
+            Else
+            {
+                If (cond < 15)
+                {
+                    core.condition_test = "true";
+                }
+                Else
+                {
+                    core.condition_test = "true";
+                }
+            }
+        }
+    }
+}
+
+Define arm9.instruction(string opcode) (warp=true)
+{
+    arm9.cycles += 1;
+    Call arm9.check_condition((floor((opcode / 16)) % 16));
+    If (core.condition_test == 0)
+    {
+        Stop(this script);
+    }
+    Call core.get_format(opcode);
+    If (core.instruction_format < 8)
+    {
+        If (core.instruction_format < 4)
+        {
+            If (core.instruction_format < 2)
+            {
+                If (core.instruction_format < 1)
+                {
+                    If ((core.little_endian % 0x04000000) > "0x01FFFFFF")
+                    {
+                        Call core.rotate_right((core.little_endian % 256))((2 * (floor((core.little_endian / 256)) % 16)));
+                        core.op.dummy2 = core.rotate_return;
+                    }
+                    Else
+                    {
+                        Call arm9.read_register((core.little_endian % 16));
+                        Call (arm9.read_return) <<((floor((core.little_endian / 16)) % 256));
+                        core.op.dummy2 = core.shift_return;
+                    }
+                    core.dummy_op = floor(((core.little_endian % 0x02000000) / 0x00200000));
+                    If (core.dummy_op < 8)
+                    {
+                        If (core.dummy_op < 4)
+                        {
+                            If (core.dummy_op < 2)
+                            {
+                                If (core.dummy_op < 1)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 3)
+                                {
+                                    Call arm9.read_register((floor((core.little_endian / 0x10000)) % 16));
+                                    core.op.dummy = (arm9.read_return - core.op.dummy2);
+                                    If ((core.little_endian % 0x00200000) > "0x000FFFFF")
+                                    {
+                                        List.ReplaceItem(arm9.flags, 1, (core.op.dummy < 0));
+                                    }
+                                    If (core.op.dummy < 0)
+                                    {
+                                        core.op.dummy += 0x100000000;
+                                    }
+                                    Call arm9.write_register((floor((core.little_endian / 0x1000)) % 16))(core.op.dummy);
+                                }
+                                Else
+                                {
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            If (core.dummy_op < 6)
+                            {
+                                If (core.dummy_op < 5)
+                                {
+                                    Call arm9.read_register((floor((core.little_endian / 0x10000)) % 16));
+                                    core.op.dummy = (arm9.read_return + core.op.dummy2);
+                                    If (core.op.dummy > "0xFFFFFFFF")
+                                    {
+                                        core.op.dummy += -0x100000000;
+                                    }
+                                    Call arm9.write_register((floor((core.little_endian / 0x1000)) % 16))(core.op.dummy);
+                                }
+                                Else
+                                {
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 7)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                        }
+                    }
+                    Else
+                    {
+                        If (core.dummy_op < 12)
+                        {
+                            If (core.dummy_op < 10)
+                            {
+                                If (core.dummy_op < 9)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 11)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            If (core.dummy_op < 14)
+                            {
+                                If (core.dummy_op < 13)
+                                {
+                                }
+                                Else
+                                {
+                                    Call arm9.write_register((floor((core.little_endian / 0x1000)) % 16))(core.op.dummy2);
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 15)
+                                {
+                                }
+                                Else
+                                {
+                                }
+                            }
+                        }
+                    }
+                    arm9.cycles += 1;
+                }
+                Else
+                {
+                    arm9.cycles += 1;
+                }
+            }
+            Else
+            {
+                If (core.instruction_format < 3)
+                {
+                    arm9.cycles += 3;
+                }
+                Else
+                {
+                }
+            }
+        }
+        Else
+        {
+            If (core.instruction_format < 6)
+            {
+                If (core.instruction_format < 5)
+                {
+                    arm9.cycles += 3;
+                }
+                Else
+                {
+                }
+            }
+            Else
+            {
+                If (core.instruction_format < 7)
+                {
+                    core.op.dummy2 = ( - ((16 * (floor((core.little_endian / 256)) % 16)) + (core.little_endian % 16)));
+                    If ((core.little_endian % 0x01000000) > "0x007FFFFF")
+                    {
+                        core.op.dummy2 = ( - core.op.dummy2);
+                    }
+                    Call arm9.read_register((floor((core.little_endian / 0x10000)) % 16));
+                    core.op.dummy2 += arm9.read_return;
+                    If ((core.little_endian % 0x00400000) > "0x001FFFFF")
+                    {
+                        Call arm9.write_register((floor((core.little_endian / 0x10000)) % 16))(core.op.dummy2);
+                    }
+                    If ((core.little_endian % 0x00200000) > "0x000FFFFF")
+                    {
+                        Call arm9.read_memory(core.op.dummy2);
+                        Call arm9.write_register((floor((core.little_endian / 0x1000)) % 16))(arm9.read_return);
+                    }
+                    Else
+                    {
+                        Call arm9.read_register((floor((core.little_endian / 0x1000)) % 16));
+                        core.op.dummy = arm9.read_return;
+                        Call arm9.write_byte(core.op.dummy2)((floor((core.op.dummy / 256)) % 256));
+                        Call arm9.write_byte((core.op.dummy2 + 1))((core.op.dummy % 256));
+                    }
+                    arm9.cycles += 1;
+                }
+                Else
+                {
+                    If ((core.little_endian % 0x04000000) > "0x01FFFFFF")
+                    {
+                        Call arm9.read_register((core.little_endian % 16));
+                        Call (arm9.read_return) <<((floor((core.little_endian / 16)) % 256));
+                        core.op.dummy2 = core.shift_return;
+                    }
+                    Else
+                    {
+                        core.op.dummy2 = (core.little_endian % 4096);
+                    }
+                    If ((core.little_endian % 0x01000000) > "0x00FFFFFF")
+                    {
+                        core.op.dummy2 = ( - core.op.dummy2);
+                    }
+                    If ((core.little_endian % 0x00200000) > "0x000FFFFF")
+                    {
+                        Call arm9.read_register((floor((core.little_endian / 0x10000)) % 16));
+                        Call arm9.read_memory((arm9.read_return + core.op.dummy2));
+                        Call arm9.write_register((floor((core.little_endian / 0x1000)) % 16))(arm9.read_return);
+                    }
+                    Else
+                    {
+                        Call arm9.read_register((floor((core.little_endian / 0x10000)) % 16));
+                        core.op.dummy = arm9.read_return;
+                        Call arm9.read_register((floor((core.little_endian / 0x1000)) % 16));
+                        Call arm9.write_memory((core.op.dummy + core.op.dummy2))(arm9.read_return);
+                    }
+                }
+            }
+        }
+    }
+    Else
+    {
+        If (core.instruction_format < 12)
+        {
+            If (core.instruction_format < 10)
+            {
+                If (core.instruction_format < 9)
+                {
+                }
+                Else
+                {
+                }
+            }
+            Else
+            {
+                If (core.instruction_format < 11)
+                {
+                    If ((core.little_endian % 0x02000000) > "0x00FFFFFF")
+                    {
+                        Call arm9.write_register(14)((arm9.pc - 1));
+                    }
+                    If ((core.little_endian % 0x01000000) > "0x007FFFFF")
+                    {
+                        arm9.pc += (-1 * (0x00FFFFFF - (core.little_endian % 0x01000000)));
+                    }
+                    Else
+                    {
+                        arm9.pc += (core.little_endian % 0x01000000);
+                    }
+                    arm9.cycles += 3;
+                }
+                Else
+                {
+                }
+            }
+        }
+        Else
+        {
+            If (core.instruction_format < 14)
+            {
+                If (core.instruction_format < 13)
+                {
+                }
+                Else
+                {
+                }
+            }
+            Else
+            {
+                If (core.instruction_format < 15)
+                {
+                    core.dummy_op = (core.dummy_op % 256);
+                    If (core.dummy_op < 16)
+                    {
+                        If (core.dummy_op < 8)
+                        {
+                            If (core.dummy_op < 4)
+                            {
+                                If (core.dummy_op < 2)
+                                {
+                                    If (core.dummy_op < 1)
+                                    {
+                                        arm9.pc = 1;
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                                Else
+                                {
+                                    If (core.dummy_op < 3)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                        arm9.cycles += (93 * (arm9.registers[1] / 4189));
+                                    }
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 6)
+                                {
+                                    If (core.dummy_op < 5)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                                Else
+                                {
+                                    If (core.dummy_op < 7)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            If (core.dummy_op < 12)
+                            {
+                                If (core.dummy_op < 10)
+                                {
+                                    If (core.dummy_op < 9)
+                                    {
+                                        If (arm9.registers[1] > "0x7FFFFFFF")
+                                        {
+                                            core.op.dummy = (0xFFFFFFFF - (arm9.registers[1] % 0x80000000));
+                                        }
+                                        Else
+                                        {
+                                            core.op.dummy = (arm9.registers[1] % 0x80000000);
+                                        }
+                                        If (arm9.registers[2] > "0x7FFFFFFF")
+                                        {
+                                            core.op.dummy2 = (0x7FFFFFFF - (arm9.registers[2] % 0x80000000));
+                                        }
+                                        Else
+                                        {
+                                            core.op.dummy2 = (arm9.registers[2] % 0x80000000);
+                                        }
+                                        If ((core.op.dummy / core.op.dummy2) < 0)
+                                        {
+                                            List.ReplaceItem(arm9.registers, 1, (0xFFFFFFFF + floor((core.op.dummy / core.op.dummy2))));
+                                            List.ReplaceItem(arm9.registers, 2, (0xFFFFFFFF + (core.op.dummy % core.op.dummy2)));
+                                        }
+                                        Else
+                                        {
+                                            List.ReplaceItem(arm9.registers, 1, floor((core.op.dummy / core.op.dummy2)));
+                                            List.ReplaceItem(arm9.registers, 2, (core.op.dummy % core.op.dummy2));
+                                        }
+                                        List.ReplaceItem(arm9.registers, 3, abs(floor((core.op.dummy / core.op.dummy2))));
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                                Else
+                                {
+                                    If (core.dummy_op < 11)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 14)
+                                {
+                                    If (core.dummy_op < 13)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                                Else
+                                {
+                                    If (core.dummy_op < 15)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Else
+                    {
+                        If (core.dummy_op < 24)
+                        {
+                            If (core.dummy_op < 20)
+                            {
+                                If (core.dummy_op < 18)
+                                {
+                                    If (core.dummy_op < 17)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                                Else
+                                {
+                                    If (core.dummy_op < 19)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 22)
+                                {
+                                    If (core.dummy_op < 21)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                                Else
+                                {
+                                    If (core.dummy_op < 23)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            If (core.dummy_op < 28)
+                            {
+                                If (core.dummy_op < 26)
+                                {
+                                    If (core.dummy_op < 25)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                                Else
+                                {
+                                    If (core.dummy_op < 27)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                            }
+                            Else
+                            {
+                                If (core.dummy_op < 30)
+                                {
+                                    If (core.dummy_op < 29)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                                Else
+                                {
+                                    If (core.dummy_op < 31)
+                                    {
+                                    }
+                                    Else
+                                    {
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Else
+                {
+                    Looks.Say("[ARM9] Illegal Opcode");
+                }
+            }
+        }
+    }
+}
+
+Define arm9.list_read_memory(string addr) (warp=true)
+{
+    If (addr > "0x061FFFFF")
+    {
+        If (addr > "0x06FFFFFF")
+        {
+            If (addr > "0x07FFFFFF")
+            {
+            }
+            Else
+            {
+                arm9.read_return = oam[(1 + floor(((addr - 0x07000000) / 4)))];
+            }
+        }
+        Else
+        {
+            If (addr > "0x065FFFFF")
+            {
+                If (addr > "0x067FFFFF")
+                {
+                    arm9.read_return = vram.lcdc[(1 + floor(((addr - 0x06800000) / 4)))];
+                }
+                Else
+                {
+                    arm9.read_return = vram.engine_b.obj[(1 + floor(((addr - 0x06600000) / 4)))];
+                }
+            }
+            Else
+            {
+                If (addr > "0x063FFFFF")
+                {
+                    arm9.read_return = vram.engine_a.obj[(1 + floor(((addr - 0x06400000) / 4)))];
+                }
+                Else
+                {
+                    arm9.read_return = vram.engine_b.bg[(1 + floor(((addr - 0x06200000) / 4)))];
+                }
+            }
+        }
+    }
+    Else
+    {
+        If (addr > "0x03FFFFFF")
+        {
+            If (addr > "0x05FFFFFF")
+            {
+                arm9.read_return = vram.engine_a.bg[(1 + floor(((addr - 0x06000000) / 4)))];
+            }
+            Else
+            {
+                If (addr > "0x04FFFFFF")
+                {
+                    arm9.read_return = arm9.standard_palettes[(1 + floor(((addr - 0x05000000) / 4)))];
+                }
+                Else
+                {
+                    arm9.read_return = arm9.io_ports[(1 + floor(((addr - 0x04000000) / 4)))];
+                }
+            }
+        }
+        Else
+        {
+            If (addr > "0x01FFFFFF")
+            {
+                If (addr > "0x02FFFFFF")
+                {
+                    arm9.read_return = core.shared_wram[(1 + floor(((addr - 0x03000000) / 4)))];
+                }
+                Else
+                {
+                    If (addr > "0x020C34FF")
+                    {
+                        If (addr > "0x020F423F")
+                        {
+                            If (addr > "0x02124F7F")
+                            {
+                                arm9.read_return = arm9.memory6[(1 + floor(((addr - 0x02124F80) / 4)))];
+                            }
+                            Else
+                            {
+                                arm9.read_return = arm9.memory5[(1 + floor(((addr - 0x020F4240) / 4)))];
+                            }
+                        }
+                        Else
+                        {
+                            arm9.read_return = arm9.memory4[(1 + floor(((addr - 0x020C3500) / 4)))];
+                        }
+                    }
+                    Else
+                    {
+                        If (addr > "0x02030D3F")
+                        {
+                            If (addr > "0x020927BF")
+                            {
+                                arm9.read_return = arm9.memory3[(1 + floor(((addr - 0x020927C0) / 4)))];
+                            }
+                            Else
+                            {
+                                arm9.read_return = arm9.memory2[(1 + floor(((addr - 0x02030D40) / 4)))];
+                            }
+                        }
+                        Else
+                        {
+                            arm9.read_return = arm9.memory1[(1 + floor(((addr - 0x02000000) / 4)))];
+                        }
+                    }
+                }
+            }
+            Else
+            {
+                If (addr > "0xXXXXFFFF")
+                {
+                }
+                Else
+                {
+                }
+            }
+        }
+    }
+}
+
+Define arm9.list_write_memory(string addr)(string value) (warp=true)
+{
+    If (addr > "0x061FFFFF")
+    {
+        If (addr > "0x06FFFFFF")
+        {
+            If (addr > "0x07FFFFFF")
+            {
+            }
+            Else
+            {
+                List.ReplaceItem(oam, (1 + floor(((addr - 0x07000000) / 4))), value);
+            }
+        }
+        Else
+        {
+            If (addr > "0x065FFFFF")
+            {
+                If (addr > "0x067FFFFF")
+                {
+                    List.ReplaceItem(vram.lcdc, (1 + floor(((addr - 0x06800000) / 4))), value);
+                }
+                Else
+                {
+                    List.ReplaceItem(vram.engine_b.obj, (1 + floor(((addr - 0x06600000) / 4))), value);
+                }
+            }
+            Else
+            {
+                If (addr > "0x063FFFFF")
+                {
+                    List.ReplaceItem(vram.engine_a.obj, (1 + floor(((addr - 0x06400000) / 4))), value);
+                }
+                Else
+                {
+                    List.ReplaceItem(vram.engine_b.bg, (1 + floor(((addr - 0x06200000) / 4))), value);
+                }
+            }
+        }
+    }
+    Else
+    {
+        If (addr > "0x03FFFFFF")
+        {
+            If (addr > "0x05FFFFFF")
+            {
+                List.ReplaceItem(vram.engine_a.bg, (1 + floor(((addr - 0x06000000) / 4))), value);
+            }
+            Else
+            {
+                If (addr > "0x04FFFFFF")
+                {
+                    List.ReplaceItem(arm9.standard_palettes, (1 + floor(((addr - 0x05000000) / 4))), value);
+                }
+                Else
+                {
+                    List.ReplaceItem(arm9.io_ports, (1 + floor(((addr - 0x04000000) / 4))), value);
+                }
+            }
+        }
+        Else
+        {
+            If (addr > "0x01FFFFFF")
+            {
+                If (addr > "0x02FFFFFF")
+                {
+                    List.ReplaceItem(core.shared_wram, (1 + floor(((addr - 0x03000000) / 4))), value);
+                }
+                Else
+                {
+                    If (addr > "0x020C34FF")
+                    {
+                        If (addr > "0x020F423F")
+                        {
+                            If (addr > "0x02124F7F")
+                            {
+                                List.ReplaceItem(arm9.memory6, (1 + floor(((addr - 0x02124F80) / 4))), value);
+                            }
+                            Else
+                            {
+                                List.ReplaceItem(arm9.memory5, (1 + floor(((addr - 0x020F4240) / 4))), value);
+                            }
+                        }
+                        Else
+                        {
+                            List.ReplaceItem(arm9.memory4, (1 + floor(((addr - 0x020C3500) / 4))), value);
+                        }
+                    }
+                    Else
+                    {
+                        If (addr > "0x02030D3F")
+                        {
+                            If (addr > "0x020927BF")
+                            {
+                                List.ReplaceItem(arm9.memory3, (1 + floor(((addr - 0x020927C0) / 4))), value);
+                            }
+                            Else
+                            {
+                                List.ReplaceItem(arm9.memory2, (1 + floor(((addr - 0x02030D40) / 4))), value);
+                            }
+                        }
+                        Else
+                        {
+                            List.ReplaceItem(arm9.memory1, (1 + floor(((addr - 0x02000000) / 4))), value);
+                        }
+                    }
+                }
+            }
+            Else
+            {
+                If (addr > "0xXXXXFFFF")
+                {
+                }
+                Else
+                {
+                }
+            }
+        }
+    }
+}
+
+Define arm9.read_byte(string addr) (warp=true)
+{
+    Call arm9.list_read_memory(addr);
+    Call core.get_byte(arm9.read_return)((addr % 4));
+    arm9.read_return = core.byte_return;
+}
+
+Define arm9.read_memory(string addr) (warp=true)
+{
+    Call arm9.list_read_memory(addr);
+    If ((addr % 4) > 0)
+    {
+        core.dummy2 = Operator.Round(e ^((5.545177444479562 * (3 - (addr % 4)))));
+        core.dummy = (arm7.read_return % core.dummy2);
+        Call arm9.list_read_memory((addr + 4));
+        arm9.read_return = ((core.dummy * (16777216 / core.dummy2)) + floor((arm9.read_return / core.dummy2)));
+    }
+}
+
+Define arm9.read_register(string register) (warp=true)
+{
+    If (register < 15)
+    {
+        arm9.read_return = arm9.registers[(register + 1)];
+    }
+    Else
+    {
+        arm9.read_return = (arm9.pc - 1);
+    }
+}
+
+Define arm9.write_byte(string addr)(string value) (warp=true)
+{
+    core.dummy = 0;
+    core.dummy2 = 0;
+    Repeat (4)
+    {
+        If (core.dummy == (addr % 4))
+        {
+            core.dummy2 = ((256 * core.dummy2) + value);
+        }
+        Else
+        {
+            Call arm9.read_byte(((4 * floor((addr / 4))) + core.dummy));
+            core.dummy2 = ((256 * core.dummy2) + arm9.read_return);
+        }
+        core.dummy += 1;
+    }
+    Call arm9.list_write_memory(addr)(core.dummy2);
+}
+
+Define arm9.write_memory(string addr)(string value) (warp=true)
+{
+    If ((addr % 4) == 0)
+    {
+        Call arm9.list_write_memory(addr)(value);
+    }
+    Else
+    {
+        core.dummy = Operator.Round(e ^((5.545177444479562 * (addr % 4))));
+        core.dummy2 = Operator.Round(e ^((5.545177444479562 * (3 - ((addr - 1) % 4)))));
+        Call arm9.list_read_memory(addr);
+        Call arm9.list_write_memory(addr)(((core.dummy * floor((arm9.read_return / core.dummy))) + floor((value / core.dummy2))));
+        Call arm9.list_read_memory((addr + 4));
+        Call arm9.list_write_memory((addr + 4))(((arm9.read_return % core.dummy) + (core.dummy * (value % core.dummy2))));
+    }
+}
+
+Define arm9.write_register(string register)(string value) (warp=true)
+{
+    List.ReplaceItem(arm9.registers, (register + 1), value);
+}
+
+Define core.get_byte(string number)(string byte) (warp=true)
+{
+    core.byte_return = floor(((number / Operator.Round(e ^((5.545177444479562 * (3 - (byte % 4)))))) % 256));
+}
+
+Define core.get_format(string opcode) (warp=true)
+{
+    core.dummy_op = opcode;
+    core.little_endian = 0;
+    Repeat (4)
+    {
+        core.little_endian = ((256 * core.little_endian) + (core.dummy_op % 256));
+        core.dummy_op = floor((core.dummy_op / 256));
+    }
+    If ((core.little_endian % 0x10000000) < "0x08000000")
+    {
+        If ((core.little_endian % 0x08000000) < "0x04000000")
+        {
+            If ((core.little_endian % 0x04000000) < "0x02000000")
+            {
+                If (floor((core.little_endian / 16)) == "0b000100101111111111110001")
+                {
+                    core.instruction_format = 4;
+                }
+                Else
+                {
+                    If (((core.little_endian % 32) > 15) And ((core.little_endian % 256) > 127))
+                    {
+                        If ((floor((core.little_endian / 16)) % 16) == 9)
+                        {
+                            If ((core.little_endian % 0x02000000) > "0x00FFFFFF")
+                            {
+                                core.instruction_format = 3;
+                            }
+                            Else
+                            {
+                                If ((core.little_endian % 0x01000000) > "0x007FFFFF")
+                                {
+                                    core.instruction_format = 2;
+                                }
+                                Else
+                                {
+                                    core.instruction_format = 1;
+                                }
+                            }
+                        }
+                        Else
+                        {
+                            If ((core.little_endian % 0x00800000) > "0x003FFFFF")
+                            {
+                                core.instruction_format = 6;
+                            }
+                            Else
+                            {
+                                If ((floor((core.little_endian / 256)) % 16) == 0)
+                                {
+                                    core.instruction_format = 5;
+                                }
+                                Else
+                                {
+                                    core.instruction_format = 15;
+                                }
+                            }
+                        }
+                    }
+                    Else
+                    {
+                        core.instruction_format = 0;
+                    }
+                }
+            }
+            Else
+            {
+                If (((core.little_endian % 32) > 15) And ((core.little_endian % 256) > 127))
+                {
+                    If ((core.little_endian % 0x00800000) > "0x003FFFFF")
+                    {
+                        core.instruction_format = 6;
+                    }
+                    Else
+                    {
+                        If ((floor((core.little_endian / 256)) % 16) == 0)
+                        {
+                            core.instruction_format = 5;
+                        }
+                        Else
+                        {
+                            core.instruction_format = 15;
+                        }
+                    }
+                }
+                Else
+                {
+                    core.instruction_format = 0;
+                }
+            }
+        }
+        Else
+        {
+            core.instruction_format = 7;
+        }
+    }
+    Else
+    {
+        If ((core.little_endian % 0x0F000000) < "0x0C000000")
+        {
+            If ((core.little_endian % 0x10000000) < "0x0A000000")
+            {
+                core.instruction_format = 9;
+            }
+            Else
+            {
+                core.instruction_format = 10;
+            }
+        }
+        Else
+        {
+            If ((floor((core.little_endian / 0x01000000)) % 16) == 15)
+            {
+                core.instruction_format = 14;
+            }
+            Else
+            {
+                core.instruction_format = 15;
+            }
+        }
+    }
+}
+
+Define core.reset_memory (warp=true)
+{
+    List.DeleteAll(arm7.memory1);
+    List.DeleteAll(arm7.memory2);
+    List.DeleteAll(arm7.memory3);
+    List.DeleteAll(arm7.memory4);
+    List.DeleteAll(arm7.memory5);
+    Repeat (200000)
+    {
+        List.Add(arm7.memory1, "0x00000000");
+        List.Add(arm7.memory2, "0x00000000");
+        List.Add(arm7.memory3, "0x00000000");
+        List.Add(arm7.memory4, "0x00000000");
+        List.Add(arm7.memory5, "0x00000000");
+    }
+    List.DeleteAll(arm7.memory6);
+    Repeat (48576)
+    {
+        List.Add(arm7.memory6, "0x00000000");
+    }
+    List.DeleteAll(core.shared_wram);
+    Repeat (8192)
+    {
+        List.Add(core.shared_wram, "0x00000000");
+    }
+    List.DeleteAll(arm7.wram);
+    Repeat (16384)
+    {
+        List.Add(arm7.wram, "0x00000000");
+    }
+    List.DeleteAll(arm7.io_ports);
+    Repeat (101)
+    {
+        List.Add(arm7.io_ports, "0x00000000");
+    }
+    List.DeleteAll(arm7.wireless.state_0);
+    Repeat (2048)
+    {
+        List.Add(arm7.wireless.state_0, "0x00000000");
+    }
+    List.DeleteAll(arm7.wireless.state_1);
+    Repeat (0)
+    {
+        List.Add(arm7.wireless.state_1, "0x00000000");
+    }
+    List.DeleteAll(arm7.vwram);
+    Repeat (65536)
+    {
+        List.Add(arm7.vwram, "0x00000000");
+    }
+    List.DeleteAll(arm7.flags);
+    Repeat (4)
+    {
+        List.Add(arm7.flags, "false");
+    }
+    List.DeleteAll(arm7.registers);
+    Repeat (16)
+    {
+        List.Add(arm7.registers, "0x00000000");
+    }
+    List.DeleteAll(arm9.memory1);
+    List.DeleteAll(arm9.memory2);
+    List.DeleteAll(arm9.memory3);
+    List.DeleteAll(arm9.memory4);
+    List.DeleteAll(arm9.memory5);
+    Repeat (200000)
+    {
+        List.Add(arm9.memory1, "0x00000000");
+        List.Add(arm9.memory2, "0x00000000");
+        List.Add(arm9.memory3, "0x00000000");
+        List.Add(arm9.memory4, "0x00000000");
+        List.Add(arm9.memory5, "0x00000000");
+    }
+    List.DeleteAll(arm9.memory6);
+    Repeat (48576)
+    {
+        List.Add(arm9.memory6, "0x00000000");
+    }
+    List.DeleteAll(arm9.io_ports);
+    Repeat (1051)
+    {
+        List.Add(arm9.io_ports, "0x00000000");
+    }
+    List.DeleteAll(vram.engine_a.bg);
+    Repeat (131072)
+    {
+        List.Add(vram.engine_a.bg, "0x00000000");
+    }
+    List.DeleteAll(vram.engine_b.bg);
+    Repeat (32768)
+    {
+        List.Add(vram.engine_b.bg, "0x00000000");
+    }
+    List.DeleteAll(vram.engine_a.obj);
+    Repeat (65536)
+    {
+        List.Add(vram.engine_a.obj, "0x00000000");
+    }
+    List.DeleteAll(vram.engine_b.obj);
+    Repeat (32768)
+    {
+        List.Add(vram.engine_b.obj, "0x00000000");
+    }
+    List.DeleteAll(vram.lcdc);
+    Repeat (167936)
+    {
+        List.Add(vram.lcdc, "0x00000000");
+    }
+    List.DeleteAll(oam);
+    Repeat (512)
+    {
+        List.Add(oam, "0x00000000");
+    }
+    List.DeleteAll(arm9.flags);
+    Repeat (4)
+    {
+        List.Add(arm9.flags, "false");
+    }
+    List.DeleteAll(arm9.registers);
+    Repeat (16)
+    {
+        List.Add(arm9.registers, "0x00000000");
+    }
+    List.DeleteAll(display.screen);
+    Repeat (98304)
+    {
+        List.Add(display.screen, 0);
+    }
+}
+
+Define core.rotate_left(string x)(string y) (warp=true)
+{
+    Call (x) >>((32 - y));
+    core.dummy = core.shift_return;
+    Call (x) <<(y);
+    core.rotate_return = ((core.shift_return + core.dummy) % 0x100000000);
+}
+
+Define core.rotate_right(string x)(string y) (warp=true)
+{
+    Call (x) >>(y);
+    core.dummy = core.shift_return;
+    Call (x) <<((32 - y));
+    core.rotate_return = ((core.shift_return + core.dummy) % 0x100000000);
+}
+
+Define emulate_frame (warp=true)
+{
+    display.scan_x = 0;
+    display.scan_y = 0;
+    Repeat Until (display.scan_y == 263)
+    {
+        Repeat Until (arm7.cycles > (arm9.cycles / 2))
+        {
+            Call arm7.instruction(arm7.rom[arm7.pc]);
+            arm7.pc += 1;
+        }
+        Repeat Until ((arm9.cycles / 2) > arm7.cycles)
+        {
+            Call arm9.instruction(arm9.rom[arm9.pc]);
+            arm9.pc += 1;
+        }
+        If (arm9.cycles > 16)
+        {
+            arm9.cycles = (arm9.cycles - arm7.cycles);
+            arm7.cycles = 0;
+            If ((arm9.io_ports[145] % 0x0100) > "0x7F")
+            {
+                Call arm9.read_byte("0x06800002");
+                core.dummy = arm9.read_return;
+                Call arm9.read_byte("0x06800003");
+                If ((display.scan_x < 256) And (display.scan_y < 192))
+                {
+                    List.ReplaceItem(display.screen, (1 + (display.scan_x + (256 * display.scan_y))), ((256 * core.dummy) + arm9.read_return));
+                }
+            }
+            display.scan_x += 1;
+        }
+        If (display.scan_x == 355)
+        {
+            display.scan_x = 0;
+            display.scan_y += 1;
+        }
+    }
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+Looks.Say("[ARM9] Data Processing")
+
+Looks.Say("[ARM7] Data Processing")
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+pop.wav

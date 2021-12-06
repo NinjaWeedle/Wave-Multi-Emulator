@@ -1,0 +1,1829 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+c8.Load/Save_Quirk = 0
+c8.Shift_quirk = 0
+c8scrnsize = 2
+chip8.audio toggle = 0
+chip8.audio_buffer = 1
+chip8.delay_timer = 0
+chip8.drawflag = 0
+chip8.drawmode = Fast/Sharp
+chip8.drawplane = 1
+chip8.drawtoggle = 1
+chip8.drawvariety = 0
+chip8.dummy = 8193
+chip8.dummy2 = 128
+chip8.dummy3 = 3
+chip8.dummy4 = 1
+chip8.dummy5 = 129
+chip8.HPSFlag = 1
+chip8.I = 811
+chip8.pc = 730
+chip8.pitch = 64
+chip8.rand = 48
+chip8.return = 0
+chip8.screenheight = 64
+chip8.screenwidth = 128
+chip8.sound_timer = -535
+CPF = 30
+SF2091! fix = 0
+VIP jumps = 1
+_id = 0
+_pitch = 0
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+chip8.keyboard = { }
+chip8.memory = { }
+chip8.registers = { 
+    35
+    0
+    0
+    0
+    8
+    158
+    36
+    32
+    35
+    0
+    4
+    0
+    0
+    0x00
+    6
+    1
+}
+chip8.screen = { }
+chip8.screen2 = { }
+chip8.stack = { }
+schip8.font = { 
+    0x7C
+    0xC6
+    0xCE
+    0xDE
+    0xD6
+    0xF6
+    0xE6
+    0xC6
+    0x7C
+    0x00
+    0x10
+    0x30
+    0xF0
+    0x30
+    0x30
+    0x30
+    0x30
+    0x30
+    0xFC
+    0x00
+    0x78
+    0xCC
+    0xCC
+    0x0C
+    0x18
+    0x30
+    0x60
+    0xCC
+    0xFC
+    0x00
+    0x78
+    0xCC
+    0x0C
+    0x0C
+    0x38
+    0x0C
+    0x0C
+    0xCC
+    0x78
+    0x00
+    0x0C
+    0x1C
+    0x3C
+    0x6C
+    0xCC
+    0xFE
+    0x0C
+    0x0C
+    0x1E
+    0x00
+    0xFC
+    0xC0
+    0xC0
+    0xC0
+    0xF8
+    0x0C
+    0x0C
+    0xCC
+    0x78
+    0x00
+    0x38
+    0x60
+    0xC0
+    0xC0
+    0xF8
+    0xCC
+    0xCC
+    0xCC
+    0x78
+    0x00
+    0xFE
+    0xC6
+    0xC6
+    0x06
+    0x0C
+    0x18
+    0x30
+    0x30
+    0x30
+    0x00
+    0x78
+    0xCC
+    0xCC
+    0xEC
+    0x78
+    0xDC
+    0xCC
+    0xCC
+    0x78
+    0x00
+    0x7C
+    0xC6
+    0xC6
+    0xC6
+    0x7E
+    0x0C
+    0x18
+    0x30
+    0x70
+    0x00
+    0x30
+    0x78
+    0xCC
+    0xCC
+    0xCC
+    0xFC
+    0xCC
+    0xCC
+    0xCC
+    0x00
+    0xFC
+    0x66
+    0x66
+    0x66
+    0x7C
+    0x66
+    0x66
+    0x66
+    0xFC
+    0x00
+    0x3C
+    0x66
+    0xC6
+    0xC0
+    0xC0
+    0xC0
+    0xC6
+    0x66
+    0x3C
+    0x00
+    0xF8
+    0x6C
+    0x66
+    0x66
+    0x66
+    0x66
+    0x66
+    0x6C
+    0xF8
+    0x00
+    0xFE
+    0x62
+    0x60
+    0x64
+    0x7C
+    0x64
+    0x60
+    0x62
+    0xFE
+    0x00
+    0xFE
+    0x66
+    0x62
+    0x64
+    0x7C
+    0x64
+    0x60
+    0x60
+    0xF0
+    0x00
+}
+schip8.RPL = { 
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+    00
+}
+
+
+//----- Green flag events ---------------------------------------------------------------------------------------------
+
+WhenGreenFlagClicked()
+{
+    Looks.Say("");
+    chip8.starting address = 512;
+    Variable.Hide(chip8.DrawType);
+    List.DeleteAll(chip8.stack);
+    List.DeleteAll(chip8.memory);
+    List.DeleteAll(chip8.screen);
+    List.DeleteAll(chip8.screen2);
+    List.DeleteAll(chip8.keyboard);
+    chip8.drawmode = "Fast/Sharp";
+    Control.DeleteThisClone();
+}
+
+
+//----- Key pressed events --------------------------------------------------------------------------------------------
+
+WhenKeyPressed(5)
+{
+    c8.Load/Save_Quirk = ((c8.Load/Save_Quirk + 1) % 2);
+}
+
+WhenKeyPressed(6)
+{
+    c8.Shift_quirk = ((c8.Shift_quirk + 1) % 2);
+}
+
+WhenKeyPressed(8)
+{
+    VIP jumps = ((VIP jumps + 1) % 2);
+}
+
+WhenKeyPressed(9)
+{
+    SF2091! fix = ((SF2091! fix + 1) % 2);
+}
+
+WhenKeyPressed(7)
+{
+    If (Not ((Inemu? == 0)))
+    {
+        If (chip8.drawmode == "Fast/Sharp")
+        {
+            chip8.drawmode = "Accurate/Sharp";
+        }
+        Else
+        {
+            If (chip8.drawmode == "Accurate/Sharp")
+            {
+                Pen.Clear();
+                chip8.drawmode = "Fast/Legacy";
+            }
+            Else
+            {
+                If (chip8.drawmode == "Fast/Legacy")
+                {
+                    chip8.drawmode = "Accurate/Legacy";
+                }
+                Else
+                {
+                    Pen.Clear();
+                    chip8.drawmode = "Fast/Sharp";
+                }
+            }
+        }
+    }
+}
+
+WhenKeyPressed(0)
+{
+    If (chip8.DrawType == "Octo")
+    {
+        Variable.Show(rom.title);
+        chip8.DrawType = "SCHIP";
+    }
+    Else
+    {
+        If (chip8.DrawType == "SCHIP")
+        {
+            Variable.Show(rom.title);
+            chip8.DrawType = "SCHIP+HPS";
+        }
+        Else
+        {
+            chip8.DrawType = "Octo";
+            Variable.Hide(rom.title);
+        }
+    }
+}
+
+WhenKeyPressed(m)
+{
+    chip8.audio toggle = ((chip8.audio toggle + 1) % 2);
+}
+
+WhenKeyPressed(n)
+{
+    chip8.drawtoggle = ((chip8.drawtoggle + 1) % 2);
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(Chip-8)
+{
+    Stop(other scripts in sprite);
+    Call chip8.reset;
+    If (rom.title == "SpaceFight2091 ")
+    {
+        SF2091! fix = 1;
+        Variable.Show(rom.title);
+        chip8.DrawType = "SCHIP";
+    }
+    Event.Broadcast("WAVE-8_drawkeys");
+    If ((chip8.memory[(chip8.pc + 1)] == 18) And (chip8.memory[(chip8.pc + 2)] == 96))
+    {
+        chip8.screenheight = 64;
+        chip8.screenwidth = 64;
+        chip8.drawflag = 1;
+        c8scrnsize = 1;
+        chip8.pc = "0x2c0";
+        Repeat Until (4095 < List.Length(chip8.screen))
+        {
+            List.Add(chip8.screen, 0);
+            List.Add(chip8.screen2, 0);
+        }
+    }
+    Event.BroadcastAndWait("wave create");
+    Forever
+    {
+        Call chip8.get_keyboard;
+        Call chip8.frame(CPF);
+        If ((chip8.drawtoggle == 1) And (Operator.Contains(chip8.drawmode, "Accurate") Or (0 < chip8.drawflag)))
+        {
+            Call chip8.render;
+        }
+        If Sensing.KeyPressed(space)
+        {
+            List.Show(chip8.stack);
+            List.Show(chip8.registers);
+            Sensing.Ask("Type the number of Cycles Per Frame to run at.");
+            If (Not ((Sensing.Answer() == 0)))
+            {
+                CPF = abs(Sensing.Answer());
+            }
+            List.Hide(chip8.stack);
+            List.Hide(chip8.registers);
+        }
+        If Sensing.KeyPressed(enter)
+        {
+            Stop(other scripts in sprite);
+            Event.Broadcast("Chip-8");
+            Stop(this script);
+        }
+        Sound.SetVolumeTo(Sound.Volume());
+    }
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    Variable.Hide(c8scrnsize);
+    Variable.Hide(chip8.pc);
+    Variable.Hide(c8.Load/Save_Quirk);
+    Variable.Hide(c8.Shift_quirk);
+    Variable.Hide(CPF);
+    Variable.Hide(VIP jumps);
+    chip8.audio toggle = 0;
+    List.Hide(chip8.stack);
+    Variable.Hide(SF2091! fix);
+    c8scrnsize = 2;
+    Variable.Hide(chip8.DrawType);
+    Variable.Hide(chip8.drawmode);
+    List.Hide(chip8.registers);
+    Stop(other scripts in sprite);
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(Project not saving fix)
+{
+    List.DeleteAll(chip8.memory);
+    List.DeleteAll(chip8.screen);
+    List.DeleteAll(chip8.screen2);
+    List.DeleteAll(chip8.stack);
+    c8.Load/Save_Quirk = 0;
+    c8.Shift_quirk = 0;
+    CPF = 30;
+    chip8.DrawType = "Octo";
+    VIP jumps = 1;
+    SF2091! fix = 0;
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define chip8.frame(string cycles) (warp=true)
+{
+    Repeat (cycles)
+    {
+        Call chip8.opcode(chip8.memory[(chip8.pc + 1)])(chip8.memory[(chip8.pc + 2)]);
+    }
+    If (chip8.sound_timer > 0)
+    {
+        If (chip8.audio toggle == 0)
+        {
+            List.ReplaceItem(pitches, 3, ((((((chip8.pitch - 64) / 48) * 120) - 100) / 10) + 69));
+            pitch = (((pitches[3] - 69) * 10) - 240);
+            If (chip8.audioflag == 1)
+            {
+                Event.Broadcast("sound.updatech8buffer");
+                chip8.audioflag = 0;
+            }
+        }
+    }
+    Else
+    {
+        chip8.sound_timer += -1;
+        List.ReplaceItem(pitches, 3, -1);
+        pitch = "-Infinity";
+    }
+    If (chip8.delay_timer > 0)
+    {
+        chip8.delay_timer += -1;
+    }
+}
+
+Define chip8.get_keyboard (warp=true)
+{
+    List.DeleteAll(chip8.keyboard);
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(x) Or (Mobile Keypad state[14] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(1) Or (Mobile Keypad state[1] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(2) Or (Mobile Keypad state[2] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(3) Or (Mobile Keypad state[3] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(q) Or (Mobile Keypad state[5] == 1)) + 0));
+    List.Add(chip8.keyboard, (((Sensing.KeyPressed(w) Or Sensing.KeyPressed(up arrow)) Or (Mobile Keypad state[6] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(e) Or (Mobile Keypad state[7] == 1)) + 0));
+    List.Add(chip8.keyboard, (((Sensing.KeyPressed(a) Or Sensing.KeyPressed(left arrow)) Or (Mobile Keypad state[9] == 1)) + 0));
+    List.Add(chip8.keyboard, (((Sensing.KeyPressed(s) Or Sensing.KeyPressed(down arrow)) Or (Mobile Keypad state[10] == 1)) + 0));
+    List.Add(chip8.keyboard, (((Sensing.KeyPressed(d) Or Sensing.KeyPressed(right arrow)) Or (Mobile Keypad state[11] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(z) Or (Mobile Keypad state[13] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(c) Or (Mobile Keypad state[15] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(4) Or (Mobile Keypad state[4] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(r) Or (Mobile Keypad state[8] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(f) Or (Mobile Keypad state[12] == 1)) + 0));
+    List.Add(chip8.keyboard, ((Sensing.KeyPressed(v) Or (Mobile Keypad state[16] == 1)) + 0));
+}
+
+Define chip8.opcode(string op1)(string op2) (warp=true)
+{
+    chip8.pc += 2;
+    If (((op1 == "0x00") And (op2 == "0xe0")) Or ((op1 == "0x02") And (op2 == "0x30")))
+    {
+        If (0 < chip8.drawplane)
+        {
+            chip8.drawflag = 1;
+            If (Not ((chip8.drawplane == 2)))
+            {
+                List.DeleteAll(chip8.screen);
+                Repeat ((chip8.screenheight * chip8.screenwidth))
+                {
+                    List.Add(chip8.screen, 0);
+                }
+            }
+            If (1 < chip8.drawplane)
+            {
+                List.DeleteAll(chip8.screen2);
+                Repeat ((chip8.screenheight * chip8.screenwidth))
+                {
+                    List.Add(chip8.screen2, 0);
+                }
+            }
+        }
+        Stop(this script);
+    }
+    If (op1 == "0x00")
+    {
+        If ((191 < op2) And (op2 < 208))
+        {
+            If (0 < chip8.drawplane)
+            {
+                chip8.drawflag = 1;
+                chip8.dummy4 = (op2 % 16);
+                If (((chip8.screenwidth == 64) And (0 < ((op2 % 16) % 2))) And (chip8.DrawType == "SCHIP+HPS"))
+                {
+                    If (chip8.HPSFlag == 0)
+                    {
+                        chip8.dummy4 += -1;
+                        chip8.HPSFlag = 1;
+                    }
+                    Else
+                    {
+                        chip8.HPSFlag = 0;
+                    }
+                }
+                Repeat ((chip8.screenwidth * chip8.dummy4))
+                {
+                    If (Not ((chip8.drawplane == 2)))
+                    {
+                        List.InsertItem(chip8.screen, 1, 0);
+                        List.DeleteItem(chip8.screen, last);
+                    }
+                    If (1 < chip8.drawplane)
+                    {
+                        List.InsertItem(chip8.screen2, 1, 0);
+                        List.DeleteItem(chip8.screen2, last);
+                    }
+                }
+            }
+            Stop(this script);
+        }
+        If (op2 < 224)
+        {
+            If (0 < chip8.drawplane)
+            {
+                chip8.drawflag = 1;
+                Repeat ((chip8.screenwidth * (op2 % 16)))
+                {
+                    If (Not ((chip8.drawplane == 2)))
+                    {
+                        List.InsertItem(chip8.screen, last, 0);
+                        List.DeleteItem(chip8.screen, 1);
+                    }
+                    If (1 < chip8.drawplane)
+                    {
+                        List.InsertItem(chip8.screen2, last, 0);
+                        List.DeleteItem(chip8.screen2, 1);
+                    }
+                }
+            }
+            Stop(this script);
+        }
+        If (op2 == "0xE1")
+        {
+            chip8.dummy = 0;
+            If (0 < chip8.drawplane)
+            {
+                chip8.drawflag = 1;
+                If (Not ((chip8.drawplane == 2)))
+                {
+                    Repeat ((chip8.screenwidth * chip8.screenheight))
+                    {
+                        chip8.dummy += 1;
+                        List.ReplaceItem(chip8.screen, chip8.dummy, ((chip8.screen[chip8.dummy] + 1) % 2));
+                    }
+                }
+                chip8.dummy = 0;
+                If (1 < chip8.drawplane)
+                {
+                    Repeat ((chip8.screenwidth * chip8.screenheight))
+                    {
+                        chip8.dummy += 1;
+                        List.ReplaceItem(chip8.screen2, chip8.dummy, ((chip8.screen2[chip8.dummy] + 1) % 2));
+                    }
+                }
+            }
+            Stop(this script);
+        }
+        If (op2 == "0xEE")
+        {
+            chip8.pc = chip8.stack[last];
+            List.DeleteItem(chip8.stack, last);
+            Stop(this script);
+        }
+        If (op2 == "0xF1")
+        {
+            chip8.drawvariety = 1;
+            Stop(this script);
+        }
+        If (op2 == "0xF2")
+        {
+            chip8.drawvariety = 2;
+            Stop(this script);
+        }
+        If (op2 == "0xF3")
+        {
+            chip8.drawvariety = 0;
+            Stop(this script);
+        }
+        If (op2 == "0xFB")
+        {
+            If (0 < chip8.drawplane)
+            {
+                chip8.drawflag = 1;
+                If (chip8.DrawType == "SCHIP+HPS")
+                {
+                    chip8.dummy3 = (chip8.screenwidth / 32);
+                }
+                Else
+                {
+                    chip8.dummy3 = 4;
+                }
+                If (Not ((chip8.drawplane == 2)))
+                {
+                    chip8.dummy = 1;
+                    Repeat Until (chip8.dummy > (chip8.screenheight * chip8.screenwidth))
+                    {
+                        chip8.dummy4 = "";
+                        chip8.dummy2 = 0;
+                        Repeat ((chip8.screenwidth - chip8.dummy3))
+                        {
+                            chip8.dummy4 = Operator.Join(chip8.dummy4, chip8.screen[(chip8.dummy + chip8.dummy2)]);
+                            chip8.dummy2 += 1;
+                        }
+                        chip8.dummy2 = chip8.dummy3;
+                        chip8.dummy5 = 1;
+                        Repeat (Variable.Length(chip8.dummy4))
+                        {
+                            List.ReplaceItem(chip8.screen, (chip8.dummy + chip8.dummy2), Operator.LetterOf(chip8.dummy4, chip8.dummy5));
+                            chip8.dummy2 += 1;
+                            chip8.dummy5 += 1;
+                        }
+                        chip8.dummy2 = 0;
+                        Repeat (chip8.dummy3)
+                        {
+                            List.ReplaceItem(chip8.screen, (chip8.dummy + chip8.dummy2), 0);
+                            chip8.dummy2 += 1;
+                        }
+                        chip8.dummy += chip8.screenwidth;
+                    }
+                    chip8.dummy4 = "";
+                }
+                If (1 < chip8.drawplane)
+                {
+                    chip8.dummy = 1;
+                    Repeat Until (chip8.dummy > (chip8.screenheight * chip8.screenwidth))
+                    {
+                        chip8.dummy4 = "";
+                        chip8.dummy2 = 0;
+                        Repeat ((chip8.screenwidth - chip8.dummy3))
+                        {
+                            chip8.dummy4 = Operator.Join(chip8.dummy4, chip8.screen2[(chip8.dummy + chip8.dummy2)]);
+                            chip8.dummy2 += 1;
+                        }
+                        chip8.dummy2 = chip8.dummy3;
+                        chip8.dummy5 = 1;
+                        Repeat (Variable.Length(chip8.dummy4))
+                        {
+                            List.ReplaceItem(chip8.screen2, (chip8.dummy + chip8.dummy2), Operator.LetterOf(chip8.dummy4, chip8.dummy5));
+                            chip8.dummy2 += 1;
+                            chip8.dummy5 += 1;
+                        }
+                        chip8.dummy2 = 0;
+                        Repeat (chip8.dummy3)
+                        {
+                            List.ReplaceItem(chip8.screen2, (chip8.dummy + chip8.dummy2), 0);
+                            chip8.dummy2 += 1;
+                        }
+                        chip8.dummy += chip8.screenwidth;
+                    }
+                    chip8.dummy4 = "";
+                }
+            }
+            Stop(this script);
+        }
+        If (op2 == "0xFC")
+        {
+            If (0 < chip8.drawplane)
+            {
+                chip8.drawflag = 1;
+                If (chip8.DrawType == "SCHIP+HPS")
+                {
+                    chip8.dummy3 = (chip8.screenwidth / 32);
+                }
+                Else
+                {
+                    chip8.dummy3 = 4;
+                }
+                If (Not ((chip8.drawplane == 2)))
+                {
+                    chip8.dummy = 1;
+                    Repeat Until (chip8.dummy > (chip8.screenheight * chip8.screenwidth))
+                    {
+                        chip8.dummy4 = "";
+                        chip8.dummy2 = 4;
+                        Repeat ((chip8.screenwidth - chip8.dummy3))
+                        {
+                            chip8.dummy4 = Operator.Join(chip8.dummy4, chip8.screen[(chip8.dummy + chip8.dummy2)]);
+                            chip8.dummy2 += 1;
+                        }
+                        Repeat ((chip8.dummy3 / 2))
+                        {
+                            chip8.dummy4 = Operator.Join(chip8.dummy4, 00);
+                        }
+                        chip8.dummy2 = 0;
+                        chip8.dummy5 = 1;
+                        Repeat (chip8.screenwidth)
+                        {
+                            List.ReplaceItem(chip8.screen, (chip8.dummy + chip8.dummy2), Operator.LetterOf(chip8.dummy4, chip8.dummy5));
+                            chip8.dummy2 += 1;
+                            chip8.dummy5 += 1;
+                        }
+                        chip8.dummy2 = 0;
+                        chip8.dummy += chip8.screenwidth;
+                    }
+                }
+                If (1 < chip8.drawplane)
+                {
+                    chip8.dummy = 1;
+                    Repeat Until (chip8.dummy > (chip8.screenheight * chip8.screenwidth))
+                    {
+                        chip8.dummy4 = "";
+                        chip8.dummy2 = 4;
+                        Repeat ((chip8.screenwidth - chip8.dummy3))
+                        {
+                            chip8.dummy4 = Operator.Join(chip8.dummy4, chip8.screen2[(chip8.dummy + chip8.dummy2)]);
+                            chip8.dummy2 += 1;
+                        }
+                        Repeat ((chip8.dummy3 / 2))
+                        {
+                            chip8.dummy4 = Operator.Join(chip8.dummy4, 00);
+                        }
+                        chip8.dummy2 = 0;
+                        chip8.dummy5 = 1;
+                        Repeat (chip8.screenwidth)
+                        {
+                            List.ReplaceItem(chip8.screen2, (chip8.dummy + chip8.dummy2), Operator.LetterOf(chip8.dummy4, chip8.dummy5));
+                            chip8.dummy2 += 1;
+                            chip8.dummy5 += 1;
+                        }
+                        chip8.dummy2 = 0;
+                        chip8.dummy += chip8.screenwidth;
+                    }
+                }
+            }
+            Stop(this script);
+        }
+        If (op2 == "0xFD")
+        {
+            Stop(other scripts in sprite);
+            Pen.Clear();
+            List.DeleteAll(chip8.screen);
+            List.DeleteAll(chip8.screen2);
+            List.DeleteAll(chip8.stack);
+            List.DeleteAll(chip8.memory);
+            Event.Broadcast("exit emulator");
+            Stop(this script);
+        }
+        If (op2 == "0xFE")
+        {
+            chip8.screenheight = 32;
+            chip8.screenwidth = 64;
+            c8scrnsize = 2;
+            List.DeleteAll(chip8.screen);
+            List.DeleteAll(chip8.screen2);
+            Repeat (2048)
+            {
+                List.Add(chip8.screen, 0);
+                List.Add(chip8.screen2, 0);
+            }
+            Stop(this script);
+        }
+        If (op2 == "0xFF")
+        {
+            chip8.drawflag = 1;
+            chip8.screenheight = 64;
+            chip8.screenwidth = 128;
+            c8scrnsize = 1;
+            List.DeleteAll(chip8.screen);
+            List.DeleteAll(chip8.screen2);
+            Repeat Until (((chip8.screenheight * chip8.screenwidth) - 1) < List.Length(chip8.screen))
+            {
+                List.Add(chip8.screen, 0);
+            }
+            Repeat Until (((chip8.screenheight * chip8.screenwidth) - 1) < List.Length(chip8.screen2))
+            {
+                List.Add(chip8.screen2, 0);
+            }
+            Stop(this script);
+        }
+    }
+    If (op1 < 32)
+    {
+        chip8.pc = ((256 * (op1 % 16)) + op2);
+        Stop(this script);
+    }
+    If (op1 < 48)
+    {
+        List.Add(chip8.stack, chip8.pc);
+        chip8.pc = ((256 * (op1 % 16)) + op2);
+        Stop(this script);
+    }
+    If (op1 < 64)
+    {
+        If (op2 == chip8.registers[(1 + (op1 % 16))])
+        {
+            If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+            {
+                chip8.pc += 2;
+            }
+            chip8.pc += 2;
+        }
+        Stop(this script);
+    }
+    If (op1 < 80)
+    {
+        If (Not ((op2 == chip8.registers[(1 + (op1 % 16))])))
+        {
+            If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+            {
+                chip8.pc += 2;
+            }
+            chip8.pc += 2;
+        }
+        Stop(this script);
+    }
+    If (op1 < 96)
+    {
+        If ((op2 % 16) == 0)
+        {
+            If (chip8.registers[(1 + (op1 % 16))] == chip8.registers[(1 + floor((op2 / 16)))])
+            {
+                If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+                {
+                    chip8.pc += 2;
+                }
+                chip8.pc += 2;
+            }
+            Stop(this script);
+        }
+        If ((op2 % 16) == 1)
+        {
+            If (chip8.registers[(1 + (op1 % 16))] > chip8.registers[(1 + floor((op2 / 16)))])
+            {
+                If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+                {
+                    chip8.pc += 2;
+                }
+                chip8.pc += 2;
+            }
+            Stop(this script);
+        }
+        If ((op1 % 16) > floor((op2 / 16)))
+        {
+            chip8.dummy = -1;
+        }
+        Else
+        {
+            chip8.dummy = 1;
+        }
+        chip8.dummy2 = 1;
+        chip8.dummy3 = (chip8.I + 1);
+        If ((op2 % 16) == 2)
+        {
+            Repeat ((1 + abs(((op1 % 16) - floor((op2 / 16))))))
+            {
+                List.ReplaceItem(chip8.memory, chip8.dummy3, chip8.registers[((op1 % 16) + chip8.dummy2)]);
+                chip8.dummy2 += chip8.dummy;
+                chip8.dummy3 += 1;
+            }
+            Stop(this script);
+        }
+        If ((op2 % 16) == 3)
+        {
+            Repeat ((1 + abs(((op1 % 16) - floor((op2 / 16))))))
+            {
+                List.ReplaceItem(chip8.registers, ((op1 % 16) + chip8.dummy2), chip8.memory[chip8.dummy3]);
+                chip8.dummy2 += chip8.dummy;
+                chip8.dummy3 += 1;
+            }
+        }
+        Stop(this script);
+    }
+    If (op1 < 112)
+    {
+        List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), op2);
+        Stop(this script);
+    }
+    If (op1 < 128)
+    {
+        List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), ((op2 + chip8.registers[(1 + (op1 % 16))]) % 256));
+        Stop(this script);
+    }
+    If (op1 < 144)
+    {
+        If ((op2 % 16) == 0)
+        {
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), chip8.registers[(1 + floor((op2 / 16)))]);
+            Stop(this script);
+        }
+        If ((op2 % 16) == 1)
+        {
+            chip8.dummy = 0;
+            chip8.return = 0;
+            Repeat (8)
+            {
+                chip8.dummy2 = Operator.Round(e ^((chip8.dummy * LN2)));
+                chip8.return += (chip8.dummy2 * (((floor((chip8.registers[(1 + floor((op2 / 16)))] / chip8.dummy2)) % 2) + (floor((chip8.registers[(1 + (op1 % 16))] / chip8.dummy2)) % 2)) > 0));
+                chip8.dummy += 1;
+            }
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), chip8.return);
+            Stop(this script);
+        }
+        If ((op2 % 16) == 2)
+        {
+            chip8.dummy = 0;
+            chip8.return = 0;
+            Repeat (8)
+            {
+                chip8.dummy2 = Operator.Round(e ^((chip8.dummy * LN2)));
+                chip8.return += (chip8.dummy2 * (((floor((chip8.registers[(1 + floor((op2 / 16)))] / chip8.dummy2)) % 2) + (floor((chip8.registers[(1 + (op1 % 16))] / chip8.dummy2)) % 2)) > 1));
+                chip8.dummy += 1;
+            }
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), chip8.return);
+            Stop(this script);
+        }
+        If ((op2 % 16) == 3)
+        {
+            chip8.dummy = 0;
+            chip8.return = 0;
+            Repeat (8)
+            {
+                chip8.dummy2 = Operator.Round(e ^((chip8.dummy * LN2)));
+                chip8.return += (chip8.dummy2 * (((floor((chip8.registers[(1 + floor((op2 / 16)))] / chip8.dummy2)) % 2) + (floor((chip8.registers[(1 + (op1 % 16))] / chip8.dummy2)) % 2)) % 2));
+                chip8.dummy += 1;
+            }
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), chip8.return);
+            Stop(this script);
+        }
+        If ((op2 % 16) == 4)
+        {
+            chip8.dummy = (chip8.registers[(1 + (op1 % 16))] + chip8.registers[(1 + floor((op2 / 16)))]);
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (chip8.dummy % 256));
+            List.ReplaceItem(chip8.registers, 16, ((chip8.dummy > 255) + ));
+            Stop(this script);
+        }
+        If ((op2 % 16) == 5)
+        {
+            chip8.dummy = (chip8.registers[(1 + (op1 % 16))] - chip8.registers[(1 + floor((op2 / 16)))]);
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (chip8.dummy % 256));
+            List.ReplaceItem(chip8.registers, 16, ((Not ((chip8.dummy < 0))) + 0));
+            Stop(this script);
+        }
+        If ((op2 % 16) == 6)
+        {
+            If (c8.Shift_quirk == 1)
+            {
+                List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), floor((chip8.registers[(1 + floor((op2 / 16)))] / 2)));
+                List.ReplaceItem(chip8.registers, 16, (chip8.registers[(1 + (op1 % 16))] % 2));
+            }
+            Else
+            {
+                List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), floor((chip8.registers[(1 + (op1 % 16))] / 2)));
+                List.ReplaceItem(chip8.registers, 16, (chip8.registers[(1 + (op1 % 16))] % 2));
+            }
+            Stop(this script);
+        }
+        If ((op2 % 16) == 7)
+        {
+            chip8.dummy = (chip8.registers[(1 + floor((op2 / 16)))] - chip8.registers[(1 + (op1 % 16))]);
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (chip8.dummy % 256));
+            List.ReplaceItem(chip8.registers, 16, ((Not ((chip8.dummy < 0))) + 0));
+            Stop(this script);
+        }
+        If ((op2 % 16) == 8)
+        {
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (floor((chip8.registers[(1 + floor((op2 / 16)))] / 2)) + ((chip8.registers[(1 + floor((op2 / 16)))] % 2) * 128)));
+            Stop(this script);
+        }
+        If ((op2 % 16) == 9)
+        {
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (((chip8.registers[(1 + floor((op2 / 16)))] * 2) % 256) + floor(chip8.registers[(1 + floor((op2 / 16)))])));
+            Stop(this script);
+        }
+        If ((op2 % 16) == 10)
+        {
+            chip8.dummy = 0;
+            chip8.return = 0;
+            Repeat (8)
+            {
+                chip8.dummy2 = Operator.Round(e ^((chip8.dummy * LN2)));
+                chip8.return += (chip8.dummy2 * (((floor((chip8.registers[(1 + floor((op2 / 16)))] / chip8.dummy2)) % 2) + (floor((chip8.registers[(1 + (op1 % 16))] / chip8.dummy2)) % 2)) > 1));
+                chip8.dummy += 1;
+            }
+            If (chip8.return == 0)
+            {
+                List.ReplaceItem(chip8.registers, 16, 0);
+            }
+            Else
+            {
+                List.ReplaceItem(chip8.registers, 16, 1);
+            }
+            Stop(this script);
+        }
+        If ((op2 % 16) == 11)
+        {
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (((chip8.registers[(1 + floor((op2 / 16)))] + 1) * -1) % 256));
+        }
+        If ((op2 % 16) == 12)
+        {
+            chip8.return = floor((chip8.registers[(1 + (op1 % 16))] * chip8.registers[(1 + floor((op2 / 16)))]));
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (chip8.return % 256));
+            List.ReplaceItem(chip8.registers, 16, floor((chip8.return / 256)));
+            Stop(this script);
+        }
+        If ((op2 % 16) == 13)
+        {
+            chip8.return = (chip8.registers[(1 + (op1 % 16))] % chip8.registers[(1 + floor((op2 / 16)))]);
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (floor((chip8.registers[(1 + (op1 % 16))] / chip8.registers[(1 + floor((op2 / 16)))])) % 256));
+            List.ReplaceItem(chip8.registers, 16, floor(chip8.return));
+            If (chip8.registers[(1 + (op1 % 16))] == "NaN")
+            {
+                List.ReplaceItem(chip8.registers, 16, 0);
+                List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), 0);
+            }
+            Stop(this script);
+        }
+        If ((op2 % 16) == 14)
+        {
+            If (c8.Shift_quirk == 1)
+            {
+                List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), ((2 * chip8.registers[(1 + floor((op2 / 16)))]) % 256));
+                List.ReplaceItem(chip8.registers, 16, (chip8.registers[(1 + (op1 % 16))] > 127));
+            }
+            Else
+            {
+                List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), ((2 * chip8.registers[(1 + (op1 % 16))]) % 256));
+                List.ReplaceItem(chip8.registers, 16, (chip8.registers[(1 + (op1 % 16))] > 127));
+            }
+        }
+        If ((op2 % 16) == 15)
+        {
+            List.ReplaceItem(chip8.registers, 16, 0);
+            chip8.return = (chip8.registers[(1 + floor((op2 / 16)))] % chip8.registers[(1 + (op1 % 16))]);
+            List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), floor((chip8.registers[(1 + floor((op2 / 16)))] / chip8.registers[(1 + (op1 % 16))])));
+            List.ReplaceItem(chip8.registers, 16, chip8.return);
+            If (chip8.registers[(1 + (op1 % 16))] == "NaN")
+            {
+                List.ReplaceItem(chip8.registers, 16, 0);
+                List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), 0);
+            }
+        }
+        Stop(this script);
+    }
+    If (op1 < 160)
+    {
+        If (Not ((chip8.registers[(1 + (op1 % 16))] == chip8.registers[(1 + floor((op2 / 16)))])))
+        {
+            If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+            {
+                chip8.pc += 2;
+            }
+            chip8.pc += 2;
+        }
+        Stop(this script);
+    }
+    If (op1 < 176)
+    {
+        chip8.I = ((256 * (op1 % 16)) + op2);
+        Stop(this script);
+    }
+    If (op1 < 192)
+    {
+        If (VIP jumps == 0)
+        {
+            chip8.pc = (chip8.registers[((op1 % 16) + 1)] + ((256 * (op1 % 16)) + op2));
+        }
+        Else
+        {
+            chip8.pc = (chip8.registers[1] + ((256 * (op1 % 16)) + op2));
+        }
+        Stop(this script);
+    }
+    If (op1 < 208)
+    {
+        chip8.dummy = 0;
+        chip8.rand = Operator.Random(0 / 255);
+        chip8.return = 0;
+        Repeat (8)
+        {
+            chip8.dummy2 = Operator.Round(e ^((chip8.dummy * LN2)));
+            chip8.return += (chip8.dummy2 * (((floor((op2 / chip8.dummy2)) % 2) + (floor((chip8.rand / chip8.dummy2)) % 2)) > 1));
+            chip8.dummy += 1;
+        }
+        List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), chip8.return);
+        Stop(this script);
+    }
+    If (op1 < 224)
+    {
+        control_clear_counter ?? - probably legacy function from Scratch 2.0;
+        chip8.dummy3 = chip8.I;
+        chip8.dummy2 = chip8.registers[(1 + floor((op2 / 16)))];
+        If (chip8.drawplane > 0)
+        {
+            chip8.drawflag = 1;
+            If ((((op2 % 16) == 0) And (chip8.DrawType == "Octo")) Or (((op2 % 16) == 0) And (chip8.screenwidth == 128)))
+            {
+                If (Not ((chip8.drawplane == 2)))
+                {
+                    Repeat (16)
+                    {
+                        chip8.dummy = chip8.registers[((op1 % 16) + 1)];
+                        Repeat (2)
+                        {
+                            chip8.return = chip8.memory[(chip8.dummy3 + 1)];
+                            Repeat (8)
+                            {
+                                If (chip8.return > 127)
+                                {
+                                    If (chip8.screen[(1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight))))] == 0)
+                                    {
+                                        If (Not ((chip8.drawvariety == 2)))
+                                        {
+                                            List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 1);
+                                        }
+                                    }
+                                    Else
+                                    {
+                                        If (Not ((chip8.drawvariety == 1)))
+                                        {
+                                            List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 0);
+                                        }
+                                        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                                    }
+                                }
+                                chip8.return = ((chip8.return * 2) % 256);
+                                chip8.dummy += 1;
+                            }
+                            chip8.dummy3 += 1;
+                        }
+                        chip8.dummy2 += 1;
+                    }
+                }
+                If (chip8.drawplane == 3)
+                {
+                    chip8.I += 32;
+                    chip8.dummy3 = chip8.I;
+                    chip8.dummy2 = chip8.registers[(1 + floor((op2 / 16)))];
+                }
+                If (1 < chip8.drawplane)
+                {
+                    Repeat (16)
+                    {
+                        chip8.dummy = chip8.registers[((op1 % 16) + 1)];
+                        Repeat (2)
+                        {
+                            chip8.return = chip8.memory[(chip8.dummy3 + 1)];
+                            Repeat (8)
+                            {
+                                If (chip8.return > 127)
+                                {
+                                    If (chip8.screen2[(1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight))))] == 0)
+                                    {
+                                        If (Not ((chip8.drawvariety == 2)))
+                                        {
+                                            List.ReplaceItem(chip8.screen2, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 1);
+                                        }
+                                    }
+                                    Else
+                                    {
+                                        If (Not ((chip8.drawvariety == 1)))
+                                        {
+                                            List.ReplaceItem(chip8.screen2, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 0);
+                                        }
+                                        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                                    }
+                                }
+                                chip8.return = ((chip8.return * 2) % 256);
+                                chip8.dummy += 1;
+                            }
+                            chip8.dummy3 += 1;
+                        }
+                        chip8.dummy2 += 1;
+                    }
+                }
+                If (chip8.drawplane == 3)
+                {
+                    chip8.I += -32;
+                }
+            }
+            Else
+            {
+                chip8.dummy4 = (op2 % 16);
+                If (chip8.dummy4 == 0)
+                {
+                    chip8.dummy4 = 16;
+                }
+                If (Not ((chip8.drawplane == 2)))
+                {
+                    Repeat (chip8.dummy4)
+                    {
+                        chip8.dummy = chip8.registers[((op1 % 16) + 1)];
+                        chip8.return = chip8.memory[(chip8.dummy3 + 1)];
+                        Repeat (8)
+                        {
+                            If (chip8.return > 127)
+                            {
+                                If (chip8.screen[(1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight))))] == 0)
+                                {
+                                    If (Not ((chip8.drawvariety == 2)))
+                                    {
+                                        List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 1);
+                                    }
+                                }
+                                Else
+                                {
+                                    If (Not ((chip8.drawvariety == 1)))
+                                    {
+                                        List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 0);
+                                    }
+                                    control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                                }
+                            }
+                            chip8.return = ((chip8.return * 2) % 256);
+                            chip8.dummy += 1;
+                        }
+                        chip8.dummy3 += 1;
+                        chip8.dummy2 += 1;
+                    }
+                }
+                If (chip8.drawplane == 3)
+                {
+                    chip8.I += chip8.dummy4;
+                    chip8.dummy3 = chip8.I;
+                    chip8.dummy2 = chip8.registers[(1 + floor((op2 / 16)))];
+                }
+                If (1 < chip8.drawplane)
+                {
+                    Repeat (chip8.dummy4)
+                    {
+                        chip8.dummy = chip8.registers[((op1 % 16) + 1)];
+                        chip8.return = chip8.memory[(chip8.dummy3 + 1)];
+                        Repeat (8)
+                        {
+                            If (chip8.return > 127)
+                            {
+                                If (chip8.screen2[(1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight))))] == 0)
+                                {
+                                    If (Not ((chip8.drawvariety == 2)))
+                                    {
+                                        List.ReplaceItem(chip8.screen2, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 1);
+                                    }
+                                }
+                                Else
+                                {
+                                    If (Not ((chip8.drawvariety == 1)))
+                                    {
+                                        List.ReplaceItem(chip8.screen2, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 0);
+                                    }
+                                    control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                                }
+                            }
+                            chip8.return = ((chip8.return * 2) % 256);
+                            chip8.dummy += 1;
+                        }
+                        chip8.dummy3 += 1;
+                        chip8.dummy2 += 1;
+                    }
+                }
+                If (chip8.drawplane == 3)
+                {
+                    chip8.I += ( - chip8.dummy4);
+                }
+            }
+        }
+        List.ReplaceItem(chip8.registers, 16, ((0 < control_get_counter ?? - probably legacy function from Scratch 2.0) + ));
+        Stop(this script);
+    }
+    If (op1 < 240)
+    {
+        If (op2 == "0x9e")
+        {
+            If (chip8.keyboard[(chip8.registers[(1 + (op1 % 16))] + 1)] == 1)
+            {
+                If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+                {
+                    chip8.pc += 2;
+                }
+                chip8.pc += 2;
+            }
+        }
+        Else
+        {
+            If ((2 - (2 * chip8.keyboard[(chip8.registers[(1 + (op1 % 16))] + 1)])) == 2)
+            {
+                If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+                {
+                    chip8.pc += 2;
+                }
+                chip8.pc += 2;
+            }
+        }
+        Stop(this script);
+    }
+    If (op2 == "0x55")
+    {
+        chip8.dummy = 0;
+        Repeat ((1 + (op1 % 16)))
+        {
+            chip8.dummy += 1;
+            List.ReplaceItem(chip8.memory, (chip8.I + chip8.dummy), chip8.registers[chip8.dummy]);
+        }
+        If (c8.Load/Save_Quirk == 1)
+        {
+            chip8.I += chip8.dummy;
+        }
+        Stop(this script);
+    }
+    If (op2 == "0x65")
+    {
+        chip8.dummy = 0;
+        Repeat ((1 + (op1 % 16)))
+        {
+            chip8.dummy += 1;
+            List.ReplaceItem(chip8.registers, chip8.dummy, chip8.memory[(chip8.I + chip8.dummy)]);
+        }
+        If (c8.Load/Save_Quirk == 1)
+        {
+            chip8.I += chip8.dummy;
+        }
+        Stop(this script);
+    }
+    If (op2 == "0x00")
+    {
+        chip8.pc += 2;
+        If ((op1 % 16) == 0)
+        {
+            chip8.I = ((256 * chip8.memory[(chip8.pc - 1)]) + chip8.memory[chip8.pc]);
+            Stop(this script);
+        }
+        If ((op1 % 16) == 1)
+        {
+            chip8.pc = ((256 * chip8.memory[(chip8.pc - 1)]) + chip8.memory[chip8.pc]);
+            Stop(this script);
+        }
+        If ((op1 % 16) == 2)
+        {
+            List.Add(chip8.stack, chip8.pc);
+            chip8.pc = ((256 * chip8.memory[(chip8.pc - 1)]) + chip8.memory[chip8.pc]);
+            Stop(this script);
+        }
+        If ((op1 % 16) == 3)
+        {
+            chip8.pc = (chip8.registers[1] + ((256 * chip8.memory[(chip8.pc - 1)]) + chip8.memory[chip8.pc]));
+        }
+        Stop(this script);
+    }
+    If (op2 == "0x01")
+    {
+        chip8.drawflag = 1;
+        chip8.drawplane = (op1 % 16);
+        Stop(this script);
+    }
+    If (op2 == "0x02")
+    {
+        chip8.audioflag = 1;
+        chip8.dummy3 = (chip8.I + 1);
+        List.DeleteAll(chip8.audiobuffer);
+        Repeat (16)
+        {
+            List.Add(chip8.audiobuffer, chip8.memory[chip8.dummy3]);
+            chip8.dummy3 += 1;
+        }
+        Stop(this script);
+    }
+    If (op2 == "0x03")
+    {
+        chip8.drawflag = 1;
+        chip8.dummy2 = "0x";
+        chip8.dummy3 = 1;
+        Repeat (3)
+        {
+            Call Convert(chip8.memory[(chip8.I + chip8.dummy3)]) to hex;
+            chip8.dummy2 = Operator.Join(chip8.dummy2, Operator.Join(Operator.LetterOf(chip8.dummy, 2), Operator.LetterOf(chip8.dummy, 1)));
+            chip8.dummy3 += 1;
+        }
+        List.ReplaceItem(_colours, ((op1 % 16) + 1), chip8.dummy2);
+        Stop(this script);
+    }
+    If (op2 == "0x07")
+    {
+        List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), chip8.delay_timer);
+        Stop(this script);
+    }
+    If (op2 == "0x0a")
+    {
+        If List.ContainsItem(chip8.keyboard, 1)
+        {
+            chip8.dummy = 1;
+            Repeat (List.Length(chip8.keyboard))
+            {
+                If (chip8.keyboard[chip8.dummy] == 1)
+                {
+                    List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), (chip8.dummy - 1));
+                }
+                chip8.dummy += 1;
+            }
+        }
+        Else
+        {
+            chip8.pc += -2;
+        }
+        Stop(this script);
+    }
+    If (op2 == "0x15")
+    {
+        chip8.delay_timer = chip8.registers[(1 + (op1 % 16))];
+        Stop(this script);
+    }
+    If (op2 == "0x18")
+    {
+        chip8.sound_timer = chip8.registers[(1 + (op1 % 16))];
+        Stop(this script);
+    }
+    If (op2 == "0x1e")
+    {
+        If ((Not ((((chip8.I + chip8.registers[(1 + (op1 % 16))]) % 4096) == (chip8.I + chip8.registers[(1 + (op1 % 16))])))) And (SF2091! fix == 1))
+        {
+            chip8.I = ((chip8.I + chip8.registers[(1 + (op1 % 16))]) % 4096);
+            List.ReplaceItem(chip8.registers, 16, 1);
+        }
+        Else
+        {
+            chip8.I = ((chip8.I + chip8.registers[(1 + (op1 % 16))]) % 65536);
+        }
+        Stop(this script);
+    }
+    If (op2 == "0x20")
+    {
+        chip8.pc = chip8.memory[(((chip8.registers[(1 + (op1 % 16))] + chip8.I) % 65536) + 1)];
+        Stop(this script);
+    }
+    If (op2 == "0x21")
+    {
+        List.Add(chip8.stack, chip8.pc);
+        chip8.pc = chip8.memory[(((chip8.registers[(1 + (op1 % 16))] + chip8.I) % 65536) + 1)];
+        Stop(this script);
+    }
+    If (op2 == "0x29")
+    {
+        chip8.I = (5 * chip8.registers[(1 + (op1 % 16))]);
+        Stop(this script);
+    }
+    If (op2 < 63)
+    {
+        If ((op2 % 16) == 0)
+        {
+            chip8.I = ((10 * chip8.registers[(1 + (op1 % 16))]) + 80);
+            Stop(this script);
+        }
+        If ((op2 % 16) == 3)
+        {
+            List.ReplaceItem(chip8.memory, (chip8.I + 1), floor((chip8.registers[(1 + (op1 % 16))] / 100)));
+            List.ReplaceItem(chip8.memory, (chip8.I + 2), (floor((chip8.registers[(1 + (op1 % 16))] / 10)) % 10));
+            List.ReplaceItem(chip8.memory, (chip8.I + 3), (chip8.registers[(1 + (op1 % 16))] % 10));
+            Stop(this script);
+        }
+        If ((op2 % 16) == 10)
+        {
+            chip8.pitch = chip8.registers[(1 + (op1 % 16))];
+            If (pitches[3] < 0)
+            {
+                pitch = "-Infinity";
+            }
+            Stop(this script);
+        }
+        If ((op2 % 16) == 11)
+        {
+            Stop(this script);
+        }
+        If ((op2 % 16) == 12)
+        {
+            Stop(this script);
+        }
+        If ((op2 % 16) == 13)
+        {
+            Stop(this script);
+        }
+    }
+    If (op2 == "0x75")
+    {
+        chip8.dummy = 0;
+        If ((7 < (op1 % 16)) And (Not ((chip8.DrawType == "Octo"))))
+        {
+            Repeat Until (chip8.dummy > 7)
+            {
+                List.ReplaceItem(schip8.RPL, (chip8.dummy + 1), chip8.registers[(1 + chip8.dummy)]);
+                chip8.dummy += 1;
+            }
+        }
+        Else
+        {
+            Repeat Until (chip8.dummy > (op1 % 16))
+            {
+                List.ReplaceItem(schip8.RPL, (chip8.dummy + 1), chip8.registers[(1 + chip8.dummy)]);
+                chip8.dummy += 1;
+            }
+        }
+        Stop(this script);
+    }
+    If (op2 == "0x85")
+    {
+        chip8.dummy = 0;
+        If ((7 < (op1 % 16)) And (Not ((chip8.DrawType == "Octo"))))
+        {
+            Repeat Until (chip8.dummy > 7)
+            {
+                List.ReplaceItem(chip8.registers, (chip8.dummy + 1), schip8.RPL[(1 + chip8.dummy)]);
+                chip8.dummy += 1;
+            }
+        }
+        Else
+        {
+            Repeat Until (chip8.dummy > (op1 % 16))
+            {
+                List.ReplaceItem(chip8.registers, (chip8.dummy + 1), schip8.RPL[(1 + chip8.dummy)]);
+                chip8.dummy += 1;
+            }
+        }
+    }
+    If (op2 == "0xA2")
+    {
+        chip8.I = chip8.memory[(((chip8.registers[(1 + (op1 % 16))] + chip8.I) % 65536) + 1)];
+    }
+    Stop(this script);
+}
+
+Define chip8.render (warp=true)
+{
+    chip8.drawflag = 0;
+    Motion.SetY(173);
+    chip8.dummy = 1;
+    If ((chip8.drawmode == "Accurate/Sharp") Or (chip8.drawmode == "Fast/Sharp"))
+    {
+        Pen.SetPenSizeTo(1);
+        Repeat (chip8.screenheight)
+        {
+            List.DeleteAll(_scanline);
+            chip8.dummy2 = 0;
+            List.Add(_scanline, (chip8.screen[chip8.dummy] + (chip8.screen2[chip8.dummy] * 2)));
+            Repeat (chip8.screenwidth)
+            {
+                chip8.dummy += 1;
+                chip8.dummy3 = (chip8.screen[chip8.dummy] + (chip8.screen2[chip8.dummy] * 2));
+                chip8.dummy2 += 1;
+                If (Not ((chip8.dummy3 == _scanline[last])))
+                {
+                    List.Add(_scanline, (chip8.dummy2 * (3 * c8scrnsize)));
+                    List.Add(_scanline, chip8.dummy3);
+                    chip8.dummy2 = 0;
+                }
+            }
+            List.Add(_scanline, (chip8.dummy2 * (3 * c8scrnsize)));
+            Repeat ((3 * c8scrnsize))
+            {
+                Motion.SetX(-192);
+                chip8.dummy3 = 1;
+                Pen.SetPenColorToColor(_colours[(_scanline[chip8.dummy3] + 1)]);
+                Pen.Down();
+                Repeat ((List.Length(_scanline) / 2))
+                {
+                    chip8.dummy3 += 1;
+                    Motion.ChangeXBy(_scanline[chip8.dummy3]);
+                    chip8.dummy3 += 1;
+                    Pen.SetPenColorToColor(_colours[(_scanline[chip8.dummy3] + 1)]);
+                }
+                Pen.Clear();
+                Motion.ChangeYBy(-1);
+            }
+        }
+    }
+    Else
+    {
+        Pen.SetPenSizeTo((3 * c8scrnsize));
+        Repeat (chip8.screenheight)
+        {
+            Motion.SetX(-192);
+            Pen.Down();
+            Repeat (chip8.screenwidth)
+            {
+                If (chip8.screen[chip8.dummy] == chip8.screen2[chip8.dummy])
+                {
+                    If (chip8.screen[chip8.dummy] == 1)
+                    {
+                        Pen.SetPenColorToColor(#ffff00);
+                    }
+                    Else
+                    {
+                        Pen.SetPenColorToColor(#000000);
+                    }
+                }
+                Else
+                {
+                    If (chip8.screen[chip8.dummy] == 1)
+                    {
+                        Pen.SetPenColorToColor(#00ff00);
+                    }
+                    Else
+                    {
+                        Pen.SetPenColorToColor(#ff0000);
+                    }
+                }
+                If (Not (((chip8.dummy % chip8.screenwidth) == 0)))
+                {
+                    Motion.ChangeXBy((3 * c8scrnsize));
+                }
+                chip8.dummy += 1;
+            }
+            Pen.Clear();
+            Motion.ChangeYBy((-3 * c8scrnsize));
+        }
+    }
+}
+
+Define chip8.reset (warp=true)
+{
+    Event.BroadcastAndWait("prune");
+    Sound.ClearEffects();
+    Sound.SetVolumeTo(0);
+    Sound.StopAllSounds();
+    Variable.Hide(chip8.pc);
+    chip8.pc = chip8.starting address;
+    chip8.delay_timer = 0;
+    chip8.sound_timer = 0;
+    List.Hide(chip8.stack);
+    List.Hide(chip8.registers);
+    List.DeleteAll(chip8.stack);
+    List.DeleteAll(chip8.memory);
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x20");
+    List.Add(chip8.memory, "0x60");
+    List.Add(chip8.memory, "0x20");
+    List.Add(chip8.memory, "0x20");
+    List.Add(chip8.memory, "0x70");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x10");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x10");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x10");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x10");
+    List.Add(chip8.memory, "0x10");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x10");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x10");
+    List.Add(chip8.memory, "0x20");
+    List.Add(chip8.memory, "0x40");
+    List.Add(chip8.memory, "0x40");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x10");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xe0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xe0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xe0");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0xe0");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0x90");
+    List.Add(chip8.memory, "0xe0");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0xf0");
+    List.Add(chip8.memory, "0x80");
+    List.Add(chip8.memory, "0x80");
+    List.DeleteAll(_colours);
+    List.Add(_colours, "0x000000");
+    List.Add(_colours, "0x00FF00");
+    List.Add(_colours, "0xFF0000");
+    List.Add(_colours, "0xFFFF00");
+    chip8.dummy = 1;
+    Repeat (List.Length(schip8.font))
+    {
+        List.Add(chip8.memory, schip8.font[chip8.dummy]);
+        chip8.dummy += 1;
+    }
+    Repeat ((512 - List.Length(chip8.memory)))
+    {
+        List.Add(chip8.memory, 0);
+    }
+    chip8.dummy = 1;
+    Repeat (List.Length(_rom))
+    {
+        List.Add(chip8.memory, _rom[chip8.dummy]);
+        chip8.dummy += 1;
+    }
+    Repeat ((4096 - List.Length(chip8.memory)))
+    {
+        List.Add(chip8.memory, 0);
+    }
+    List.DeleteAll(chip8.registers);
+    Repeat (16)
+    {
+        List.Add(chip8.registers, 0);
+    }
+    List.DeleteAll(schip8.RPL);
+    Repeat (16)
+    {
+        List.Add(schip8.RPL, 00);
+    }
+    chip8.screenwidth = 64;
+    chip8.screenheight = 32;
+    chip8.dummy4 = 0;
+    List.DeleteAll(chip8.screen);
+    List.DeleteAll(chip8.screen2);
+    chip8.drawplane = 1;
+    Repeat ((chip8.screenwidth * chip8.screenheight))
+    {
+        List.Add(chip8.screen, 0);
+        List.Add(chip8.screen2, 0);
+    }
+    LN2 = ln(2);
+    Variable.Show(CPF);
+    chip8.I = 0;
+    chip8.pitch = 64;
+    chip8.drawflag = 1;
+    Variable.Show(c8.Load/Save_Quirk);
+    Variable.Show(c8.Shift_quirk);
+    List.DeleteAll(chip8.audiobuffer);
+    chip8.drawtoggle = 1;
+    Repeat (8)
+    {
+        List.Add(chip8.audiobuffer, 0);
+        List.Add(chip8.audiobuffer, 255);
+    }
+    Variable.Show(chip8.DrawType);
+    Variable.Show(chip8.pc);
+    Variable.Show(VIP jumps);
+    Variable.Show(SF2091! fix);
+    Variable.Show(chip8.drawmode);
+    chip8.drawvariety = 0;
+    chip8.audioflag = 0;
+    Pen.Clear();
+    Sensing.ResetTimer();
+}
+
+Define Convert(string Decimal Number) to hex (warp=true)
+{
+    chip8.dummy = Operator.Join(Operator.Join(Operator.LetterOf("0123456789ABCDEF", ((Decimal Number % 16) + 1)), Operator.LetterOf("0123456789ABCDEF", ((floor((Decimal Number / 16)) % 16) + 1))), Operator.Join(Operator.LetterOf("0123456789ABCDEF", ((floor((Decimal Number / 256)) % 16) + 1)), Operator.LetterOf("0123456789ABCDEF", ((floor((Decimal Number / 4096)) % 16) + 1))));
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+If (rom.title == "SpaceFight2091 ")
+{
+    SF2091! fix = 1;
+    Variable.Show(rom.title);
+    chip8.DrawType = "SCHIP";
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg

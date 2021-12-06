@@ -1,0 +1,3816 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+*ModeDelay = 0
+*tileBase = 0x8000
+-bit = 8
+-L = 4
+-LCDCbits = 10010001
+-LCDSbits = 10000000
+-LY = 61
+-LYC = 0
+-LYmask = 61
+-mode = 0
+-PPU enable = 1
+-scx = 0
+-scy = 0
+-spriteAttributes = 0
+-windowWasDrawn? = 0
+-WLY = 0
+-wx = -7
+-wy = 0
+.hflip = 0
+.IME = 0
+.instrID = 0
+.instrParam = ~
+.IOwritten = 0
+.joypad = 0
+.lastlcdc = 10010001
+.sprite = 0
+.spritesize = 8
+.STATlock = 0
+.tx = 19
+.ty = 18
+.vflip = 0
+2^x = 8
+@*PIXRETURN = 0
+@PIXTYPE = 0
+bytesOpcode = 1
+cyclesOpcode = 4
+cyclesOpcodeBranched = 0
+cyclesThisFrame = 33476
+dot clocks left = 8
+emu: cycles = 173924
+g = 40
+h = 1
+i = 0
+k = 160
+loop = 128
+memDisable = 0
+source = 65280
+T0 = 8009.722927662
+T1 = 0
+T2 = 0
+T3 = 
+T4 = 1111
+T5 = 61665
+T6 = 
+T7 = 0
+ticks = 0
+vol = 7
+_BANKN = 1
+_FPS = 0.40666937224582
+_frames = 2
+_frameskip = 4
+_lastLineCycles = 444
+_linecycles = 448
+_R = 0
+_RE = 128
+_S = 128
+_STATcond1 = 0
+_STATcond2 = 0
+_T = 65344
+_T1 = -1
+_T2 = 7
+_X = 160
+_X4 = 157
+_xs = 159
+_ys = 144
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+$A = { }
+$B = { }
+$C = { 
+    224
+    1
+}
+*LCDClog = { 
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+    10010001
+}
+*OAMidx = { }
+*OAMx = { }
+*OAMy = { }
+*objbuffer1 = { }
+*palette = { 
+    #b9ffa8
+    #081820
+    #081820
+    #081820
+    #081820
+    #081820
+    #081820
+    #081820
+    #081820
+    #081820
+    #081820
+    #081820
+}
+*tempLog = { 
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+    0
+    0
+    -7
+    0
+}
+.AND = { }
+.cpob = { 
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    12
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    12
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    12
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    12
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    20
+    0
+    16
+    0
+    24
+    0
+    0
+    0
+    20
+    0
+    16
+    0
+    24
+    0
+    0
+    0
+    20
+    0
+    16
+    0
+    24
+    0
+    0
+    0
+    20
+    0
+    16
+    0
+    16
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+}
+.Index -> pointer = { }
+.lcdcProperites = { 
+    1
+    0
+    8
+    0x9800
+    
+    0
+    0x9800
+    1
+}
+.OR = { }
+.pointers = { }
+.pointerStart = { }
+.ptr index = { }
+.ram map = { }
+.XOR = { 
+    0
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+    10
+    11
+    12
+    13
+    14
+    15
+    1
+    0
+    3
+    2
+    5
+    4
+    7
+    6
+    9
+    8
+    11
+    10
+    13
+    12
+    15
+    14
+    2
+    3
+    0
+    1
+    6
+    7
+    4
+    5
+    10
+    11
+    8
+    9
+    14
+    15
+    12
+    13
+    3
+    2
+    1
+    0
+    7
+    6
+    5
+    4
+    11
+    10
+    9
+    8
+    15
+    14
+    13
+    12
+    4
+    5
+    6
+    7
+    0
+    1
+    2
+    3
+    12
+    13
+    14
+    15
+    8
+    9
+    10
+    11
+    5
+    4
+    7
+    6
+    1
+    0
+    3
+    2
+    13
+    12
+    15
+    14
+    9
+    8
+    11
+    10
+    6
+    7
+    4
+    5
+    2
+    3
+    0
+    1
+    14
+    15
+    12
+    13
+    10
+    11
+    8
+    9
+    7
+    6
+    5
+    4
+    3
+    2
+    1
+    0
+    15
+    14
+    13
+    12
+    11
+    10
+    9
+    8
+    8
+    9
+    10
+    11
+    12
+    13
+    14
+    15
+    0
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    9
+    8
+    11
+    10
+    13
+    12
+    15
+    14
+    1
+    0
+    3
+    2
+    5
+    4
+    7
+    6
+    10
+    11
+    8
+    9
+    14
+    15
+    12
+    13
+    2
+    3
+    0
+    1
+    6
+    7
+    4
+    5
+    11
+    10
+    9
+    8
+    15
+    14
+    13
+    12
+    3
+    2
+    1
+    0
+    7
+    6
+    5
+    4
+    12
+    13
+    14
+    15
+    8
+    9
+    10
+    11
+    4
+    5
+    6
+    7
+    0
+    1
+    2
+    3
+    13
+    12
+    15
+    14
+    9
+    8
+    11
+    10
+    5
+    4
+    7
+    6
+    1
+    0
+    3
+    2
+    14
+    15
+    12
+    13
+    10
+    11
+    8
+    9
+    6
+    7
+    4
+    5
+    2
+    3
+    0
+    1
+    15
+    14
+    13
+    12
+    11
+    10
+    9
+    8
+    7
+    6
+    5
+    4
+    3
+    2
+    1
+    0
+}
+2^x = { 
+    1
+    2
+    4
+    8
+    16
+    32
+    64
+    128
+    256
+}
+bin8 = { 
+    00000000
+    00000001
+    00000010
+    00000011
+    00000100
+    00000101
+    00000110
+    00000111
+    00001000
+    00001001
+    00001010
+    00001011
+    00001100
+    00001101
+    00001110
+    00001111
+    00010000
+    00010001
+    00010010
+    00010011
+    00010100
+    00010101
+    00010110
+    00010111
+    00011000
+    00011001
+    00011010
+    00011011
+    00011100
+    00011101
+    00011110
+    00011111
+    00100000
+    00100001
+    00100010
+    00100011
+    00100100
+    00100101
+    00100110
+    00100111
+    00101000
+    00101001
+    00101010
+    00101011
+    00101100
+    00101101
+    00101110
+    00101111
+    00110000
+    00110001
+    00110010
+    00110011
+    00110100
+    00110101
+    00110110
+    00110111
+    00111000
+    00111001
+    00111010
+    00111011
+    00111100
+    00111101
+    00111110
+    00111111
+    01000000
+    01000001
+    01000010
+    01000011
+    01000100
+    01000101
+    01000110
+    01000111
+    01001000
+    01001001
+    01001010
+    01001011
+    01001100
+    01001101
+    01001110
+    01001111
+    01010000
+    01010001
+    01010010
+    01010011
+    01010100
+    01010101
+    01010110
+    01010111
+    01011000
+    01011001
+    01011010
+    01011011
+    01011100
+    01011101
+    01011110
+    01011111
+    01100000
+    01100001
+    01100010
+    01100011
+    01100100
+    01100101
+    01100110
+    01100111
+    01101000
+    01101001
+    01101010
+    01101011
+    01101100
+    01101101
+    01101110
+    01101111
+    01110000
+    01110001
+    01110010
+    01110011
+    01110100
+    01110101
+    01110110
+    01110111
+    01111000
+    01111001
+    01111010
+    01111011
+    01111100
+    01111101
+    01111110
+    01111111
+    10000000
+    10000001
+    10000010
+    10000011
+    10000100
+    10000101
+    10000110
+    10000111
+    10001000
+    10001001
+    10001010
+    10001011
+    10001100
+    10001101
+    10001110
+    10001111
+    10010000
+    10010001
+    10010010
+    10010011
+    10010100
+    10010101
+    10010110
+    10010111
+    10011000
+    10011001
+    10011010
+    10011011
+    10011100
+    10011101
+    10011110
+    10011111
+    10100000
+    10100001
+    10100010
+    10100011
+    10100100
+    10100101
+    10100110
+    10100111
+    10101000
+    10101001
+    10101010
+    10101011
+    10101100
+    10101101
+    10101110
+    10101111
+    10110000
+    10110001
+    10110010
+    10110011
+    10110100
+    10110101
+    10110110
+    10110111
+    10111000
+    10111001
+    10111010
+    10111011
+    10111100
+    10111101
+    10111110
+    10111111
+    11000000
+    11000001
+    11000010
+    11000011
+    11000100
+    11000101
+    11000110
+    11000111
+    11001000
+    11001001
+    11001010
+    11001011
+    11001100
+    11001101
+    11001110
+    11001111
+    11010000
+    11010001
+    11010010
+    11010011
+    11010100
+    11010101
+    11010110
+    11010111
+    11011000
+    11011001
+    11011010
+    11011011
+    11011100
+    11011101
+    11011110
+    11011111
+    11100000
+    11100001
+    11100010
+    11100011
+    11100100
+    11100101
+    11100110
+    11100111
+    11101000
+    11101001
+    11101010
+    11101011
+    11101100
+    11101101
+    11101110
+    11101111
+    11110000
+    11110001
+    11110010
+    11110011
+    11110100
+    11110101
+    11110110
+    11110111
+    11111000
+    11111001
+    11111010
+    11111011
+    11111100
+    11111101
+    11111110
+    11111111
+}
+bytesPerOpcode = { 
+    1311112131111121231111212111112123111121211111212311112121111121111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111133312111323321113031211130302121100121213000212111012121310021
+}
+byteStack = { 
+    0
+    0
+}
+cyclesPerOpcode = { }
+Flag bits = { 
+    0
+    0
+    0
+    0
+}
+regHelp = { 
+    A
+    B
+    C
+    D
+}
+soundTemp = { 
+    -1
+    -1
+    -1
+}
+_cartridge stuff = { 
+    0
+    0
+    
+}
+_DMGCOLORS = { }
+_instructionBlocks = { 
+    0
+    10
+    11
+    12
+    13
+    13
+    1
+    22
+    2
+    4
+    11
+    12
+    13
+    13
+    1
+    22
+    2
+    10
+    11
+    12
+    13
+    13
+    1
+    23
+    14
+    4
+    11
+    12
+    13
+    13
+    1
+    23
+    14
+    10
+    11
+    12
+    13
+    13
+    1
+    2
+    14
+    4
+    11
+    12
+    13
+    13
+    1
+    2
+    14
+    10
+    11
+    12
+    13
+    13
+    1
+    2
+    14
+    4
+    11
+    12
+    13
+    13
+    1
+    2
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    2
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    1
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    5
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    7
+    7
+    7
+    7
+    7
+    7
+    7
+    7
+    8
+    8
+    8
+    8
+    8
+    8
+    8
+    8
+    9
+    9
+    9
+    9
+    9
+    9
+    9
+    9
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    6
+    15
+    18
+    16
+    16
+    17
+    19
+    5
+    20
+    15
+    15
+    16
+    2
+    17
+    17
+    5
+    20
+    15
+    18
+    16
+    0
+    17
+    19
+    6
+    20
+    15
+    15
+    16
+    0
+    17
+    0
+    6
+    20
+    24
+    18
+    24
+    0
+    0
+    19
+    7
+    20
+    25
+    21
+    26
+    0
+    0
+    0
+    8
+    20
+    24
+    18
+    24
+    3
+    0
+    19
+    9
+    20
+    25
+    21
+    26
+    3
+    0
+    0
+    6
+    20
+}
+_instructionParameters = { 
+    ~
+    J23
+    K023
+    L+23
+    M+2
+    M-2
+    A2U
+    V0
+    B0SP
+    D23
+    K123
+    L-23
+    M+3
+    M-3
+    A3U
+    V1
+    B1STOP
+    J45
+    K045
+    L+45
+    M+4
+    M-4
+    A4U
+    W0
+    N0
+    D45
+    K145
+    L-45
+    M+5
+    M-5
+    A5U
+    W1
+    N110
+    J78
+    K078+
+    L+78
+    M+7
+    M-7
+    A7U
+    B2DAA
+    N111
+    D78
+    K178+
+    L-78
+    M+8
+    M-8
+    A8U
+    B3CPL
+    N140
+    JSP
+    K078-
+    L+SP
+    M+9
+    M-9
+    A9U
+    B4SCF
+    N141
+    DSP
+    K178-
+    L-SP
+    M+1
+    M-1
+    A1U
+    B5CCF
+    A22
+    A23
+    A24
+    A25
+    A27
+    A28
+    A29
+    A21
+    A32
+    A33
+    A34
+    A35
+    A37
+    A38
+    A39
+    A31
+    A42
+    A43
+    A44
+    A45
+    A47
+    A48
+    A49
+    A41
+    A52
+    A53
+    A54
+    A55
+    A57
+    A58
+    A59
+    A51
+    A72
+    A73
+    A74
+    A75
+    A77
+    A78
+    A79
+    A71
+    A82
+    A83
+    A84
+    A85
+    A87
+    A88
+    A89
+    A81
+    A92
+    A93
+    A94
+    A95
+    A97
+    A98
+    B6HALT
+    A91
+    A12
+    A13
+    A14
+    A15
+    A17
+    A18
+    A19
+    A11
+    E02
+    E03
+    E04
+    E05
+    E07
+    E08
+    E09
+    E01
+    E12
+    E13
+    E14
+    E15
+    E17
+    E18
+    E19
+    E11
+    F02
+    F03
+    F04
+    F05
+    F07
+    F08
+    F09
+    F01
+    F12
+    F13
+    F14
+    F15
+    F17
+    F18
+    F19
+    F11
+    G02
+    G03
+    G04
+    G05
+    G07
+    G08
+    G09
+    G01
+    H02
+    H03
+    H04
+    H05
+    H07
+    H08
+    H09
+    H01
+    I02
+    I03
+    I04
+    I05
+    I07
+    I08
+    I09
+    I01
+    F22
+    F23
+    F24
+    F25
+    F27
+    F28
+    F29
+    F21
+    O110
+    R23
+    P110
+    P000
+    Q110
+    S23
+    E0U
+    T0
+    O111
+    O000
+    P111
+    B7CB
+    Q111
+    Q000
+    E1U
+    T1
+    O140
+    R45
+    P140
+    -
+    Q140
+    S45
+    F0U
+    T2
+    O141
+    O200
+    P141
+    -
+    Q141
+    -
+    F1U
+    T3
+    X0U
+    R78
+    X03
+    -
+    -
+    S78
+    G0U
+    T4
+    Y0
+    U0
+    Z0
+    -
+    -
+    -
+    H0U
+    T5
+    X1U
+    R16
+    X13
+    C0
+    -
+    S16
+    I0U
+    T6
+    Y1
+    U1
+    Z1
+    C1
+    -
+    -
+    F2U
+    T8
+}
+_REGISTERS = { 
+    143
+    0
+    19
+    0
+    216
+    0
+    255
+    142
+    0
+}
+_soundtemp2 = { 
+    131072
+    131072
+    131072
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(Game Boy)
+{
+    Pen.Clear();
+    Variable.Show(rom.designation);
+    Event.BroadcastAndWait("prune");
+    Event.BroadcastAndWait("create sound");
+    Call __INIT;
+    Pen.SetPenSizeTo(2);
+    List.DeleteAll(logzz);
+    List.DeleteAll(_DMGCOLORS);
+    List.Add(_DMGCOLORS, "#081820");
+    List.Add(_DMGCOLORS, "#43654d");
+    List.Add(_DMGCOLORS, "#7eb27a");
+    List.Add(_DMGCOLORS, "#b9ffa8");
+    List.DeleteAll(logzz);
+    __SIZE = 2;
+    Forever
+    {
+        T0 = Sensing.DaysSince2000();
+        Call __run cycles;
+        Wait Until (Not ((((Sensing.DaysSince2000() - T0) * 86400) < 0.016)));
+        _FPS = (1 / ((Sensing.DaysSince2000() - T0) * 86400));
+    }
+}
+
+WhenBroadcastReceived(Project not saving fix)
+{
+    List.DeleteAll($A);
+    List.DeleteAll($B);
+    List.DeleteAll(temp.0);
+    List.DeleteAll(.AND);
+    List.DeleteAll(.OR);
+    List.DeleteAll(temp.1);
+    List.DeleteAll(_DMGCOLORS);
+    List.DeleteAll(cyclesPerOpcode);
+    List.DeleteAll(.Index -> pointer);
+    List.DeleteAll(.pointerStart);
+    List.DeleteAll(.pointers);
+    List.DeleteAll(RAM);
+    List.DeleteAll(.ptr index);
+    List.DeleteAll(.ram map);
+    Event.Broadcast("prune");
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define !put F bits into F register (warp=true)
+{
+    List.ReplaceItem(_REGISTERS, 6, (((Flag bits[1] * 8) + ((Flag bits[2] * 4) + ((Flag bits[3] * 2) + Flag bits[4]))) * 16));
+}
+
+Define !update flag list with F register (warp=true)
+{
+    List.DeleteAll(Flag bits);
+    List.Add(Flag bits, (floor((_REGISTERS[6] / 128)) % 2));
+    List.Add(Flag bits, (floor((_REGISTERS[6] / 64)) % 2));
+    List.Add(Flag bits, (floor((_REGISTERS[6] / 32)) % 2));
+    List.Add(Flag bits, (floor((_REGISTERS[6] / 16)) % 2));
+}
+
+Define $ab reset (warp=true)
+{
+    List.DeleteAll($A);
+    List.DeleteAll($B);
+    Repeat (4)
+    {
+        List.Add($A, 0);
+    }
+    Repeat (4)
+    {
+        List.Add($B, 0);
+    }
+}
+
+Define $incA (warp=false)
+{
+    Repeat Until (($A[last] == 0) Or ($A[last] == ""))
+    {
+        List.DeleteItem($A, last);
+    }
+    List.ReplaceItem($A, last, 1);
+    Repeat ((4 - List.Length($A)))
+    {
+        List.Add($A, 0);
+    }
+}
+
+Define $incB (warp=false)
+{
+    Repeat Until (($B[last] == 0) Or ($B[last] == ""))
+    {
+        List.DeleteItem($B, last);
+    }
+    List.ReplaceItem($B, last, 1);
+    Repeat ((4 - List.Length($B)))
+    {
+        List.Add($B, 0);
+    }
+}
+
+Define $load ROM(string ROM) (warp=true)
+{
+    loop = 0;
+    List.DeleteAll(ROM);
+    Repeat ((Variable.Length(ROM) / 2))
+    {
+        _RE = (0 + Operator.Join("0x", Operator.Join(Operator.LetterOf(ROM, (((loop - 0) * 2) + 1)), Operator.LetterOf(ROM, (((loop - 0) * 2) + 2)))));
+        List.Add(ROM, _RE);
+        loop += 1;
+    }
+    Repeat ((32768 - List.Length(ROM)))
+    {
+        List.Add(ROM, 0);
+    }
+}
+
+Define $reset ram (warp=true)
+{
+    List.DeleteAll(RAM);
+    Repeat (65536)
+    {
+        List.Add(RAM, 0);
+    }
+}
+
+Define $reset registers (warp=true)
+{
+    Call !update flag list with F register;
+    _PC = 256;
+    _SP = 65534;
+    -LY = 0;
+    List.DeleteAll(_REGISTERS);
+    List.Add(_REGISTERS, 1);
+    List.Add(_REGISTERS, 0);
+    List.Add(_REGISTERS, 19);
+    List.Add(_REGISTERS, 0);
+    List.Add(_REGISTERS, 216);
+    List.Add(_REGISTERS, 176);
+    List.Add(_REGISTERS, 1);
+    List.Add(_REGISTERS, 77);
+    List.Add(_REGISTERS, 0);
+}
+
+Define &get bit(string x) of(string n) (warp=false)
+{
+    -bit = (floor((n / 2^x[(x + 1)])) % 2);
+}
+
+Define &interrupt handler (warp=true)
+{
+    If (.IME == 0)
+    {
+        Stop(this script);
+    }
+    List.DeleteAll($C);
+    Call .S = read("0xFF0F") of mem;
+    List.Add($C, _S);
+    Call .S = read("0xFFFF") of mem;
+    List.Add($C, _S);
+    Call ^.bitwisetemp($C[1])($C[2]);
+    If (((.AND[$B[1]] * 16) + .AND[$B[2]]) > 0)
+    {
+        i = 8;
+        control_while ?? - probably legacy function from Scratch 2.0;
+        If (i > 3)
+        {
+            i = (8 - i);
+            Call *set IF(i) ,(0);
+            emu: cycles += 20;
+            cyclesThisFrame += 20;
+            Call ~RST((i + 8));
+            .IME = 0;
+            _HALT = 0;
+        }
+    }
+}
+
+Define &set bit(string x) of(string n) to(string b) (warp=false)
+{
+    2^x = 2^x[(x + 2)];
+    _RE = ((floor((n / 2^x)) * 2^x) + ((b * (2^x / 2)) + (n % (2^x / 2))));
+}
+
+Define &update joypad address (warp=true)
+{
+    If (.joypad == 1)
+    {
+        Call .S = read("0xFF00") of mem;
+        T1 = bin8[(_S + 1)];
+        T2 = Operator.Join(Operator.Join(Operator.Join(Operator.LetterOf(T1, 1), Operator.LetterOf(T1, 2)), Operator.LetterOf(T1, 3)), Operator.LetterOf(T1, 4));
+        T3 = Operator.Join(Operator.Join(Operator.Join(Operator.LetterOf(T1, 5), Operator.LetterOf(T1, 6)), Operator.LetterOf(T1, 7)), Operator.LetterOf(T1, 8));
+        If (Operator.LetterOf(T1, 3) == 1)
+        {
+            T4 = Operator.Join(Operator.Join((1 - joypad buttons[1]), (1 - joypad buttons[2])), Operator.Join((1 - joypad buttons[3]), (1 - joypad buttons[4])));
+        }
+        If (Operator.LetterOf(T1, 4) == 1)
+        {
+            T4 = Operator.Join(Operator.Join((1 - joypad buttons[5]), (1 - joypad buttons[6])), Operator.Join((1 - joypad buttons[7]), (1 - joypad buttons[8])));
+        }
+        T2 = Operator.Join(T2, T4);
+        If (T4 < T3)
+        {
+            Call *set IF(4) ,(1);
+        }
+        Call .write mem("0xFF00") byte((0 + Operator.Join("0b", T2)));
+    }
+}
+
+Define *draw frame (warp=false)
+{
+    List.DeleteAll($A);
+    List.DeleteAll($B);
+    T1 = 1;
+    i = 1;
+    Repeat (List.Length(*graphicsBuffer))
+    {
+        i += 1;
+        If (*graphicsBuffer[(i - 1)] == *graphicsBuffer[i])
+        {
+            T1 += 1;
+        }
+        Else
+        {
+            List.Add($A, *graphicsBuffer[(i - 1)]);
+            List.Add($B, T1);
+            T1 = 1;
+        }
+    }
+    T1 = 0;
+    T2 = 0;
+    Pen.Clear();
+    Call *goto(0)(0);
+    Pen.Down();
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+    Pen.Clear();
+}
+
+Define *get pixel using x(string x) y(string y) scx(string scx) scy(string scy) LCDC(string lcdc) wx(string wx) wy(string wy) (warp=false)
+{
+    .hflip = 0;
+    .vflip = 0;
+    .sprite = 0;
+    If (Not ((.lastlcdc == lcdc)))
+    {
+        List.DeleteAll(.lcdcProperites);
+        List.Add(.lcdcProperites, Operator.LetterOf(lcdc, 8));
+        List.Add(.lcdcProperites, Operator.LetterOf(lcdc, 7));
+        If (Operator.LetterOf(lcdc, 6) == 0)
+        {
+            List.Add(.lcdcProperites, 8);
+        }
+        Else
+        {
+            List.Add(.lcdcProperites, 16);
+        }
+        If (Operator.LetterOf(lcdc, 5) == 1)
+        {
+            List.Add(.lcdcProperites, "0x9C00");
+        }
+        Else
+        {
+            List.Add(.lcdcProperites, "0x9800");
+        }
+        List.Add(.lcdcProperites, "");
+        List.Add(.lcdcProperites, Operator.LetterOf(lcdc, 3));
+        If (Operator.LetterOf(lcdc, 2) == 1)
+        {
+            List.Add(.lcdcProperites, "0x9C00");
+        }
+        Else
+        {
+            List.Add(.lcdcProperites, "0x9800");
+        }
+        List.Add(.lcdcProperites, Operator.LetterOf(lcdc, 1));
+        .lastlcdc = lcdc;
+    }
+    -spriteAttributes = 0;
+    _xs = (x + scx);
+    _ys = (y + scy);
+    .tx = floor(((_xs % 256) / 8));
+    .ty = floor(((_ys % 256) / 8));
+    If .lcdcProperites[8]
+    {
+        If (.lcdcProperites[6] And ((Not ((x < wx))) And (Not ((y < wy)))))
+        {
+            _xs = (x - wx);
+            -windowWasDrawn? = 1;
+            .tx = floor(((_xs % 256) / 8));
+            .ty = floor(((-WLY % 256) / 8));
+            _S = RAM[(((.lcdcProperites[7] + ((.ty * 32) + .tx)) - 0x8000) + 1)];
+            h = _S;
+            If ((h > 127) Or (Operator.LetterOf(lcdc, 4) > 0))
+            {
+                *tileBase = "0x8000";
+            }
+            Else
+            {
+                *tileBase = "0x9000";
+            }
+            g = ((*tileBase + (h * 16)) + ((-WLY % 8) * 2));
+            T2 = (_xs % 8);
+        }
+        Else
+        {
+            If .lcdcProperites[1]
+            {
+                g = ((.ty * 32) + .tx);
+                _S = RAM[(((.lcdcProperites[4] + g) - 0x8000) + 1)];
+                If ((_S > 127) Or (Operator.LetterOf(lcdc, 4) > 0))
+                {
+                    *tileBase = "0x8000";
+                }
+                Else
+                {
+                    *tileBase = "0x9000";
+                }
+                g = ((*tileBase + (_S * 16)) + ((_ys % 8) * 2));
+                T2 = (_xs % 8);
+            }
+            Else
+            {
+                @PIXTYPE = "";
+                @*PIXRETURN = "";
+            }
+        }
+        List.DeleteAll($A);
+        _S = RAM[(((g + 0) - 0x8000) + 1)];
+        List.Add($A, bin8[(_S + 1)]);
+        _S = RAM[(((g + 1) - 0x8000) + 1)];
+        List.Add($A, bin8[(_S + 1)]);
+        @*PIXRETURN = ((Operator.LetterOf($A[2], (T2 + 1)) * 2) + Operator.LetterOf($A[1], (T2 + 1)));
+        @PIXTYPE = 0;
+        h = 0;
+        If .lcdcProperites[2]
+        {
+            List.DeleteAll(*objbuffer1);
+            control_while ?? - probably legacy function from Scratch 2.0;
+            i = List.Length(*objbuffer1);
+            Repeat (i)
+            {
+                h = *objbuffer1[i];
+                i += -1;
+                _xs = (x - *OAMx[h]);
+                _ys = (y - *OAMy[h]);
+                .sprite = 1;
+                Call .S = read((*OAMidx[h] + 3)) of mem;
+                -spriteAttributes = bin8[(_S + 1)];
+                Call .S = read((*OAMidx[h] + 2)) of mem;
+                If (.lcdcProperites[3] == 16)
+                {
+                    _S = (_S - (_S % 2));
+                    If (Not ((y < (*OAMy[h] + 8))))
+                    {
+                        _S += 1;
+                    }
+                }
+                .hflip = Operator.LetterOf(-spriteAttributes, 3);
+                g = (0x8000 + (_S * 16));
+                If (Operator.LetterOf(-spriteAttributes, 2) == 1)
+                {
+                    If (.lcdcProperites[3] == 16)
+                    {
+                        If (Not ((y < (*OAMy[h] + 8))))
+                        {
+                            g += ((7 - (_ys % 16)) * 2);
+                        }
+                        Else
+                        {
+                            g += ((15 - (_ys % 16)) * 2);
+                        }
+                    }
+                    Else
+                    {
+                        g += ((7 - (_ys % 8)) * 2);
+                    }
+                }
+                Else
+                {
+                    g += ((_ys % 8) * 2);
+                }
+                @PIXTYPE = (1 + Operator.LetterOf(-spriteAttributes, 4));
+                T2 = (_xs % 8);
+                If (.sprite > 0)
+                {
+                    List.DeleteAll($A);
+                    Call .S = read((g + 0)) of mem;
+                    List.Add($A, bin8[(_S + 1)]);
+                    Call .S = read((g + 1)) of mem;
+                    List.Add($A, bin8[(_S + 1)]);
+                    T1 = @*PIXRETURN;
+                    If (.hflip == 1)
+                    {
+                        @*PIXRETURN = ((Operator.LetterOf($A[2], ((7 - T2) + 1)) * 2) + Operator.LetterOf($A[1], ((7 - T2) + 1)));
+                    }
+                    Else
+                    {
+                        @*PIXRETURN = ((Operator.LetterOf($A[2], (T2 + 1)) * 2) + Operator.LetterOf($A[1], (T2 + 1)));
+                    }
+                    If (Operator.LetterOf(-spriteAttributes, 1) == 1)
+                    {
+                        If ((T1 > 0) Or (@*PIXRETURN == 0))
+                        {
+                            @*PIXRETURN = T1;
+                            @PIXTYPE = "";
+                        }
+                    }
+                    Else
+                    {
+                        If (@*PIXRETURN == 0)
+                        {
+                            @*PIXRETURN = T1;
+                            @PIXTYPE = "";
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Else
+    {
+        @PIXTYPE = "";
+        @*PIXRETURN = 0;
+    }
+}
+
+Define *goto(string x)(string y) (warp=true)
+{
+    Motion.GoToXY(((x * __SIZE) - __XSHIFT), (__YSHIFT - (y * __SIZE)));
+}
+
+Define *LCD line (warp=true)
+{
+    _X = 0;
+    _X4 = 1;
+    Call *palette decode;
+    Repeat (160)
+    {
+        _X4 = ((floor((_X / 4)) * 4) + 1);
+        Call *get pixel using x(_X) y(-LY) scx(*tempLog[_X4]) scy(*tempLog[(_X4 + 1)]) LCDC(*LCDClog[(floor((_X / 4)) + 1)]) wx(*tempLog[(_X4 + 2)]) wy(*tempLog[(_X4 + 3)]);
+        List.Add(*graphicsBuffer, *palette[(((@PIXTYPE * 4) + @*PIXRETURN) + 1)]);
+        _X += 1;
+    }
+}
+
+Define *monodecode palettes address(string addr) (warp=true)
+{
+    Call .S = read(addr) of mem;
+    T1 = _S;
+    If 
+    {
+        List.Add(*palette, ((3 - (floor((T1 / 1)) % 4)) * 0x555555));
+        List.Add(*palette, ((3 - (floor((T1 / 4)) % 4)) * 0x555555));
+        List.Add(*palette, ((3 - (floor((T1 / 16)) % 4)) * 0x555555));
+        List.Add(*palette, ((3 - (floor((T1 / 64)) % 4)) * 0x555555));
+    }
+    Else
+    {
+        List.Add(*palette, _DMGCOLORS[(4 - (floor((T1 / 1)) % 4))]);
+        List.Add(*palette, _DMGCOLORS[(4 - (floor((T1 / 4)) % 4))]);
+        List.Add(*palette, _DMGCOLORS[(4 - (floor((T1 / 16)) % 4))]);
+        List.Add(*palette, _DMGCOLORS[(4 - (floor((T1 / 64)) % 4))]);
+    }
+}
+
+Define *OAMsearch (warp=true)
+{
+    g = 0;
+    List.DeleteAll(*OAMidx);
+    List.DeleteAll(*OAMx);
+    List.DeleteAll(*OAMy);
+    *ModeDelay = (-scx % 8);
+    Repeat (40)
+    {
+        -LCDCbits = *LCDClog[((g / 2) + 1)];
+        .spritesize = (8 + (Operator.LetterOf(-LCDCbits, 6) * 8));
+        Call .S = read((0xFE00 + (g * 4))) of mem;
+        _S += -16;
+        If (List.Length(*OAMidx) < 10)
+        {
+            If ((Not ((-LY < _S))) And (-LY < (_S + .spritesize)))
+            {
+                List.Add(*OAMidx, (0xFE00 + (g * 4)));
+                List.Add(*OAMy, _S);
+                Call .S = read(((0xFE00 + (g * 4)) + 1)) of mem;
+                List.Add(*OAMx, (_S - 8));
+            }
+        }
+        g += 1;
+    }
+    Call *sort by x position;
+}
+
+Define *palette decode (warp=true)
+{
+    List.DeleteAll(*palette);
+    Call *monodecode palettes address("0xFF47");
+    Call *monodecode palettes address("0xFF48");
+    Call *monodecode palettes address("0xFF49");
+}
+
+Define *reset PPU (warp=true)
+{
+    List.DeleteAll(*graphicsBuffer);
+    Call *set MODE(2);
+    Call *setLY(0);
+    -WLY = 0;
+    -windowWasDrawn? = 0;
+    dot clocks left = 80;
+    *ModeDelay = 0;
+    _linecycles = 0;
+    _lastLineCycles = 0;
+    .STATlock = 0;
+}
+
+Define *set IF(string bit) ,(string val) (warp=false)
+{
+    Call &set bit(bit) of(RAM[(.pointers[.Index -> pointer[(0xFF0F + 1)]] + .ptr index[(0xFF0F + 1)])]) to(( + val));
+    Call .not MMU write(_RE) to("0xFF0F");
+}
+
+Define *setLY(string n) (warp=true)
+{
+    -LY = n;
+    Call .not MMU write(n) to("0xFF44");
+}
+
+Define *set MODE(string 2) (warp=true)
+{
+    _S = RAM[(.pointers[.Index -> pointer[(0xFF41 + 1)]] + .ptr index[(0xFF41 + 1)])];
+    -mode = 2;
+    Call .not MMU write(((_S - (_S % 4)) + 2)) to("0xFF41");
+}
+
+Define *set STAT(string bit) ,(string cond) (warp=true)
+{
+    Call &set bit(bit) of(RAM[(.pointers[.Index -> pointer[(0xFF41 + 1)]] + .ptr index[(0xFF41 + 1)])]) to(( + cond));
+    Call .not MMU write(_RE) to("0xFF41");
+}
+
+Define *sort by x position (warp=true)
+{
+    If (List.Length(*OAMx) > 0)
+    {
+        h = 0;
+        Repeat (List.Length(*OAMx))
+        {
+            h += 1;
+            i = h;
+            T2 = 0;
+            control_while ?? - probably legacy function from Scratch 2.0;
+        }
+    }
+}
+
+Define *swap(string a)(string b) (warp=true)
+{
+    T1 = *OAMidx[a];
+    List.ReplaceItem(*OAMidx, a, *OAMidx[b]);
+    List.ReplaceItem(*OAMidx, b, T1);
+    T1 = *OAMx[a];
+    List.ReplaceItem(*OAMx, a, *OAMx[b]);
+    List.ReplaceItem(*OAMx, b, T1);
+    T1 = *OAMy[a];
+    List.ReplaceItem(*OAMy, a, *OAMy[b]);
+    List.ReplaceItem(*OAMy, b, T1);
+}
+
+Define +convert freq to MIDI(string f) (warp=false)
+{
+    _RE = (((ln(((131072 / (2048 - f)) / 440)) / ln(2)) * 12) + 69);
+    If (_RE > 109)
+    {
+        _RE = -1;
+    }
+    List.Add(_soundtemp2, (131072 / (2048 - f)));
+}
+
+Define +update sound (warp=false)
+{
+    List.DeleteAll(_soundtemp2);
+    List.DeleteAll(soundTemp);
+    Call .S = read("0xFF11") of mem;
+    List.ReplaceItem(voice, 1, floor((_S / 64)));
+    Call .S = read("0xFF16") of mem;
+    List.ReplaceItem(voice, 2, floor((_S / 64)));
+    Call .S = read("0xFF13") of mem;
+    _RE = _S;
+    Call .S = read("0xFF14") of mem;
+    _RE += ((_S % 8) * 256);
+    Call +convert freq to MIDI(_RE);
+    List.Add(soundTemp, _RE);
+    Call .S = read("0xFF18") of mem;
+    _RE = _S;
+    Call .S = read("0xFF19") of mem;
+    _RE += ((_S % 8) * 256);
+    Call +convert freq to MIDI(_RE);
+    List.Add(soundTemp, _RE);
+    Call .S = read("0xFF1D") of mem;
+    _RE = _S;
+    Call .S = read("0xFF1E") of mem;
+    _RE += ((_S % 8) * 256);
+    Call +convert freq to MIDI(_RE);
+    List.Add(soundTemp, _RE);
+    _T = "0xFF30";
+    List.DeleteAll(wave);
+    Repeat (16)
+    {
+        Call .S = read(_T) of mem;
+        _T += 1;
+        List.Add(wave, floor((_S / 16)));
+        List.Add(wave, floor((_S % 16)));
+    }
+    Call .S = read("0xFF24") of mem;
+    vol = (_S % 16);
+    List.ReplaceItem(volume, 1, vol);
+    List.ReplaceItem(volume, 2, vol);
+    List.ReplaceItem(volume, 3, vol);
+}
+
+Define .cpuFAST (warp=true)
+{
+    If (_HALT == 1)
+    {
+        Stop(this script);
+    }
+    Call .S = read(_PC) of mem;
+    Call cycleCountSetup;
+    bytesOpcode = Operator.LetterOf(bytesPerOpcode[1], (_S + 1));
+    .instrID = _instructionBlocks[(_S + 1)];
+    .instrParam = _instructionParameters[(_S + 1)];
+    Call !update flag list with F register;
+    List.DeleteAll(byteStack);
+    List.Add(byteStack, _S);
+    Repeat (bytesOpcode)
+    {
+        _PC += 1;
+        Call .S = read(_PC) of mem;
+        List.Add(byteStack, _S);
+    }
+    If (.instrID < 16)
+    {
+        If (.instrID < 8)
+        {
+            If (.instrID < 4)
+            {
+                If (.instrID < 2)
+                {
+                    If (.instrID < 1)
+                    {
+                    }
+                    Else
+                    {
+                        Call ~LD8(Operator.LetterOf(.instrParam, 2))(Operator.LetterOf(.instrParam, 3));
+                    }
+                }
+                Else
+                {
+                    If (.instrID < 3)
+                    {
+                        Call ~unMapped(Operator.LetterOf(.instrParam, 2));
+                    }
+                    Else
+                    {
+                        .IME = Operator.LetterOf(.instrParam, 2);
+                    }
+                }
+            }
+            Else
+            {
+                If (.instrID < 6)
+                {
+                    If (.instrID < 5)
+                    {
+                        Call ~ADD16 HL,(Operator.LetterOf(.instrParam, 2))(Operator.LetterOf(.instrParam, 3));
+                    }
+                    Else
+                    {
+                        Call ~ADD A,(Operator.LetterOf(.instrParam, 3)) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                }
+                Else
+                {
+                    If (.instrID < 7)
+                    {
+                        Call ~SUB A,(Operator.LetterOf(.instrParam, 3)) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                    Else
+                    {
+                        Call ~AND A,(Operator.LetterOf(.instrParam, 3));
+                    }
+                }
+            }
+        }
+        Else
+        {
+            If (.instrID < 12)
+            {
+                If (.instrID < 10)
+                {
+                    If (.instrID < 9)
+                    {
+                        Call ~XOR A,(Operator.LetterOf(.instrParam, 3));
+                    }
+                    Else
+                    {
+                        Call ~OR A,(Operator.LetterOf(.instrParam, 3));
+                    }
+                }
+                Else
+                {
+                    If (.instrID < 11)
+                    {
+                        Call ~LD16(Operator.LetterOf(.instrParam, 2))(Operator.LetterOf(.instrParam, 3)) ,u16;
+                    }
+                    Else
+                    {
+                        Call ~LD16PTR(Operator.LetterOf(.instrParam, 3))(Operator.LetterOf(.instrParam, 4)) |(Operator.LetterOf(.instrParam, 2))(Operator.LetterOf(.instrParam, 5));
+                    }
+                }
+            }
+            Else
+            {
+                If (.instrID < 14)
+                {
+                    If (.instrID < 13)
+                    {
+                        Call ~INC/DEC16(Operator.LetterOf(.instrParam, 3))(Operator.LetterOf(.instrParam, 4)) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                    Else
+                    {
+                        Call ~INC/DEC8(Operator.LetterOf(.instrParam, 3)) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                }
+                Else
+                {
+                    If (.instrID < 15)
+                    {
+                        Call ~JR(Operator.LetterOf(.instrParam, 3))(Operator.LetterOf(.instrParam, 4)) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                    Else
+                    {
+                        Call ~RET(Operator.LetterOf(.instrParam, 3))(Operator.LetterOf(.instrParam, 4)) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                }
+            }
+        }
+    }
+    Else
+    {
+        If (.instrID < 24)
+        {
+            If (.instrID < 20)
+            {
+                If (.instrID < 18)
+                {
+                    If (.instrID < 17)
+                    {
+                        Call ~JP(Operator.LetterOf(.instrParam, 3))(Operator.LetterOf(.instrParam, 4)) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                    Else
+                    {
+                        Call ~CALL(Operator.LetterOf(.instrParam, 3))(Operator.LetterOf(.instrParam, 4)) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                }
+                Else
+                {
+                    If (.instrID < 19)
+                    {
+                        Call ~POP;
+                        List.ReplaceItem(_REGISTERS, Operator.LetterOf(.instrParam, 2), floor((_T / 256)));
+                        List.ReplaceItem(_REGISTERS, Operator.LetterOf(.instrParam, 3), (_T % 256));
+                        List.ReplaceItem(_REGISTERS, 6, (_REGISTERS[6] - (_REGISTERS[6] % 16)));
+                        Call !update flag list with F register;
+                    }
+                    Else
+                    {
+                        Call ~PUSH(_REGISTERS[Operator.LetterOf(.instrParam, 2)])(_REGISTERS[Operator.LetterOf(.instrParam, 3)]);
+                    }
+                }
+            }
+            Else
+            {
+                If (.instrID < 22)
+                {
+                    If (.instrID < 21)
+                    {
+                        Call ~RST(Operator.LetterOf(.instrParam, 2));
+                    }
+                    Else
+                    {
+                        Call ~some HL operations(Operator.LetterOf(.instrParam, 2));
+                    }
+                }
+                Else
+                {
+                    If (.instrID < 23)
+                    {
+                        Call ~RLC/RRC(1) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                    Else
+                    {
+                        Call ~RL/RR(1) |(Operator.LetterOf(.instrParam, 2));
+                    }
+                    List.ReplaceItem(Flag bits, 1, 0);
+                }
+            }
+        }
+        Else
+        {
+            If (.instrID < 28)
+            {
+                If (.instrID < 26)
+                {
+                    If (.instrID < 25)
+                    {
+                        Call ~LDFF00A(Operator.LetterOf(.instrParam, 2))(Operator.LetterOf(.instrParam, 3));
+                    }
+                    Else
+                    {
+                        Call ~LDSPHLI8(Operator.LetterOf(.instrParam, 2));
+                    }
+                }
+                Else
+                {
+                    If (.instrID < 27)
+                    {
+                        Call ~LDU16(Operator.LetterOf(.instrParam, 2));
+                    }
+                }
+            }
+        }
+    }
+    Call !put F bits into F register;
+}
+
+Define .not MMU write(string b) to(string a) (warp=false)
+{
+    List.ReplaceItem(RAM, (.pointers[.Index -> pointer[(a + 1)]] + .ptr index[(a + 1)]), b);
+}
+
+Define .S = read(string a) of mem (warp=false)
+{
+    T6 = .ram map[(a + 1)];
+    T5 = (.pointers[.Index -> pointer[(a + 1)]] + .ptr index[(a + 1)]);
+    _S = ((RAM[T5] * (T6 == 1)) + (ROM[T5] * (T6 == 2)));
+}
+
+Define .write mem(string a) byte(string b) (warp=false)
+{
+    T5 = (.pointers[.Index -> pointer[(a + 1)]] + .ptr index[(a + 1)]);
+    T6 = .ram map[(a + 1)];
+    If (T6 == 1)
+    {
+        List.ReplaceItem(RAM, T5, b);
+    }
+    Else
+    {
+        If _cartridge stuff[2]
+        {
+            If ((a > "0x1FFF") And (a < "0x4000"))
+            {
+                _S = (b % _cartridge stuff[3]);
+                If (_S > 1)
+                {
+                    Call _swap ROM bank N to(_S);
+                }
+                Else
+                {
+                    Call _swap ROM bank N to(1);
+                }
+            }
+        }
+    }
+    If (a == "0xFF46")
+    {
+        k = 0;
+        source = (b * 256);
+    }
+    .IOwritten = ( + (.Index -> pointer[(a + 1)] == 10));
+    .joypad = ( + (a == "0xFF00"));
+}
+
+Define convert(string x) to base 16(string c) (warp=true)
+{
+    If (c == 1)
+    {
+        _RE = Operator.Join(Operator.Join(Operator.LetterOf("0123456789ABCDEF", (floor((x / 4096)) + 1)), Operator.LetterOf("0123456789ABCDEF", ((floor((x / 256)) % 16) + 1))), Operator.Join(Operator.LetterOf("0123456789ABCDEF", ((floor((x / 16)) % 16) + 1)), Operator.LetterOf("0123456789ABCDEF", (floor((x % 16)) + 1))));
+    }
+    Else
+    {
+        _RE = Operator.Join(Operator.LetterOf("0123456789ABCDEF", (floor((x / 16)) + 1)), Operator.LetterOf("0123456789ABCDEF", (floor((x % 16)) + 1)));
+    }
+}
+
+Define Cycle (warp=false)
+{
+    T5 = (.pointers[.Index -> pointer[(0xFF40 + 1)]] + .ptr index[(0xFF40 + 1)]);
+    -LCDSbits = bin8[(RAM[(T5 + 1)] + 1)];
+    -PPU enable = ( + (RAM[T5] > 127));
+    If (-PPU enable == 0)
+    {
+        Stop(this script);
+    }
+    _lastLineCycles = _linecycles;
+    If (.IOwritten == 1)
+    {
+        -scy = RAM[(T5 + 2)];
+        -scx = RAM[(T5 + 3)];
+        -LYC = RAM[(T5 + 5)];
+        -wy = RAM[(T5 + 10)];
+        -wx = (RAM[(T5 + 11)] - 7);
+        -LCDCbits = bin8[(RAM[T5] + 1)];
+    }
+    If (-PPU enable == 1)
+    {
+        If (dot clocks left < cyclesOpcode)
+        {
+            Call ss(dot clocks left);
+            Call s;
+            Call ss((cyclesOpcode - dot clocks left));
+        }
+        Else
+        {
+            Call ss(cyclesOpcode);
+        }
+    }
+    Else
+    {
+        Call *reset PPU;
+    }
+    -LYmask = -LY;
+    -L = 4;
+    If ((-LY == 153) And (_linecycles > 3))
+    {
+        -LYmask = 0;
+        -L = 12;
+        .STATlock = 0;
+    }
+    Call *set MODE(-mode);
+    Call *set STAT(2) ,((-LYmask == -LYC));
+    _STATcond1 = ( + (((Operator.LetterOf(-LCDSbits, 2) == 1) And ((-LYmask == -LYC) And (((Not ((_linecycles < -L))) And (_lastLineCycles < -L)) And (-LY > 0)))) Or (((Operator.LetterOf(-LCDSbits, 3) == 1) And (-mode == 2)) Or (((Operator.LetterOf(-LCDSbits, 4) == 1) And (-mode == 1)) Or ((Operator.LetterOf(-LCDSbits, 5) == 1) And (-mode == 0))))));
+    If (_STATcond1 > _STATcond2)
+    {
+        Call *set IF(1) ,(1);
+        .STATlock = 1;
+    }
+    _STATcond2 = _STATcond1;
+    If (k < 160)
+    {
+        Repeat (cyclesOpcode)
+        {
+            If (k < 160)
+            {
+                Call .S = read((source + k)) of mem;
+                Call .write mem((0xFE00 + k)) byte(_S);
+                k += 1;
+            }
+        }
+    }
+}
+
+Define cycleCountSetup (warp=true)
+{
+    cyclesOpcode = cyclesPerOpcode[(_S + 1)];
+    cyclesOpcodeBranched = .cpob[(_S + 1)];
+}
+
+Define generate table(string n) (warp=true)
+{
+    g = n;
+    List.DeleteAll(bin8);
+    Repeat (n)
+    {
+        List.Add(bin8, "");
+    }
+    Repeat (Operator.Round((ln(n) / ln(2))))
+    {
+        i = 0;
+        _S = 0;
+        g = floor((g / 2));
+        Repeat (n)
+        {
+            List.ReplaceItem(bin8, (i + 1), Operator.Join(bin8[(i + 1)], _S));
+            i += 1;
+            If ((i % g) == 0)
+            {
+                _S = (1 - _S);
+            }
+        }
+    }
+}
+
+Define log (warp=true)
+{
+    Call !put F bits into F register;
+    List.DeleteAll(logtemp);
+    List.Add(logtemp, "A:");
+    Call convert(_REGISTERS[1]) to base 16("");
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "F:");
+    Call convert(_REGISTERS[6]) to base 16("");
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "B:");
+    Call convert(_REGISTERS[2]) to base 16("");
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "C:");
+    Call convert(_REGISTERS[3]) to base 16("");
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "D:");
+    Call convert(_REGISTERS[4]) to base 16("");
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "E:");
+    Call convert(_REGISTERS[5]) to base 16("");
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "H:");
+    Call convert(_REGISTERS[7]) to base 16("");
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "L:");
+    Call convert(_REGISTERS[8]) to base 16("");
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "SP:");
+    Call convert(_SP) to base 16(1);
+    List.Add(logtemp, _RE);
+    List.Add(logtemp, "PC:");
+    Call convert(_PC) to base 16(1);
+    List.Add(logtemp, Operator.Join("00:", _RE));
+    Call .S = read((_PC + 0)) of mem;
+    Call convert(_S) to base 16("");
+    List.Add(logtemp, Operator.Join("(", _RE));
+    Call .S = read((_PC + 1)) of mem;
+    Call convert(_S) to base 16("");
+    List.Add(logtemp, _RE);
+    Call .S = read((_PC + 2)) of mem;
+    Call convert(_S) to base 16("");
+    List.Add(logtemp, _RE);
+    Call .S = read((_PC + 3)) of mem;
+    Call convert(_S) to base 16("");
+    List.Add(logtemp, Operator.Join(_RE, ")"));
+    List.Add(logzz, logtemp);
+}
+
+Define s (warp=false)
+{
+    If (-mode == 3)
+    {
+        If ((_frames % _frameskip) == 0)
+        {
+            Call *LCD line;
+        }
+        Call *set MODE(0);
+        dot clocks left += (208 - *ModeDelay);
+    }
+    Else
+    {
+        If (-mode == 2)
+        {
+            Call *OAMsearch;
+            Call *set MODE(3);
+            dot clocks left += (168 + *ModeDelay);
+        }
+        Else
+        {
+            If (-mode == 0)
+            {
+                If (-LY == 144)
+                {
+                    Call *set IF(0) ,(1);
+                    Call *set MODE(1);
+                    Call *setLY((-LY + 1));
+                    dot clocks left += 456;
+                    _linecycles += -456;
+                    .STATlock = 0;
+                }
+                Else
+                {
+                    Call *set MODE(2);
+                    Call *setLY((-LY + 1));
+                    -WLY += -windowWasDrawn?;
+                    -windowWasDrawn? = 0;
+                    dot clocks left += 80;
+                    *ModeDelay = 0;
+                    _linecycles += -456;
+                    .STATlock = 0;
+                }
+            }
+            Else
+            {
+                If (-LY == 154)
+                {
+                    If ((_frames % _frameskip) == 0)
+                    {
+                        Call *draw frame;
+                    }
+                    _frames += 1;
+                    List.DeleteAll(*graphicsBuffer);
+                    Call *set MODE(2);
+                    Call *setLY(0);
+                    *ModeDelay = 0;
+                    -WLY = 0;
+                    -windowWasDrawn? = 0;
+                    dot clocks left += 80;
+                    _linecycles += -456;
+                    .STATlock = 0;
+                }
+                Else
+                {
+                    Call *setLY((-LY + 1));
+                    dot clocks left += 456;
+                    _linecycles += -456;
+                    .STATlock = 0;
+                }
+            }
+        }
+    }
+    List.DeleteAll(*LCDClog);
+    List.DeleteAll(*tempLog);
+}
+
+Define ss(string x) (warp=true)
+{
+    Repeat (floor((x / 4)))
+    {
+        List.Add(*LCDClog, -LCDCbits);
+        List.Add(*tempLog, -scx);
+        List.Add(*tempLog, -scy);
+        List.Add(*tempLog, -wx);
+        List.Add(*tempLog, -wy);
+        dot clocks left += -4;
+        _linecycles += 4;
+    }
+    Repeat ((x % 4))
+    {
+        ticks += 1;
+        dot clocks left += -1;
+        _linecycles += 1;
+        If (ticks > 3)
+        {
+            List.Add(*LCDClog, -LCDCbits);
+            List.Add(*tempLog, -scx);
+            List.Add(*tempLog, -scy);
+            List.Add(*tempLog, -wx);
+            List.Add(*tempLog, -wy);
+            ticks = 0;
+        }
+    }
+}
+
+Define update joypad (warp=true)
+{
+    List.DeleteAll(joypad buttons);
+    List.Add(joypad buttons, ( + Sensing.KeyPressed(down arrow)));
+    List.Add(joypad buttons, ( + Sensing.KeyPressed(up arrow)));
+    List.Add(joypad buttons, ( + Sensing.KeyPressed(left arrow)));
+    List.Add(joypad buttons, ( + Sensing.KeyPressed(right arrow)));
+    List.Add(joypad buttons, ( + Sensing.KeyPressed(Operator.Join("enter", ""))));
+    List.Add(joypad buttons, ( + Sensing.KeyPressed(space)));
+    List.Add(joypad buttons, ( + Sensing.KeyPressed(s)));
+    List.Add(joypad buttons, ( + Sensing.KeyPressed(a)));
+}
+
+Define ^.bitwisetemp(string A)(string B) (warp=false)
+{
+    List.DeleteAll($B);
+    List.Add($B, (1 + ((floor((A / 16)) * 16) + floor((B / 16)))));
+    List.Add($B, (1 + ((floor((A % 16)) * 16) + floor((B % 16)))));
+}
+
+Define ^branch (warp=true)
+{
+    If (cyclesOpcodeBranched > 0)
+    {
+        cyclesOpcode = cyclesOpcodeBranched;
+    }
+}
+
+Define _bitwise init (warp=true)
+{
+    Call $ab reset;
+    List.DeleteAll(.AND);
+    Repeat (16)
+    {
+        Repeat (16)
+        {
+            T1 = "0b";
+            i = 0;
+            Repeat (4)
+            {
+                i += 1;
+                T1 = Operator.Join(T1, ( + ($A[i] And $B[i])));
+            }
+            Call $incA;
+            List.Add(.AND, (T1 + 0));
+        }
+        Call $incB;
+    }
+    List.DeleteAll(.OR);
+    Repeat (16)
+    {
+        Repeat (16)
+        {
+            T1 = "0b";
+            i = 0;
+            Repeat (4)
+            {
+                i += 1;
+                T1 = Operator.Join(T1, ( + ($A[i] Or $B[i])));
+            }
+            Call $incA;
+            List.Add(.OR, (T1 + 0));
+        }
+        Call $incB;
+    }
+    List.DeleteAll(.XOR);
+    Repeat (16)
+    {
+        Repeat (16)
+        {
+            T1 = "0b";
+            i = 0;
+            Repeat (4)
+            {
+                i += 1;
+                T1 = Operator.Join(T1, ( + (Not (($A[i] == $B[i])))));
+            }
+            Call $incA;
+            List.Add(.XOR, (T1 + 0));
+        }
+        Call $incB;
+    }
+}
+
+Define _init cpu tables (warp=true)
+{
+    T1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ&!0123";
+    T2 = 0;
+    List.DeleteAll($A);
+    Repeat (32)
+    {
+        T2 += 1;
+        List.Add($A, Operator.LetterOf(T1, T2));
+    }
+    T1 = "~ J23 K023 L+23 M+2 M-2 A2U V0 B0SP D23 K123 L-23 M+3 M-3 A3U V1 B1STOP J45 K045 L+45 M+4 M-4 A4U W0 N0 D45 K145 L-45 M+5 M-5 A5U W1 N110 J78 K078+ L+78 M+7 M-7 A7U B2DAA N111 D78 K178+ L-78 M+8 M-8 A8U B3CPL N140 JSP K078- L+SP M+9 M-9 A9U B4SCF N141 DSP K178- L-SP M+1 M-1 A1U B5CCF A22 A23 A24 A25 A27 A28 A29 A21 A32 A33 A34 A35 A37 A38 A39 A31 A42 A43 A44 A45 A47 A48 A49 A41 A52 A53 A54 A55 A57 A58 A59 A51 A72 A73 A74 A75 A77 A78 A79 A71 A82 A83 A84 A85 A87 A88 A89 A81 A92 A93 A94 A95 A97 A98 B6HALT A91 A12 A13 A14 A15 A17 A18 A19 A11 E02 E03 E04 E05 E07 E08 E09 E01 E12 E13 E14 E15 E17 E18 E19 E11 F02 F03 F04 F05 F07 F08 F09 F01 F12 F13 F14 F15 F17 F18 F19 F11 G02 G03 G04 G05 G07 G08 G09 G01 H02 H03 H04 H05 H07 H08 H09 H01 I02 I03 I04 I05 I07 I08 I09 I01 F22 F23 F24 F25 F27 F28 F29 F21 O110 R23 P110 P000 Q110 S23 E0U T0 O111 O000 P111 B7CB Q111 Q000 E1U T1 O140 R45 P140 - Q140 S45 F0U T2 O141 O200 P141 - Q141 - F1U T3 X0U R78 X03 - - S78 G0U T4 Y0 U0 Z0 - - - H0U T5 X1U R16 X13 C0 - S16 I0U T6 Y1 U1 Z1 C1 - - F2U T8";
+    T2 = 0;
+    T3 = "";
+    List.DeleteAll(_instructionParameters);
+    Repeat (Variable.Length(T1))
+    {
+        T2 += 1;
+        If (Operator.LetterOf(T1, T2) == " ")
+        {
+            List.Add(_instructionParameters, T3);
+            T3 = "";
+        }
+        Else
+        {
+            T3 = Operator.Join(T3, Operator.LetterOf(T1, T2));
+        }
+    }
+    List.Add(_instructionParameters, T3);
+    T3 = "";
+    List.DeleteAll(_instructionBlocks);
+    T2 = 0;
+    Repeat (256)
+    {
+        T2 += 1;
+        List.Add(_instructionBlocks, List.IndexOf($A, Operator.LetterOf(_instructionParameters[T2], 1)));
+    }
+}
+
+Define _initMemPointers (warp=false)
+{
+    List.DeleteAll(.Index -> pointer);
+    List.DeleteAll(.pointerStart);
+    List.DeleteAll(.pointers);
+    List.DeleteAll(RAM);
+    List.DeleteAll(.ptr index);
+    List.DeleteAll(.ram map);
+    Call _new pointer length("0x4000") map to ram(2) offset("");
+    Call _new pointer length("0x4000") map to ram(2) offset("");
+    Call _new pointer length("0x2000") map to ram(1) offset("");
+    Repeat (0x2000)
+    {
+        List.Add(RAM, 0);
+    }
+    Call _new pointer length("0x2000") map to ram(3) offset("");
+    Call _new pointer length("0x1000") map to ram(1) offset("");
+    Call _new pointer length("0xE00") map to ram(1) offset("");
+    Repeat (0x200)
+    {
+        List.Add(RAM, 0);
+    }
+    Repeat (0x7000)
+    {
+        List.Add(RAM, 0);
+    }
+    Call _new pointer length("0x2000") map to ram(1) offset(1);
+    Call _new pointer length("0xA0") map to ram(1) offset("");
+    Call _new pointer length("0x60") map to ram(0) offset("");
+    Call _new pointer length("0x100") map to ram(1) offset("");
+    List.ReplaceItem(.pointers, 2, 16384);
+}
+
+Define _new pointer length(string l) map to ram(string q) offset(string o) (warp=false)
+{
+    List.Add(.pointerStart, List.Length(RAM));
+    List.Add(.pointers, List.Length(RAM));
+    i = 0;
+    Repeat (l)
+    {
+        List.Add(.Index -> pointer, (List.Length(.pointerStart) - o));
+        If (q == 1)
+        {
+            List.Add(RAM, 0);
+        }
+        List.Add(.ram map, q);
+        i += 1;
+        List.Add(.ptr index, i);
+    }
+}
+
+Define _swap ROM bank N to(string n) (warp=false)
+{
+    List.ReplaceItem(.pointers, 2, (n * 16384));
+    _BANKN = n;
+}
+
+Define __INIT (warp=true)
+{
+    Call $reset registers;
+    Call $reset ram;
+    Call $load ROM(_ROM);
+    Call _bitwise init;
+    Call _initMemPointers;
+    dot clocks left = 0;
+    _BANKN = 1;
+    _lastLineCycles = 0;
+    emu: cycles = 0;
+    cyclesThisFrame = 0;
+    dot clocks left = 0;
+    loop = 0;
+    T1 = "CF007EFFAB0000F8FFFFFFFFFFFFFFE180BFF3FFBFFF3F00FFBF7FFF9FFFBFFFFF0000BF77F3F1FFFFFFFFFFFFFFFFFF2366AED5B89157390EC96F5EA558842D918700000000FFFCFFFF0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+    *ModeDelay = 0;
+    memDisable = 0;
+    _frames = 0;
+    _frameskip = 4;
+    .lastlcdc = 2;
+    ticks = 0;
+    _linecycles = 0;
+    Repeat (128)
+    {
+        Call .write mem((loop + 0xFF00)) byte((0 + Operator.Join("0x", Operator.Join(Operator.LetterOf(T1, ((loop * 2) + 1)), Operator.LetterOf(T1, ((loop * 2) + 2))))));
+        loop += 1;
+    }
+    List.DeleteAll(bytesPerOpcode);
+    _R = 0;
+    _HALT = 0;
+    List.DeleteAll(regHelp);
+    List.Add(regHelp, "A");
+    List.Add(regHelp, "B");
+    List.Add(regHelp, "C");
+    List.Add(regHelp, "D");
+    List.DeleteAll(*graphicsBuffer);
+    List.DeleteAll(*LCDClog);
+    -LY = 153;
+    Call *reset PPU;
+    Call generate table(256);
+    Call _init cpu tables;
+    .IME = 0;
+    T1 = 1311112131111121231111212111112123111121211111212311112121111121111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111133312111323321113031211130302121100121213000212111012121310021;
+    List.Add(bytesPerOpcode, T1);
+    List.DeleteAll(cyclesPerOpcode);
+    T1 = "13221121522211211322112132221121A3221121A2221121A3223321A222112111111121111111211111112111111121111111211111112122222212111111211111112111111121111111211111112111111121111111211111112111111121B3C4D424B4C2D624B3C0D424B4C0C02433200424414000243321042432410024";
+    List.DeleteAll(.cpob);
+    _S = 0;
+    Repeat (256)
+    {
+        T7 = Operator.LetterOf(T1, (_S + 1));
+        T7 = List.IndexOf(regHelp, T7);
+        If (T7 > 0)
+        {
+            cyclesOpcode = (Operator.LetterOf(2233, T7) * 4);
+            cyclesOpcodeBranched = (Operator.LetterOf(3546, T7) * 4);
+        }
+        Else
+        {
+            cyclesOpcode = (Operator.LetterOf(T1, (_S + 1)) * 4);
+            cyclesOpcodeBranched = 0;
+        }
+        _S += 1;
+        List.Add(cyclesPerOpcode, cyclesOpcode);
+        List.Add(.cpob, cyclesOpcodeBranched);
+    }
+    List.DeleteAll(2^x);
+    List.Add(2^x, 1);
+    Repeat (8)
+    {
+        List.Add(2^x, (2 * 2^x[last]));
+    }
+    List.DeleteAll(_cartridge stuff);
+    List.Add(_cartridge stuff, ROM[(0x143 + 1)]);
+    List.Add(_cartridge stuff, ROM[(0x147 + 1)]);
+    List.Add(_cartridge stuff, 2^x[(ROM[(0x148 + 1)] + 2)]);
+    _STATcond1 = 2;
+}
+
+Define __run cycles (warp=true)
+{
+    Call update joypad;
+    control_while ?? - probably legacy function from Scratch 2.0;
+    cyclesThisFrame += ( - 70224);
+    Call +update sound;
+    List.ReplaceItem(pitches, 1, soundTemp[1]);
+    List.ReplaceItem(pitches, 2, soundTemp[2]);
+    List.ReplaceItem(pitches, 3, soundTemp[3]);
+}
+
+Define ~ADD16 HL,(string r1)(string r2) (warp=false)
+{
+    If (r1 == "S")
+    {
+        _S = _SP;
+    }
+    Else
+    {
+        _S = ((_REGISTERS[r1] * 256) + _REGISTERS[r2]);
+    }
+    _T = ((_REGISTERS[7] * 256) + _REGISTERS[8]);
+    List.ReplaceItem(Flag bits, 3, ( + (((_T % 4096) + (_S % 4096)) > 4095)));
+    List.ReplaceItem(Flag bits, 2, 0);
+    _T += _S;
+    List.ReplaceItem(Flag bits, 4, ( + (_T > 65535)));
+    List.ReplaceItem(_REGISTERS, 7, floor(((_T / 256) % 256)));
+    List.ReplaceItem(_REGISTERS, 8, (_T % 256));
+}
+
+Define ~ADD A,(string r1) |(string p1) (warp=true)
+{
+    If (r1 == 9)
+    {
+        Call .S = read(((_REGISTERS[7] * 256) + _REGISTERS[8])) of mem;
+    }
+    Else
+    {
+        If (r1 == "U")
+        {
+            _S = byteStack[2];
+        }
+        Else
+        {
+            _S = _REGISTERS[r1];
+        }
+    }
+    List.ReplaceItem(Flag bits, 3, ( + ((((_REGISTERS[1] % 16) + (_S % 16)) + (Flag bits[4] * (p1 == 1))) > 15)));
+    List.ReplaceItem(Flag bits, 2, 0);
+    _S += (Flag bits[4] * (p1 == 1));
+    _S += _REGISTERS[1];
+    List.ReplaceItem(Flag bits, 4, ( + (_S > 255)));
+    List.ReplaceItem(_REGISTERS, 1, (_S % 256));
+    List.ReplaceItem(Flag bits, 1, ( + (_REGISTERS[1] == 0)));
+}
+
+Define ~AND A,(string r1) (warp=false)
+{
+    If (r1 == 9)
+    {
+        Call .S = read(((_REGISTERS[7] * 256) + _REGISTERS[8])) of mem;
+    }
+    Else
+    {
+        If (r1 == "U")
+        {
+            _S = byteStack[2];
+        }
+        Else
+        {
+            _S = _REGISTERS[r1];
+        }
+    }
+    Call ^.bitwisetemp(_REGISTERS[1])(_S);
+    List.ReplaceItem(Flag bits, 2, 0);
+    List.ReplaceItem(Flag bits, 3, 1);
+    List.ReplaceItem(Flag bits, 4, 0);
+    List.ReplaceItem(_REGISTERS, 1, ((.AND[$B[1]] * 16) + .AND[$B[2]]));
+    List.ReplaceItem(Flag bits, 1, ( + (_REGISTERS[1] == 0)));
+}
+
+Define ~CALL(string c1)(string c2) |(string p1) (warp=false)
+{
+    If ((p1 == 0) Or (Flag bits[c1] == c2))
+    {
+        Call ~PUSH(floor((_PC / 256)))((_PC % 256));
+        _PC = ((byteStack[3] * 256) + byteStack[2]);
+        If (p1 == 1)
+        {
+            Call ^branch;
+        }
+    }
+}
+
+Define ~CBbitset bit(string x) of(string n) to(string b) (warp=true)
+{
+    2^x = 2^x[(x + 2)];
+    _RE = ((n - (n % 2^x)) + ((b * (2^x / 2)) + (n % (2^x / 2))));
+}
+
+Define ~CB prefixed (warp=false)
+{
+    Call .S = read((_PC - 1)) of mem;
+    _T1 = _S;
+    _R = ((_REGISTERS[7] * 256) + _REGISTERS[8]);
+    _T2 = (_T1 % 8);
+    If (_T2 == 6)
+    {
+        Call .S = read(_R) of mem;
+        _T = _S;
+    }
+    Else
+    {
+        _T = _REGISTERS[Operator.LetterOf(23457891, (_T2 + 1))];
+    }
+    List.ReplaceItem(_REGISTERS, 9, _T);
+    If (_T1 < 128)
+    {
+        If (_T1 < 64)
+        {
+            If (_T1 < 32)
+            {
+                If (_T1 < 16)
+                {
+                    Call ~RLC/RRC(9) |(floor(((_T1 % 16) / 8)));
+                }
+                Else
+                {
+                    Call ~RL/RR(9) |(floor(((_T1 % 16) / 8)));
+                }
+                _RE = _REGISTERS[9];
+            }
+            Else
+            {
+                If (_T1 < 48)
+                {
+                    Call ~SLA/SRA(9)(floor(((_T1 % 16) / 8)));
+                }
+                Else
+                {
+                    Call ~SWAP/SRL(9) |(floor(((_T1 % 16) / 8)));
+                }
+                _RE = _REGISTERS[9];
+            }
+        }
+        Else
+        {
+            List.ReplaceItem(Flag bits, 1, ( + ((floor((_REGISTERS[9] / 2^x[(floor(((_T1 % 64) / 8)) + 1)])) % 2) == 0)));
+            List.ReplaceItem(Flag bits, 2, 0);
+            List.ReplaceItem(Flag bits, 3, 1);
+            _RE = _T;
+        }
+    }
+    Else
+    {
+        Call ~CBbitset bit(floor(((_T1 % 64) / 8))) of(_T) to(floor(((_T1 % 128) / 64)));
+    }
+    If (_T2 == 6)
+    {
+        Call .write mem(_R) byte(_RE);
+    }
+    Else
+    {
+        List.ReplaceItem(_REGISTERS, Operator.LetterOf(23457891, (_T2 + 1)), _RE);
+    }
+}
+
+Define ~DAA (warp=true)
+{
+    If (Not (Flag bits[2]))
+    {
+        If (Flag bits[4] Or (_REGISTERS[1] > "0x99"))
+        {
+            List.ReplaceItem(_REGISTERS, 1, (_REGISTERS[1] + 96));
+            List.ReplaceItem(Flag bits, 4, 1);
+        }
+        If (Flag bits[3] Or ((_REGISTERS[1] % 16) > 9))
+        {
+            List.ReplaceItem(_REGISTERS, 1, (_REGISTERS[1] + 6));
+        }
+    }
+    Else
+    {
+        If Flag bits[4]
+        {
+            List.ReplaceItem(_REGISTERS, 1, (_REGISTERS[1] + -96));
+        }
+        If Flag bits[3]
+        {
+            List.ReplaceItem(_REGISTERS, 1, (_REGISTERS[1] + -6));
+        }
+    }
+    List.ReplaceItem(_REGISTERS, 1, (_REGISTERS[1] % 256));
+    List.ReplaceItem(Flag bits, 3, 0);
+    List.ReplaceItem(Flag bits, 1, ( + (_REGISTERS[1] == 0)));
+}
+
+Define ~INC/DEC8(string r1) |(string p1) (warp=true)
+{
+    If (r1 == 9)
+    {
+        Call .S = read(((_REGISTERS[7] * 256) + _REGISTERS[8])) of mem;
+    }
+    Else
+    {
+        _S = _REGISTERS[r1];
+    }
+    _T1 = ((p1 == "+") - (p1 == "-"));
+    _T = (_S + _T1);
+    List.ReplaceItem(Flag bits, 2, ( + (p1 == "-")));
+    If Flag bits[2]
+    {
+        List.ReplaceItem(Flag bits, 3, (1 - ((((_S % 16) + (_T1 % 16)) % 32) > 15)));
+    }
+    Else
+    {
+        List.ReplaceItem(Flag bits, 3, ( + ((((_S % 16) + (_T1 % 16)) % 32) > 15)));
+    }
+    If (r1 == 9)
+    {
+        Call .write mem(((_REGISTERS[7] * 256) + _REGISTERS[8])) byte((_T % 256));
+    }
+    Else
+    {
+        List.ReplaceItem(_REGISTERS, r1, (_T % 256));
+    }
+    List.ReplaceItem(Flag bits, 1, ( + ((_T % 256) == 0)));
+}
+
+Define ~INC/DEC16(string r1)(string r2) |(string p1) (warp=true)
+{
+    _S = ((p1 == "+") - (p1 == "-"));
+    If (r1 == "S")
+    {
+        _SP = ((_SP + _S) % 65536);
+    }
+    Else
+    {
+        _T = (_REGISTERS[r2] + _S);
+        List.ReplaceItem(_REGISTERS, r2, (_T % 256));
+        List.ReplaceItem(_REGISTERS, r1, ((_REGISTERS[r1] + floor((_T / 256))) % 256));
+    }
+}
+
+Define ~JP(string c1)(string c2) |(string p1) (warp=false)
+{
+    If ((p1 == 0) Or (Flag bits[c1] == c2))
+    {
+        _PC = ((byteStack[3] * 256) + byteStack[2]);
+        If (p1 == 1)
+        {
+            Call ^branch;
+        }
+    }
+}
+
+Define ~JR(string c1)(string c2) |(string p1) (warp=true)
+{
+    If ((p1 == 0) Or (Flag bits[c1] == c2))
+    {
+        _PC = ((_PC + (byteStack[2] - ((byteStack[2] > 127) * 256))) % 65536);
+        If (p1 == 1)
+        {
+            Call ^branch;
+        }
+    }
+}
+
+Define ~LD8(string r1)(string r2) (warp=false)
+{
+    If (r2 == 9)
+    {
+        Call .S = read(((_REGISTERS[7] * 256) + _REGISTERS[8])) of mem;
+    }
+    Else
+    {
+        If (r2 == "U")
+        {
+            _S = byteStack[2];
+        }
+        Else
+        {
+            _S = _REGISTERS[r2];
+        }
+    }
+    If (r1 == 9)
+    {
+        Call .write mem(((_REGISTERS[7] * 256) + _REGISTERS[8])) byte(_S);
+    }
+    Else
+    {
+        List.ReplaceItem(_REGISTERS, r1, _S);
+    }
+}
+
+Define ~LD16(string r1)(string r2) ,u16 (warp=false)
+{
+    If (r1 == "S")
+    {
+        _SP = ((byteStack[3] * 256) + byteStack[2]);
+    }
+    Else
+    {
+        List.ReplaceItem(_REGISTERS, r1, byteStack[3]);
+        List.ReplaceItem(_REGISTERS, r2, byteStack[2]);
+    }
+}
+
+Define ~LD16PTR(string r1)(string r2) |(string p1)(string p2) (warp=false)
+{
+    If (p1 == 0)
+    {
+        Call .write mem(((_REGISTERS[r1] * 256) + _REGISTERS[r2])) byte(_REGISTERS[1]);
+    }
+    Else
+    {
+        Call .S = read(((_REGISTERS[r1] * 256) + _REGISTERS[r2])) of mem;
+        List.ReplaceItem(_REGISTERS, 1, _S);
+    }
+    If (p2 > "")
+    {
+        _S = ((p2 == "+") - (p2 == "-"));
+        _T = (_REGISTERS[8] + _S);
+        List.ReplaceItem(_REGISTERS, 8, (_T % 256));
+        List.ReplaceItem(_REGISTERS, 7, floor((_REGISTERS[7] + (_T / 256))));
+    }
+}
+
+Define ~LDFF00A(string p1)(string p2) (warp=true)
+{
+    _T = "0xFF00";
+    If (p2 == "U")
+    {
+        _T += byteStack[2];
+    }
+    Else
+    {
+        _T += _REGISTERS[3];
+    }
+    If (p1 == 0)
+    {
+        Call .write mem(_T) byte(_REGISTERS[1]);
+    }
+    Else
+    {
+        Call .S = read(_T) of mem;
+        List.ReplaceItem(_REGISTERS, 1, _S);
+    }
+}
+
+Define ~LDSPHLI8(string p1) (warp=false)
+{
+    List.ReplaceItem(Flag bits, 1, 0);
+    List.ReplaceItem(Flag bits, 2, 0);
+    _T = (byteStack[2] - ((byteStack[2] > 127) * 256));
+    List.ReplaceItem(Flag bits, 3, ( + ((((_SP % 16) + (_T % 16)) % 32) > 15)));
+    List.ReplaceItem(Flag bits, 4, ( + ((((_SP % 256) + (_T % 256)) % 512) > 255)));
+    If (p1 == 0)
+    {
+        _SP = ((_SP + _T) % 65536);
+    }
+    Else
+    {
+        List.ReplaceItem(_REGISTERS, 7, (floor(((_SP + _T) / 256)) % 256));
+        List.ReplaceItem(_REGISTERS, 8, ((_SP + _T) % 256));
+    }
+}
+
+Define ~LDU16(string p1) (warp=true)
+{
+    If (p1 == 0)
+    {
+        Call .write mem(((byteStack[3] * 256) + byteStack[2])) byte(_REGISTERS[1]);
+    }
+    Else
+    {
+        Call .S = read(((byteStack[3] * 256) + byteStack[2])) of mem;
+        List.ReplaceItem(_REGISTERS, 1, _S);
+    }
+}
+
+Define ~OR A,(string r1) (warp=true)
+{
+    If (r1 == 9)
+    {
+        Call .S = read(((_REGISTERS[7] * 256) + _REGISTERS[8])) of mem;
+    }
+    Else
+    {
+        If (r1 == "U")
+        {
+            _S = byteStack[2];
+        }
+        Else
+        {
+            _S = _REGISTERS[r1];
+        }
+    }
+    Call ^.bitwisetemp(_REGISTERS[1])(_S);
+    List.ReplaceItem(Flag bits, 2, 0);
+    List.ReplaceItem(Flag bits, 3, 0);
+    List.ReplaceItem(Flag bits, 4, 0);
+    List.ReplaceItem(_REGISTERS, 1, ((.OR[$B[1]] * 16) + .OR[$B[2]]));
+    List.ReplaceItem(Flag bits, 1, ( + (_REGISTERS[1] == 0)));
+}
+
+Define ~POP (warp=true)
+{
+    Call .S = read(_SP) of mem;
+    _T = _S;
+    _SP = ((_SP + 1) % 65536);
+    Call .S = read(_SP) of mem;
+    _T += (_S * 256);
+    _SP = ((_SP + 1) % 65536);
+}
+
+Define ~PUSH(string uH)(string uL) (warp=false)
+{
+    _SP = ((_SP - 1) % 65536);
+    Call .write mem(_SP) byte(uH);
+    _SP = ((_SP - 1) % 65536);
+    Call .write mem(_SP) byte(uL);
+}
+
+Define ~RET(string c1)(string c2) |(string p1) (warp=true)
+{
+    If (((p1 == 0) Or (p1 == 2)) Or (Flag bits[c1] == c2))
+    {
+        Call ~POP;
+        _PC = _T;
+        If (p1 == 1)
+        {
+            Call ^branch;
+        }
+    }
+    If (p1 == 2)
+    {
+        .IME = 1;
+    }
+}
+
+Define ~RL/RR(string r1) |(string d1) (warp=false)
+{
+    _S = _REGISTERS[r1];
+    List.ReplaceItem(Flag bits, 2, 0);
+    List.ReplaceItem(Flag bits, 3, 0);
+    If (d1 == 0)
+    {
+        _S = ((_S * 2) + Flag bits[4]);
+        List.ReplaceItem(Flag bits, 4, ( + (_S > 255)));
+    }
+    Else
+    {
+        _T = Flag bits[4];
+        List.ReplaceItem(Flag bits, 4, (_S % 2));
+        _S = (floor((_S / 2)) + (_T * 128));
+    }
+    _S = (_S % 256);
+    List.ReplaceItem(Flag bits, 1, ( + (_S == 0)));
+    List.ReplaceItem(_REGISTERS, r1, _S);
+}
+
+Define ~RLC/RRC(string r1) |(string d1) (warp=true)
+{
+    _S = _REGISTERS[r1];
+    List.ReplaceItem(Flag bits, 2, 0);
+    List.ReplaceItem(Flag bits, 3, 0);
+    If (d1 == 0)
+    {
+        _S = ((_S * 2) + floor((_S / 128)));
+        List.ReplaceItem(Flag bits, 4, ( + (_S > 255)));
+    }
+    Else
+    {
+        List.ReplaceItem(Flag bits, 4, (_S % 2));
+        _S = (floor((_S / 2)) + ((_S % 2) * 128));
+    }
+    _S = (_S % 256);
+    List.ReplaceItem(Flag bits, 1, ( + (_S == 0)));
+    List.ReplaceItem(_REGISTERS, r1, _S);
+}
+
+Define ~RST(string n) (warp=true)
+{
+    Call ~PUSH(floor((_PC / 256)))((_PC % 256));
+    _PC = (n * 8);
+}
+
+Define ~SLA/SRA(string r1)(string p1) (warp=false)
+{
+    _S = _REGISTERS[r1];
+    If (p1 == 0)
+    {
+        _S += _S;
+        List.ReplaceItem(Flag bits, 4, ( + (_S > 255)));
+        _S = (_S % 256);
+    }
+    Else
+    {
+        List.ReplaceItem(Flag bits, 4, (_S % 2));
+        _S = ((floor((_S / 2)) + (floor((_S / 128)) * 128)) % 256);
+    }
+    List.ReplaceItem(Flag bits, 3, 0);
+    List.ReplaceItem(Flag bits, 2, 0);
+    List.ReplaceItem(Flag bits, 1, ( + (_S == 0)));
+    List.ReplaceItem(_REGISTERS, r1, _S);
+}
+
+Define ~some HL operations(string r1) (warp=true)
+{
+    If (r1 == 0)
+    {
+        _PC = ((_REGISTERS[7] * 256) + _REGISTERS[8]);
+    }
+    Else
+    {
+        _SP = ((_REGISTERS[7] * 256) + _REGISTERS[8]);
+    }
+}
+
+Define ~SUB A,(string r1) |(string p1) (warp=false)
+{
+    If (r1 == 9)
+    {
+        Call .S = read(((_REGISTERS[7] * 256) + _REGISTERS[8])) of mem;
+    }
+    Else
+    {
+        If (r1 == "U")
+        {
+            _S = byteStack[2];
+        }
+        Else
+        {
+            _S = _REGISTERS[r1];
+        }
+    }
+    List.ReplaceItem(Flag bits, 3, ( + (((((_REGISTERS[1] % 16) - (_S % 16)) - (Flag bits[4] * (p1 == 1))) % 32) > 15)));
+    List.ReplaceItem(Flag bits, 2, 1);
+    _S += (Flag bits[4] * (p1 == 1));
+    _T = ( - _S);
+    _S = (_REGISTERS[1] + _T);
+    List.ReplaceItem(Flag bits, 4, ( + (_S < 0)));
+    If (Not ((p1 == 2)))
+    {
+        List.ReplaceItem(_REGISTERS, 1, (_S % 256));
+    }
+    List.ReplaceItem(Flag bits, 1, ( + ((_S % 256) == 0)));
+}
+
+Define ~SWAP/SRL(string r1) |(string p1) (warp=false)
+{
+    _S = _REGISTERS[r1];
+    If (p1 == 0)
+    {
+        List.ReplaceItem(Flag bits, 4, 0);
+        _S = (((_S % 16) * 16) + floor((_S / 16)));
+    }
+    Else
+    {
+        List.ReplaceItem(Flag bits, 4, (_S % 2));
+        _S = floor((_S / 2));
+    }
+    List.ReplaceItem(Flag bits, 3, 0);
+    List.ReplaceItem(Flag bits, 2, 0);
+    List.ReplaceItem(Flag bits, 1, ( + (_S == 0)));
+    List.ReplaceItem(_REGISTERS, r1, _S);
+}
+
+Define ~unMapped(string p1) (warp=false)
+{
+    If (p1 < 4)
+    {
+        If (p1 < 2)
+        {
+            If (p1 < 1)
+            {
+                _T = ((byteStack[3] * 256) + byteStack[2]);
+                Call .write mem(_T) byte((_SP % 256));
+                Call .write mem(((_T + 1) % 65536)) byte(floor((_SP / 256)));
+            }
+            Else
+            {
+                Call ​​log​​("STOP");
+                Stop(all);
+            }
+        }
+        Else
+        {
+            If (p1 < 3)
+            {
+                Call ~DAA;
+            }
+            Else
+            {
+                List.ReplaceItem(_REGISTERS, 1, (255 - _REGISTERS[1]));
+                List.ReplaceItem(Flag bits, 2, 1);
+                List.ReplaceItem(Flag bits, 3, 1);
+            }
+        }
+    }
+    Else
+    {
+        If (p1 < 6)
+        {
+            If (p1 < 5)
+            {
+                List.ReplaceItem(Flag bits, 4, 1);
+            }
+            Else
+            {
+                List.ReplaceItem(Flag bits, 4, (1 - Flag bits[4]));
+            }
+            List.ReplaceItem(Flag bits, 2, 0);
+            List.ReplaceItem(Flag bits, 3, 0);
+        }
+        Else
+        {
+            If (p1 < 7)
+            {
+                _HALT = 1;
+            }
+            Else
+            {
+                Call ~CB prefixed;
+            }
+        }
+    }
+}
+
+Define ~XOR A,(string r1) (warp=true)
+{
+    If (r1 == 9)
+    {
+        Call .S = read(((_REGISTERS[7] * 256) + _REGISTERS[8])) of mem;
+    }
+    Else
+    {
+        If (r1 == "U")
+        {
+            _S = byteStack[2];
+        }
+        Else
+        {
+            _S = _REGISTERS[r1];
+        }
+    }
+    Call ^.bitwisetemp(_REGISTERS[1])(_S);
+    List.ReplaceItem(Flag bits, 2, 0);
+    List.ReplaceItem(Flag bits, 3, 0);
+    List.ReplaceItem(Flag bits, 4, 0);
+    List.ReplaceItem(_REGISTERS, 1, ((.XOR[$B[1]] * 16) + .XOR[$B[2]]));
+    List.ReplaceItem(Flag bits, 1, ( + (_REGISTERS[1] == 0)));
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+8
+
+HALF_C
+
+hc
+
+8_1
+
+0
+
+1
+
+pair
+
+d1
+
+d2
+
+Call ​​log​​(_T)
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg

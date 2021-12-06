@@ -1,0 +1,227 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+chip8.delay_timer = 0
+chip8.dummy = 0
+chip8.dummy2 = 0
+chip8.I = 0
+chip8.pc = 0
+chip8.rand = 0
+chip8.return = 0
+chip8.sound_timer = 0
+Input = 0
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+chip8.keyboard = { }
+chip8.memory = { }
+chip8.registers = { }
+chip8.screen = { }
+chip8.stack = { }
+lowest y = { 
+    72.8166098057
+    49.9128442573
+    175
+    715
+    5
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(exit emulator)
+{
+    If (Menu Theme[4] == 0)
+    {
+        Looks.Hide();
+    }
+    Else
+    {
+        Looks.Show();
+    }
+    my variable = 0;
+    Control.Wait(1.5);
+    If (Menu Theme[7] == 0)
+    {
+        Forever
+        {
+            my variable = ((my variable + 5) % 725);
+            Motion.ChangeYBy(sin(my variable));
+        }
+    }
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    Looks.ClearGraphicEffects();
+    Motion.GoToXY(0, 0);
+    Motion.PointInDirection(90);
+    Looks.SetSizeTo(100);
+    Control.Wait(1);
+    Motion.GlideTo(0, (50 + (Menu Theme[7] * 10)), 0.5);
+    Looks.SetEffectTo(COLOR, (10 * Operator.Join(Menu Theme[5], Menu Theme[6])));
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    Control.Wait(1);
+    Repeat (15)
+    {
+        Looks.ChengeSizeBy(-1);
+    }
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    Variable.Hide(GUItemp);
+    GUItemp = (130 + (is compiled? * 10));
+    Looks.SwitchCostumeTo((2 - is compiled?));
+    Control.Wait(1);
+    Repeat ((8 + is compiled?))
+    {
+        Looks.NextCostume();
+        Control.Wait(((1 + is compiled?) / 100));
+        GUItemp += -10;
+    }
+}
+
+WhenBroadcastReceived(GUI_Emulator_Select)
+{
+    Inemu? = 2;
+    If (MenuScroll == 200)
+    {
+        Sound.Play((1 + (2 * Menu Theme[7])));
+        Event.Broadcast("get_theme");
+    }
+    If (MenuScroll == 0)
+    {
+        Sound.Play((1 + (2 * Menu Theme[7])));
+        Event.Broadcast("get_newtheme");
+    }
+    If (MenuScroll == -200)
+    {
+        Sound.Play((1 + (2 * Menu Theme[7])));
+        Event.Broadcast("get_rom");
+    }
+    If (MenuScroll == -400)
+    {
+        Event.Broadcast("Launch Emulator");
+        Sound.Play((2 + (2 * Menu Theme[7])));
+        Event.BroadcastAndWait("Launch EmulatorWaitd");
+        Looks.SwitchBackdropTo(Chip-8);
+        Event.Broadcast("Chip-8");
+        microbit_displayText ?? - probably legacy function from Scratch 2.0;
+    }
+    If (MenuScroll == -600)
+    {
+        Event.Broadcast("Launch Emulator");
+        Sound.Play((2 + (2 * Menu Theme[7])));
+        Event.BroadcastAndWait("Launch EmulatorWaitd");
+        Looks.SwitchBackdropTo(Game Boy);
+        Event.Broadcast("Game Boy");
+        microbit_displayText ?? - probably legacy function from Scratch 2.0;
+    }
+    If (MenuScroll == -800)
+    {
+        Event.Broadcast("Launch Emulator");
+        Sound.Play((2 + (2 * Menu Theme[7])));
+        Event.BroadcastAndWait("Launch EmulatorWaitd");
+        Looks.SwitchBackdropTo(Black);
+        Event.Broadcast("Game Boy Advance");
+        microbit_displayText ?? - probably legacy function from Scratch 2.0;
+    }
+    If (MenuScroll == -1000)
+    {
+        Event.Broadcast("Launch Emulator");
+        Sound.Play((2 + (2 * Menu Theme[7])));
+        Event.BroadcastAndWait("Launch EmulatorWaitd");
+        Looks.SwitchBackdropTo(screen);
+        Event.Broadcast("start game");
+        microbit_displayText ?? - probably legacy function from Scratch 2.0;
+    }
+    If (MenuScroll == -1200)
+    {
+        Event.Broadcast("Launch Emulator");
+        Sound.Play((2 + (2 * Menu Theme[7])));
+        Event.BroadcastAndWait("Launch EmulatorWaitd");
+        Looks.SwitchBackdropTo(NES);
+        Variable.Show(GUItemp);
+        GUItemp = "Regenerating Tables...";
+        Event.BroadcastAndWait("coolnes_make_tables");
+        coolnes_regenerate = 0;
+        coolnes_convert = 1;
+        Variable.Hide(GUItemp);
+        Event.BroadcastAndWait("coolnes_init");
+        Event.Broadcast("coolnes_unpause");
+        microbit_displayText ?? - probably legacy function from Scratch 2.0;
+    }
+    If (MenuScroll == -1400)
+    {
+        Event.Broadcast("Launch Emulator");
+        Sound.Play((2 + (2 * Menu Theme[7])));
+        Event.BroadcastAndWait("Launch EmulatorWaitd");
+        Looks.SwitchBackdropTo(BytePusher);
+        Event.Broadcast("BytePusher");
+        microbit_displayText ?? - probably legacy function from Scratch 2.0;
+    }
+    If (MenuScroll == -1600)
+    {
+        Event.Broadcast("Launch Emulator");
+        Sound.Play((2 + (2 * Menu Theme[7])));
+        Event.BroadcastAndWait("Launch EmulatorWaitd");
+        Looks.SwitchBackdropTo(HelloWorld);
+        Event.Broadcast("HelloInter");
+        microbit_displayText ?? - probably legacy function from Scratch 2.0;
+    }
+    If (MenuScroll == -1800)
+    {
+        Event.Broadcast("Launch Emulator");
+        Sound.Play((2 + (2 * Menu Theme[7])));
+        Event.BroadcastAndWait("Launch EmulatorWaitd");
+        Looks.SwitchBackdropTo(Goddess A);
+        Event.Broadcast("Goddess A");
+        microbit_displayText ?? - probably legacy function from Scratch 2.0;
+    }
+}
+
+WhenBroadcastReceived(Launch EmulatorWaitd)
+{
+    If (Not ((Inemu? == 2)))
+    {
+        Stop(other scripts in sprite);
+    }
+    Looks.Hide();
+}
+
+WhenBroadcastReceived(un-needed broadcast)
+{
+    Looks.Hide();
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+List.DeleteAll(lowest y)
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+costume2.svg
+costume3.svg
+costume4.svg
+costume5.svg
+costume6.svg
+costume7.svg
+costume8.svg
+costume9.svg
+costume10.svg
+costume11.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+423930__mudkip2016__correct.wav
+select.wav
+Select WDS.wav
+Theme WDS.wav

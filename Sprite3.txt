@@ -1,0 +1,115 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+_id = 0
+_pitch = 0
+
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(Chip-8)
+{
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    Stop(other scripts in sprite);
+    Motion.GoToXY(0, 0);
+    Looks.SetEffectTo(GHOST, 100);
+    Looks.SetSizeTo(100);
+    Looks.SwitchCostumeTo(costume1);
+    Looks.Show();
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(WAVE-8_drawkeys)
+{
+    Call Draw Keys starting at(-67)(-39) With(4) rows and(4) columns;
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Looks.SetSizeTo((100 - (Menu Theme[8] * 25)));
+    Forever
+    {
+        If (Sensing.MouseDown() And Sensing.TouchingObject(_mouse_))
+        {
+            List.ReplaceItem(Mobile Keypad state, (Costume.GetNumberName(number) - ((Menu Theme[8] * 16) + 1)), 1);
+            Looks.SetEffectTo(BRIGHTNESS, -20);
+        }
+        Else
+        {
+            List.ReplaceItem(Mobile Keypad state, (Costume.GetNumberName(number) - ((Menu Theme[8] * 16) + 1)), 0);
+            Looks.SetEffectTo(BRIGHTNESS, 0);
+        }
+    }
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define Draw Keys starting at(string Xstart)(string Ystart) With(string rows) rows and(string columns) columns (warp=true)
+{
+    Looks.Show();
+    Looks.SetEffectTo(GHOST, (100 - (Menu Theme[8] * 100)));
+    Looks.SwitchCostumeTo(((Menu Theme[8] * 16) + 1));
+    Motion.GoToXY(Xstart, Ystart);
+    List.DeleteAll(Mobile Keypad state);
+    Repeat ((rows * columns))
+    {
+        List.Add(Mobile Keypad state, 0);
+    }
+    Repeat (rows)
+    {
+        Motion.SetX(-67);
+        Repeat (columns)
+        {
+            Looks.NextCostume();
+            Control.CreateCloneOf(_myself_);
+            Motion.ChangeXBy(45);
+        }
+        Motion.ChangeYBy(-40);
+    }
+    Looks.Hide();
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+0.png
+1.png
+2.png
+3.png
+4.png
+5.png
+6.png
+7.png
+8.png
+9.png
+10.png
+11.png
+12.png
+13.png
+14.png
+15.png
+16.png
+17.png
+18.png
+19.png
+20.png
+21.png
+22.png
+23.png
+24.png
+25.png
+a.png
+b.png
+c.png
+costume1.svg
+d.png
+e.png
+f.png

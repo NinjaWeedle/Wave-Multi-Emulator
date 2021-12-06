@@ -1,0 +1,501 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+bg_mode = 0
+c8scrnsize = 0
+calc.char = 0
+calc.return = 0
+calc.temp = 0
+calc.temp2 = 0
+chip8.delay_timer = 0
+chip8.drawflag = 0
+chip8.drawmode = 0
+chip8.drawplane = 0
+chip8.dummy = 0
+chip8.dummy2 = 0
+chip8.dummy3 = 0
+chip8.dummy4 = 0
+chip8.HPS = 0
+chip8.HPSFlag = 0
+chip8.I = 0
+chip8.Load/Save_Quirk = 0
+chip8.pc = 0
+chip8.rand = 0
+chip8.return = 0
+chip8.screenheight = 0
+chip8.screenwidth = 0
+chip8.Shift_quirk = 0
+chip8.sound_timer = 0
+flags.met = 0
+import.ascii =  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+import.binary = 000000
+import.char = 12
+import.dummy = 1
+import.percent = 0
+import.read_return = 241
+import.rom_length = 0
+import.status = (2/2) Importing rom... (16%)
+load = 
+op.opcode = 0
+op.pos = 0
+op.temp = 0
+program.done = 0
+read.return = 0
+read.single.return = 0
+rom.name = 0
+scanX = 0
+scanY = 0
+SF2091! fix = 0
+speed (CPF) = 0
+storage.byte = 0
+temp = 49185
+tile_mode = 0
+VIP jumps = 0
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+chip8.audio = { }
+chip8.keyboard = { }
+chip8.memory = { }
+chip8.registers = { }
+chip8.screen = { }
+chip8.screen2 = { }
+chip8.stack = { }
+load = { 
+    16384
+    8192
+    24576
+    0
+    0
+}
+Load ROMs: _rom = { }
+mappers = { 
+    0
+    1
+    2
+    3
+    4
+    7
+    75
+}
+schip8.font = { }
+schip8.RPL = { }
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(exit emulator)
+{
+    Looks.Hide();
+    Variable.Hide(import.status);
+    Variable.Hide(rom.designation);
+    Variable.Hide(rom.title);
+}
+
+WhenBroadcastReceived(get_rom)
+{
+    Motion.GoToXY(0, 45);
+    Looks.Show();
+    Costume.GoToFrontBack(front);
+    Looks.SwitchCostumeTo(A);
+    import.ascii = " !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    microbit_displaySymbol ?? - probably legacy function from Scratch 2.0;
+    Sensing.Ask("");
+    Sound.Play(423930__mudkip2016__correct4);
+    If (Sensing.Answer() == "base64")
+    {
+        Looks.SwitchCostumeTo(C);
+        Sensing.Ask("");
+        If (Not ((Sensing.Answer() == "")))
+        {
+            Call convert_b64(Sensing.Answer());
+            Sound.Play(423930__mudkip2016__correct2);
+        }
+    }
+    Else
+    {
+        If (Sensing.Answer() == "NDS")
+        {
+            Looks.SwitchCostumeTo(B);
+            Sensing.Ask("");
+            If (Not ((Sensing.Answer() == "")))
+            {
+                Call load rom;
+                Sound.Play(423930__mudkip2016__correct2);
+            }
+        }
+        Else
+        {
+            If (Sensing.Answer() == "NES")
+            {
+                Looks.SwitchCostumeTo(D);
+                Sensing.Ask("");
+                If (Not ((Sensing.Answer() == "")))
+                {
+                    Call load NES(Sensing.Answer());
+                    Sound.Play(423930__mudkip2016__correct2);
+                }
+            }
+            Else
+            {
+                If (Not ((Sensing.Answer() == "")))
+                {
+                    Call import_rom(Sensing.Answer())(0);
+                    Sound.Play(423930__mudkip2016__correct2);
+                }
+            }
+        }
+    }
+    microbit_displayClear ?? - probably legacy function from Scratch 2.0;
+    Looks.Hide();
+}
+
+WhenBroadcastReceived(Load_Prebuilt_game)
+{
+    Call import_rom(_ROM)(Load Rom Flag);
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define convert_b64(string code) (warp=true)
+{
+    Looks.SwitchCostumeTo(H);
+    import.binary = "";
+    import.char = 1;
+    import.status = "(1/2) Converting to binary... (0%)";
+    Variable.Show(import.status);
+    Repeat (Variable.Length(code))
+    {
+        import.status = Operator.Join("(1/2) Converting to binary... (", Operator.Join(floor((100 * (import.char / Variable.Length(code)))), "%)"));
+        Looks.SwitchCostumeTo(Operator.LetterOf(code, import.char));
+        If ((floor(((Costume.GetNumberName(number) - 1) / 32)) % 2) == 0)
+        {
+            import.binary = Operator.Join(import.binary, 0);
+        }
+        Else
+        {
+            import.binary = Operator.Join(import.binary, 1);
+        }
+        If ((floor(((Costume.GetNumberName(number) - 1) / 16)) % 2) == 0)
+        {
+            import.binary = Operator.Join(import.binary, 0);
+        }
+        Else
+        {
+            import.binary = Operator.Join(import.binary, 1);
+        }
+        If ((floor(((Costume.GetNumberName(number) - 1) / 8)) % 2) == 0)
+        {
+            import.binary = Operator.Join(import.binary, 0);
+        }
+        Else
+        {
+            import.binary = Operator.Join(import.binary, 1);
+        }
+        If ((floor(((Costume.GetNumberName(number) - 1) / 4)) % 2) == 0)
+        {
+            import.binary = Operator.Join(import.binary, 0);
+        }
+        Else
+        {
+            import.binary = Operator.Join(import.binary, 1);
+        }
+        If ((floor(((Costume.GetNumberName(number) - 1) / 2)) % 2) == 0)
+        {
+            import.binary = Operator.Join(import.binary, 0);
+        }
+        Else
+        {
+            import.binary = Operator.Join(import.binary, 1);
+        }
+        If (((Costume.GetNumberName(number) - 1) % 2) == 0)
+        {
+            import.binary = Operator.Join(import.binary, 0);
+        }
+        Else
+        {
+            import.binary = Operator.Join(import.binary, 1);
+        }
+        import.char += 1;
+    }
+    List.DeleteAll(PAKROM);
+    import.char = 1;
+    import.status = "(2/2) Importing rom... (0%)";
+    Repeat ((Variable.Length(import.binary) / 8))
+    {
+        import.status = Operator.Join("(2/2) Importing rom... (", Operator.Join(floor((100 * (import.char / Variable.Length(import.binary)))), "%)"));
+        List.Add(PAKROM, ((((128 * Operator.LetterOf(import.binary, import.char)) + (64 * Operator.LetterOf(import.binary, (import.char + 1)))) + ((32 * Operator.LetterOf(import.binary, (import.char + 2))) + (16 * Operator.LetterOf(import.binary, (import.char + 3))))) + (((8 * Operator.LetterOf(import.binary, (import.char + 4))) + (4 * Operator.LetterOf(import.binary, (import.char + 5)))) + ((2 * Operator.LetterOf(import.binary, (import.char + 6))) + Operator.LetterOf(import.binary, (import.char + 7))))));
+        import.char += 8;
+    }
+    Variable.Hide(import.status);
+}
+
+Define import_rom(string rom)(string flag) (warp=true)
+{
+    If (Not ((flag == 1)))
+    {
+        Looks.SwitchCostumeTo(I);
+        _ROM = Sensing.Answer();
+    }
+    Looks.SwitchCostumeTo(J);
+    List.DeleteAll(_rom);
+    import.char = 1;
+    If (Operator.LetterOf(rom, 2) == "x")
+    {
+        Repeat ((Variable.Length(rom) / 6))
+        {
+            List.Add(_rom, ( + Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, (import.char + 2)), Operator.LetterOf(rom, (import.char + 3))))));
+            import.char += 6;
+        }
+    }
+    Else
+    {
+        Repeat ((Variable.Length(rom) / 2))
+        {
+            List.Add(_rom, Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, import.char), Operator.LetterOf(rom, (import.char + 1)))));
+            import.char += 2;
+        }
+    }
+    Looks.SwitchCostumeTo(K);
+    rom.title = "";
+    import.char = 8;
+    Repeat (60)
+    {
+        Call read byte(import.char);
+        rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (import.read_return - 31)));
+        import.char += 1;
+    }
+    Looks.SwitchCostumeTo(L);
+    rom.designation = "";
+    import.char = 1234;
+    Repeat (68)
+    {
+        Call read byte(import.char);
+        rom.designation = Operator.Join(rom.designation, Operator.LetterOf(import.ascii, (import.read_return - 31)));
+        import.char += 1;
+    }
+}
+
+Define load NES(string data) (warp=true)
+{
+    Looks.SwitchCostumeTo(H);
+    List.DeleteAll(load);
+    List.Add(load, (Operator.Join("0x", Operator.Join(Operator.LetterOf(data, 9), Operator.LetterOf(data, 10))) * 16384));
+    List.Add(load, (Operator.Join("0x", Operator.Join(Operator.LetterOf(data, 11), Operator.LetterOf(data, 12))) * 8192));
+    List.Add(load, (load[1] + load[2]));
+    List.Add(load, (Operator.Join("0x", Operator.LetterOf(data, 14)) % 2));
+    List.Add(load, (Operator.Join("0x", Operator.Join(Operator.LetterOf(data, 15), Operator.LetterOf(data, 13))) + ));
+    If (Not (Operator.Contains(data, "4E45531A")))
+    {
+        Looks.SwitchCostumeTo(E);
+        Sensing.Ask("Error");
+        Stop(this script);
+    }
+    If (Not ((((Variable.Length(data) - 32) / 2) == load[3])))
+    {
+        Looks.SwitchCostumeTo(F);
+        Sensing.Ask("Error");
+        Stop(this script);
+    }
+    If (List.IndexOf(mappers, load[5]) == 0)
+    {
+        Looks.SwitchCostumeTo(G);
+        import.status = Operator.Join("Unsupported mapper ", load[5]);
+        Variable.Show(import.status);
+        Sensing.Ask("Error");
+        Variable.Hide(import.status);
+        Stop(this script);
+    }
+    prg_size = load[1];
+    chr_size = load[2];
+    mapper = load[5];
+    chr_ram = ((chr_size == 0) + );
+    List.DeleteAll(nt_map);
+    If (load[4] == 1)
+    {
+        List.Add(nt_map, 0);
+        List.Add(nt_map, 1);
+        List.Add(nt_map, 0);
+        List.Add(nt_map, 1);
+    }
+    Else
+    {
+        List.Add(nt_map, 0);
+        List.Add(nt_map, 0);
+        List.Add(nt_map, 1);
+        List.Add(nt_map, 1);
+    }
+    List.DeleteAll(prg_rom);
+    List.DeleteAll(chr_rom);
+    temp = 33;
+    Repeat (prg_size)
+    {
+        List.Add(prg_rom, (Operator.Join("0x", Operator.Join(Operator.LetterOf(data, temp), Operator.LetterOf(data, (temp + 1)))) + ));
+        temp += 2;
+    }
+    Repeat (chr_size)
+    {
+        List.Add(chr_rom, (Operator.Join("0x", Operator.Join(Operator.LetterOf(data, temp), Operator.LetterOf(data, (temp + 1)))) + ));
+        temp += 2;
+    }
+    coolnes_convert = 1;
+}
+
+Define load rom (warp=true)
+{
+    Looks.SwitchCostumeTo(M);
+    Variable.Show(import.status);
+    If (Not ((Sensing.Answer() == "")))
+    {
+        List.DeleteAll(_rom);
+        If (Operator.LetterOf(Sensing.Answer(), 2) == "x")
+        {
+            import.char = 1;
+            Repeat ((Variable.Length(Sensing.Answer()) / 24))
+            {
+                List.Add(_rom, ( + Operator.Join("0x", Operator.Join(Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 2)), Operator.LetterOf(Sensing.Answer(), (import.char + 3))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 8)), Operator.LetterOf(Sensing.Answer(), (import.char + 9)))), Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 14)), Operator.LetterOf(Sensing.Answer(), (import.char + 15))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 20)), Operator.LetterOf(Sensing.Answer(), (import.char + 21))))))));
+                import.status = Operator.Join("Importing ROM as list... ", Operator.Join((Operator.Round((1000 * (import.char / Variable.Length(Sensing.Answer())))) / 10), "%"));
+                import.char += 24;
+            }
+        }
+        Else
+        {
+            import.char = 1;
+            Repeat ((Variable.Length(Sensing.Answer()) / 8))
+            {
+                List.Add(_rom, ( + Operator.Join("0x", Operator.Join(Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), import.char), Operator.LetterOf(Sensing.Answer(), (import.char + 1))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 2)), Operator.LetterOf(Sensing.Answer(), (import.char + 3)))), Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 4)), Operator.LetterOf(Sensing.Answer(), (import.char + 5))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 6)), Operator.LetterOf(Sensing.Answer(), (import.char + 7))))))));
+                import.status = Operator.Join("Importing ROM as list... ", Operator.Join((Operator.Round((1000 * (import.char / Variable.Length(Sensing.Answer())))) / 10), "%"));
+                import.char += 8;
+            }
+        }
+    }
+    Looks.SwitchCostumeTo(N);
+    List.DeleteAll(arm9.rom);
+    Call read byte("0x20");
+    import.char = import.read_return;
+    Call read byte("0x2C");
+    import.rom_length = import.read_return;
+    Looks.SwitchCostumeTo(O);
+    Repeat ((import.rom_length / 4))
+    {
+        import.dummy = 0;
+        Repeat (4)
+        {
+            Call read byte(import.char);
+            import.dummy = ((256 * import.dummy) + import.read_return);
+            import.char += 1;
+        }
+        List.Add(arm9.rom, import.dummy);
+        import.status = Operator.Join("Importing ARM9 ROM... ", Operator.Join((Operator.Round((1000 * (import.char / import.rom_length))) / 10), "%"));
+    }
+    Looks.SwitchCostumeTo(P);
+    List.DeleteAll(arm7.rom);
+    Call read byte("0x30");
+    import.char = import.read_return;
+    Call read byte("0x3C");
+    import.rom_length = import.read_return;
+    Looks.SwitchCostumeTo(Q);
+    Repeat ((import.rom_length / 4))
+    {
+        import.dummy = 0;
+        Repeat (4)
+        {
+            Call read byte(import.char);
+            import.dummy = ((256 * import.dummy) + import.read_return);
+            import.char += 1;
+        }
+        List.Add(arm7.rom, import.dummy);
+        import.status = Operator.Join("Importing ARM7 ROM... ", Operator.Join((Operator.Round((1000 * (import.char / import.rom_length))) / 10), "%"));
+    }
+    Looks.SwitchCostumeTo(R);
+    import.dummy = 1;
+    rom.title = "";
+    import.char = 0;
+    Repeat (12)
+    {
+        Call read byte(import.char);
+        rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (BG: Plane 0 - 31)));
+        import.char += 1;
+    }
+    Variable.Hide(import.status);
+}
+
+Define read byte(string addr) (warp=true)
+{
+    import.read_return = floor(((_rom[(floor((addr / 4)) + 1)] / Operator.Round(e ^((5.545177444479562 * (3 - (addr % 4)))))) % 256));
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
++.svg
+/.svg
+0.svg
+1.svg
+2.svg
+3.svg
+4.svg
+5.svg
+6.svg
+7.svg
+8.svg
+9.svg
+A.svg
+a.svg
+B.svg
+b.svg
+C.svg
+c.svg
+d.svg
+D.svg
+E.svg
+e.svg
+F.svg
+f.svg
+G.svg
+g.svg
+h.svg
+H.svg
+I.svg
+i.svg
+J.svg
+j.svg
+K.svg
+k.svg
+l.svg
+L.svg
+M.svg
+m.svg
+n.svg
+N.svg
+O.svg
+o.svg
+P.svg
+p.svg
+Q.svg
+q.svg
+R.svg
+r.svg
+S.svg
+s.svg
+T.svg
+t.svg
+U.svg
+u.svg
+V.svg
+v.svg
+W.svg
+w.svg
+X.svg
+x.svg
+Y.svg
+y.svg
+Z.svg
+z.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+423930__mudkip2016__correct2.wav
+423930__mudkip2016__correct4.wav

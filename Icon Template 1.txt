@@ -1,0 +1,140 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+Ahello = 0
+Input = 0
+S = 0
+Velocity = -5
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+chip8.keyboard = { }
+chip8.memory = { }
+chip8.registers = { }
+chip8.screen = { }
+chip8.stack = { }
+
+
+//----- Sprite clicked events -----------------------------------------------------------------------------------------
+
+WhenThisSpriteClicked()
+{
+    MenuScroll = ((Costume.GetNumberName(number) - 2) * -200);
+    Event.Broadcast("GUI_Emulator_Select");
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(exit emulator)
+{
+    Inemu? = 0;
+    Looks.ClearGraphicEffects();
+    Looks.SetEffectTo(COLOR, (Operator.Join(Menu Theme[5], Menu Theme[6]) * 10));
+    Looks.Hide();
+    Control.Wait(1.5);
+    Looks.SwitchCostumeTo(0import);
+    Repeat (11)
+    {
+        Control.CreateCloneOf(_myself_);
+        Looks.NextCostume();
+    }
+}
+
+WhenBroadcastReceived(Launch Emulator)
+{
+    Control.Wait((0.5 - (0.25 * is compiled?)));
+    Control.DeleteThisClone();
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Looks.Show();
+    Looks.SetSizeTo(52);
+    Forever
+    {
+        Wait Until Sensing.TouchingObject(Sprite3);
+        Looks.SetSizeTo(55);
+        Velocity = 5;
+        Wait Until (Not (Sensing.TouchingObject(Sprite3)));
+        Looks.SetSizeTo(98);
+        Velocity = -5;
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        Motion.GoToXY((MenuScroll + ((Costume.GetNumberName(number) - 2) * 200)), (((Menu Theme[3] * 50) + ((cos(my variable) * 2) * ((Menu Theme[7] == 0) * Sensing.TouchingObject(Sprite3)))) - 230));
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Looks.SetEffectTo(GHOST, 100);
+    Looks.Show();
+    Repeat ((11 * (1 + is compiled?)))
+    {
+        Looks.ChangeEffectBy(GHOST, (-5 * (2 - is compiled?)));
+    }
+    Forever
+    {
+        S = Looks.Size();
+        Looks.SetSizeTo(50);
+        If Sensing.TouchingObject(_edge_)
+        {
+            Looks.SetEffectTo(GHOST, 100);
+        }
+        Else
+        {
+            Looks.SetEffectTo(GHOST, 0);
+        }
+        Looks.SetSizeTo(S);
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Velocity = 0;
+    Forever
+    {
+        Looks.ChengeSizeBy(Velocity);
+        If (abs(Velocity) < 0.1)
+        {
+            Velocity = 0;
+        }
+        Else
+        {
+            Velocity = (Velocity * 0.9);
+        }
+        Looks.SetEffectTo(BRIGHTNESS, (Looks.Size() - 100));
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+0GA.svg
+0GA2.svg
+0import.svg
+0random.svg
+0Rom.svg
+1DS.svg
+1W8.svg
+2DS.svg
+2GB.svg
+2GBA.svg
+2N64.svg
+2NES.svg
+2UHWEI.svg
+2W8.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+423930__mudkip2016__correct.wav
+select.wav

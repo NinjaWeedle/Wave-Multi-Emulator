@@ -1,0 +1,3458 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+!A = 109
+!apu_cycle = 987405
+!break = 0
+!C = 1
+!ctrl_strobe = 0
+!D = 0
+!I = 1
+!immediate = 0
+!N = 0
+!NMI_occured = 0
+!op = 197
+!P = 39
+!PC = 49809
+!penalty = 0
+!port1_count = 8
+!port2_count = 0
+!ppu_cycle = 168
+!SP = 8
+!V = 0
+!X = 27
+!Y = 9
+!Z = 1
+#frame_interrupt = 0
+#frame_mode = 1
+#irq_inhibit = 1
+#sequence = 4
+#sq0_counter = 0
+#sq0_counter_halt = 0
+#sq0_enabled = 0
+$chr_bank0 = 0
+$chr_bank1 = 0
+$chr_bank2 = 0
+$chr_bank3 = 0
+$chr_bank4 = 0
+$chr_bank5 = 0
+$chr_bank6 = 0
+$chr_bank7 = 0
+$chr_bank_mode = 0
+$irq_counter = 0
+$irq_enabled = 0
+$irq_latch = 0
+$irq_occured = 0
+$irq_reload = 0
+$prg_bank0 = 0
+$prg_bank1 = 0
+$prg_bank2 = 0
+$prg_bank3 = 0
+$prg_bank_mode = 0
+$reg0 = 0
+$reg1 = 0
+@bg_pattern = 0
+@bit = 8
+@counter = 8192
+@data_latch = 00000000
+@fine_x = 0
+@frameskip = 0
+@hflip = 0
+@mask_bg = 1
+@mask_sprite = 1
+@nametable_index = 2
+@nmi_enabled = 1
+@nmi_flag = 0
+@nt_data = 0
+@oam_addr = 1
+@palette = 1
+@priority = 0
+@read_buffer = 0
+@render_bg = 1
+@render_sprite = 0
+@result = 00000000
+@scanline = 206
+@sprite0_bit = 0
+@sprite_attribute = 32
+@sprite_hit = 0
+@sprite_overflow = 0
+@sprite_pattern = 0
+@sprite_size = 1
+@sprite_x = 150
+@sprite_y = 192
+@temp_addr = 0
+@tile_index = 32
+@vram_addr = 25376
+@vram_incr = 0
+@write_toggle = 0
+display_mode = 0
+draw: pixel = 0
+o_down = 0
+o_up = 0
+scaling = 0
+size_mod = 0
+stretch_x = 0
+stretch_y = 0
+temp = 1
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+!and_table = { }
+!eor_table = { }
+!hex = { 
+    00
+    01
+    02
+    03
+    04
+    05
+    06
+    07
+    08
+    09
+    0A
+    0B
+    0C
+    0D
+    0E
+    0F
+    10
+    11
+    12
+    13
+    14
+    15
+    16
+    17
+    18
+    19
+    1A
+    1B
+    1C
+    1D
+    1E
+    1F
+    20
+    21
+    22
+    23
+    24
+    25
+    26
+    27
+    28
+    29
+    2A
+    2B
+    2C
+    2D
+    2E
+    2F
+    30
+    31
+    32
+    33
+    34
+    35
+    36
+    37
+    38
+    39
+    3A
+    3B
+    3C
+    3D
+    3E
+    3F
+    40
+    41
+    42
+    43
+    44
+    45
+    46
+    47
+    48
+    49
+    4A
+    4B
+    4C
+    4D
+    4E
+    4F
+    50
+    51
+    52
+    53
+    54
+    55
+    56
+    57
+    58
+    59
+    5A
+    5B
+    5C
+    5D
+    5E
+    5F
+    60
+    61
+    62
+    63
+    64
+    65
+    66
+    67
+    68
+    69
+    6A
+    6B
+    6C
+    6D
+    6E
+    6F
+    70
+    71
+    72
+    73
+    74
+    75
+    76
+    77
+    78
+    79
+    7A
+    7B
+    7C
+    7D
+    7E
+    7F
+    80
+    81
+    82
+    83
+    84
+    85
+    86
+    87
+    88
+    89
+    8A
+    8B
+    8C
+    8D
+    8E
+    8F
+    90
+    91
+    92
+    93
+    94
+    95
+    96
+    97
+    98
+    99
+    9A
+    9B
+    9C
+    9D
+    9E
+    9F
+    A0
+    A1
+    A2
+    A3
+    A4
+    A5
+    A6
+    A7
+    A8
+    A9
+    AA
+    AB
+    AC
+    AD
+    AE
+    AF
+    B0
+    B1
+    B2
+    B3
+    B4
+    B5
+    B6
+    B7
+    B8
+    B9
+    BA
+    BB
+    BC
+    BD
+    BE
+    BF
+    C0
+    C1
+    C2
+    C3
+    C4
+    C5
+    C6
+    C7
+    C8
+    C9
+    CA
+    CB
+    CC
+    CD
+    CE
+    CF
+    D0
+    D1
+    D2
+    D3
+    D4
+    D5
+    D6
+    D7
+    D8
+    D9
+    DA
+    DB
+    DC
+    DD
+    DE
+    DF
+    E0
+    E1
+    E2
+    E3
+    E4
+    E5
+    E6
+    E7
+    E8
+    E9
+    EA
+    EB
+    EC
+    ED
+    EE
+    EF
+    F0
+    F1
+    F2
+    F3
+    F4
+    F5
+    F6
+    F7
+    F8
+    F9
+    FA
+    FB
+    FC
+    FD
+    FE
+    FF
+}
+!modes = { 
+    1
+    14
+    1
+    2
+    2
+    2
+    2
+    0
+    3
+    0
+    3
+    4
+    4
+    4
+    4
+    11
+    5
+    14
+    37
+    6
+    6
+    6
+    6
+    0
+    7
+    0
+    39
+    8
+    8
+    40
+    40
+    0
+    1
+    14
+    1
+    2
+    2
+    2
+    2
+    0
+    3
+    0
+    3
+    4
+    4
+    4
+    4
+    11
+    5
+    14
+    37
+    6
+    6
+    6
+    6
+    0
+    7
+    0
+    39
+    8
+    8
+    40
+    40
+    0
+    1
+    14
+    1
+    2
+    2
+    2
+    2
+    0
+    3
+    0
+    3
+    4
+    4
+    4
+    4
+    11
+    5
+    14
+    37
+    6
+    6
+    6
+    6
+    0
+    7
+    0
+    39
+    8
+    8
+    40
+    40
+    0
+    1
+    14
+    1
+    2
+    2
+    2
+    2
+    0
+    3
+    0
+    3
+    13
+    4
+    4
+    4
+    11
+    5
+    14
+    37
+    6
+    6
+    6
+    6
+    0
+    7
+    0
+    39
+    8
+    8
+    40
+    40
+    3
+    33
+    3
+    1
+    2
+    34
+    2
+    2
+    0
+    35
+    0
+    3
+    4
+    36
+    4
+    4
+    11
+    37
+    14
+    37
+    6
+    38
+    12
+    12
+    0
+    39
+    0
+    39
+    40
+    40
+    39
+    39
+    3
+    1
+    3
+    1
+    2
+    2
+    2
+    2
+    0
+    3
+    0
+    3
+    4
+    4
+    4
+    4
+    11
+    5
+    14
+    5
+    6
+    6
+    12
+    12
+    0
+    7
+    0
+    7
+    8
+    8
+    7
+    7
+    3
+    1
+    3
+    1
+    2
+    2
+    2
+    2
+    0
+    3
+    0
+    3
+    4
+    4
+    4
+    4
+    11
+    5
+    14
+    37
+    6
+    6
+    6
+    6
+    0
+    7
+    0
+    39
+    8
+    8
+    40
+    40
+    3
+    1
+    3
+    1
+    2
+    2
+    2
+    2
+    0
+    3
+    0
+    3
+    4
+    4
+    4
+    4
+    11
+    5
+    14
+    37
+    6
+    6
+    6
+    6
+    0
+    7
+    0
+    39
+    8
+    8
+    40
+    40
+    
+    0  imp/acc
+    1  inx
+    2  zp
+    3  imm
+    4  abs
+    5  iny
+    6  zpx
+    7  aby
+    8  abx
+    11 rel
+    12 zpy
+    13 ind
+    14 stp
+    +32: penalty
+    
+}
+!ora_table = { }
+!ram = { }
+!trace = { }
+!wram = { }
+#length_table = { }
+@attribute0 = { }
+@attribute1 = { }
+@bg_palette = { }
+@ciram0 = { }
+@ciram1 = { }
+@convert = { }
+@oam_mem = { }
+@palette = { 
+    #666666
+    #002A88
+    #1412A7
+    #3B00A4
+    #5C007E
+    #6E0040
+    #6C0600
+    #561D00
+    #333500
+    #0B4800
+    #005200
+    #004F08
+    #00404D
+    #000000
+    #000000
+    #000000
+    #ADADAD
+    #215FD9
+    #4240FF
+    #7527FE
+    #A01ACC
+    #B71E7B
+    #B53120
+    #994E00
+    #6B6D00
+    #388700
+    #0C9300
+    #008F32
+    #007C8D
+    #000000
+    #000000
+    #000000
+    #FFFEFF
+    #64B0FF
+    #9290FF
+    #C676FF
+    #F36AFF
+    #FE6ECC
+    #FE8170
+    #EA9E22
+    #BCBE00
+    #88D800
+    #5CE430
+    #45E082
+    #48CDDE
+    #4F4F4F
+    #000000
+    #000000
+    #FFFEFF
+    #C0DFFF
+    #D3D2FF
+    #E8C8FF
+    #FBC2FF
+    #FEC4EA
+    #FECCC5
+    #F7D8A5
+    #E4E594
+    #CFEF96
+    #BDF4AB
+    #B3F3CC
+    #B5EBF2
+    #B8B8B8
+    #000000
+    #000000
+}
+@spr_palette = { }
+@temp_oam = { }
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(coolnes_init)
+{
+    #frame_interrupt = 0;
+    #irq_inhibit = 0;
+    #frame_mode = 0;
+    #sequence = 0;
+}
+
+WhenBroadcastReceived(coolnes_init)
+{
+    Call !init;
+}
+
+WhenBroadcastReceived(coolnes_init)
+{
+    frame = 1;
+    @sprite_hit = 0;
+    @sprite_overflow = 0;
+    @vram_incr = 0;
+    @sprite_pattern = 0;
+    @bg_pattern = 0;
+    @sprite_size = 1;
+    @nmi_enabled = 0;
+    @nmi_flag = 0;
+    @mask_bg = 0;
+    @mask_sprite = 0;
+    @render_bg = 0;
+    @render_sprite = 0;
+    render_enabled = 0;
+    @vram_addr = 8192;
+    @data_latch = 00000000;
+    @write_toggle = 0;
+    @read_buffer = 0;
+    @frameskip = 0;
+    @scanline = 0;
+    Call @init;
+}
+
+WhenBroadcastReceived(coolnes_init)
+{
+    Call $init;
+}
+
+WhenBroadcastReceived(coolnes_make_tables)
+{
+    Call !make tables;
+}
+
+WhenBroadcastReceived(coolnes_pause)
+{
+    Stop(other scripts in sprite);
+}
+
+WhenBroadcastReceived(coolnes_reset)
+{
+    address = 65532;
+    Call !read;
+    temp = data;
+    address = 65533;
+    Call !read;
+    !PC = ((data * 256) + temp);
+    !I = 1;
+    !SP = ((!SP - 3) % 256);
+}
+
+WhenBroadcastReceived(coolnes_reset)
+{
+    frame = 1;
+}
+
+WhenBroadcastReceived(coolnes_unpause)
+{
+    Forever
+    {
+        Call !cpu;
+    }
+}
+
+WhenBroadcastReceived(Project not saving fix)
+{
+    List.DeleteAll(!ora_table);
+    List.DeleteAll(!and_table);
+    List.DeleteAll(!eor_table);
+    List.DeleteAll(!ram);
+    List.DeleteAll(!wram);
+    List.DeleteAll(!trace);
+    coolnes_regenerate = 1;
+}
+
+WhenBroadcastReceived(Project not saving fix)
+{
+    List.DeleteAll(@ciram0);
+    List.DeleteAll(@ciram1);
+    List.DeleteAll(@attribute0);
+    List.DeleteAll(@attribute1);
+    List.DeleteAll(@bg_palette);
+    List.DeleteAll(@spr_palette);
+    List.DeleteAll(@oam_mem);
+    List.DeleteAll(@temp_oam);
+    List.DeleteAll(@convert);
+    List.DeleteAll(pixel_buffer);
+    List.DeleteAll(pattern);
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define !address (warp=true)
+{
+    !immediate = 0;
+    temp = (!modes[!op] % 32);
+    If (!modes[!op] > 32)
+    {
+        !penalty = 1;
+    }
+    Else
+    {
+        !penalty = 0;
+    }
+    If (temp == 0)
+    {
+        address = 80000;
+        Stop(this script);
+    }
+    If (temp == 1)
+    {
+        !PC += 1;
+        address = data;
+        Call !read;
+        address = ((address + !X) % 256);
+        Call !read;
+        temp = data;
+        If ((address % 256) == 255)
+        {
+            address += -255;
+        }
+        Else
+        {
+            address += 1;
+        }
+        Call !read;
+        address = ((data * 256) + temp);
+        Stop(this script);
+    }
+    If (temp == 2)
+    {
+        !PC += 1;
+        address = data;
+        Stop(this script);
+    }
+    If (temp == 3)
+    {
+        !PC += 1;
+        !immediate = 1;
+        Stop(this script);
+    }
+    If (temp == 4)
+    {
+        !PC += 2;
+        temp = data;
+        address += 1;
+        Call !read;
+        address = ((data * 256) + temp);
+        Stop(this script);
+    }
+    If (temp == 5)
+    {
+        !PC += 1;
+        address = data;
+        Call !read;
+        temp = data;
+        address = ((address + 1) % 256);
+        Call !read;
+        temp += !Y;
+        address = ((data * 256) + (temp % 256));
+        If ((temp > 255) Or (!penalty == 1))
+        {
+            Call !read;
+            If (temp > 255)
+            {
+                address = ((address + 256) % 65536);
+            }
+        }
+        Stop(this script);
+    }
+    If (temp == 6)
+    {
+        !PC += 1;
+        address = data;
+        Call !read;
+        address = ((address + !X) % 256);
+        Stop(this script);
+    }
+    If (temp == 7)
+    {
+        !PC += 2;
+        temp = data;
+        address += 1;
+        Call !read;
+        temp += !Y;
+        address = ((data * 256) + (temp % 256));
+        If ((temp > 255) Or (!penalty == 1))
+        {
+            Call !read;
+            If (temp > 255)
+            {
+                address = ((address + 256) % 65536);
+            }
+        }
+        Stop(this script);
+    }
+    If (temp == 8)
+    {
+        !PC += 2;
+        temp = data;
+        address += 1;
+        Call !read;
+        temp += !X;
+        address = ((data * 256) + (temp % 256));
+        If ((temp > 255) Or (!penalty == 1))
+        {
+            Call !read;
+            If (temp > 255)
+            {
+                address = ((address + 256) % 65536);
+            }
+        }
+        Stop(this script);
+    }
+    If (temp == 11)
+    {
+        !PC += 1;
+        If (data == 128)
+        {
+            temp = -128;
+        }
+        Else
+        {
+            If (data > 127)
+            {
+                temp = (data % -128);
+            }
+            Else
+            {
+                temp = data;
+            }
+        }
+        Stop(this script);
+    }
+    If (temp == 12)
+    {
+        !PC += 1;
+        address = data;
+        Call !read;
+        address = ((address + !Y) % 256);
+        Stop(this script);
+    }
+    If (temp == 13)
+    {
+        !PC += 2;
+        temp = data;
+        address += 1;
+        Call !read;
+        address = ((data * 256) + temp);
+        Call !read;
+        temp = data;
+        If ((address % 256) == 255)
+        {
+            address += -255;
+        }
+        Else
+        {
+            address += 1;
+        }
+        Call !read;
+        address = ((data * 256) + temp);
+        Stop(this script);
+    }
+    If (temp == 14)
+    {
+        Sensing.Ask("CPU halted");
+        Stop(all);
+    }
+}
+
+Define !cpu (warp=true)
+{
+    address = !PC;
+    Call !read;
+    !op = data;
+    !PC += 1;
+    address += 1;
+    Call !read;
+    Call !address;
+    Call !execute;
+    Call !set p;
+    If (!ppu_cycle > 340)
+    {
+        !ppu_cycle += -341;
+        Call @ppu;
+    }
+    If (cpu_cycles > !apu_cycle)
+    {
+        !apu_cycle += 7457;
+        Call #apu;
+    }
+    If ((NMI == 1) And (!NMI_occured == 0))
+    {
+        cpu_cycles += 2;
+        !ppu_cycle += 6;
+        Call !interrupt(65530);
+        !NMI_occured = 1;
+    }
+    If ((IRQ == 1) And (!I == 0))
+    {
+        cpu_cycles += 2;
+        !ppu_cycle += 6;
+        Call !interrupt(65534);
+    }
+    If (!break == 16)
+    {
+        Call !interrupt(65534);
+        !break = 0;
+    }
+    If ((NMI == 0) And (!NMI_occured == 1))
+    {
+        !NMI_occured = 0;
+    }
+}
+
+Define !execute (warp=true)
+{
+    If ((!op % 4) == 0)
+    {
+        If ((!op % 32) == 8)
+        {
+            If (!op == 8)
+            {
+                Call php;
+                Stop(this script);
+            }
+            If (!op == 40)
+            {
+                Call plp;
+                Stop(this script);
+            }
+            If (!op == 72)
+            {
+                Call pha;
+                Stop(this script);
+            }
+            If (!op == 104)
+            {
+                Call pla;
+                Stop(this script);
+            }
+            If (!op == 136)
+            {
+                Call dey;
+                Stop(this script);
+            }
+            If (!op == 168)
+            {
+                Call tay;
+                Stop(this script);
+            }
+            If (!op == 200)
+            {
+                Call iny;
+                Stop(this script);
+            }
+            If (!op == 232)
+            {
+                Call inx;
+                Stop(this script);
+            }
+        }
+        If ((!op % 32) == 16)
+        {
+            If (!op == 16)
+            {
+                Call branch((!N == 0));
+                Stop(this script);
+            }
+            If (!op == 48)
+            {
+                Call branch((!N == 1));
+                Stop(this script);
+            }
+            If (!op == 80)
+            {
+                Call branch((!V == 0));
+                Stop(this script);
+            }
+            If (!op == 112)
+            {
+                Call branch((!V == 1));
+                Stop(this script);
+            }
+            If (!op == 144)
+            {
+                Call branch((!C == 0));
+                Stop(this script);
+            }
+            If (!op == 176)
+            {
+                Call branch((!C == 1));
+                Stop(this script);
+            }
+            If (!op == 208)
+            {
+                Call branch((!Z == 0));
+                Stop(this script);
+            }
+            If (!op == 240)
+            {
+                Call branch((!Z == 1));
+                Stop(this script);
+            }
+        }
+        If ((!op % 32) == 24)
+        {
+            If (!op == 24)
+            {
+                !C = 0;
+                Stop(this script);
+            }
+            If (!op == 56)
+            {
+                !C = 1;
+                Stop(this script);
+            }
+            If (!op == 88)
+            {
+                !I = 0;
+                Stop(this script);
+            }
+            If (!op == 120)
+            {
+                !I = 1;
+                Stop(this script);
+            }
+            If (!op == 152)
+            {
+                Call tya;
+                Stop(this script);
+            }
+            If (!op == 184)
+            {
+                !V = 0;
+                Stop(this script);
+            }
+            If (!op == 216)
+            {
+                !D = 0;
+                Stop(this script);
+            }
+            If (!op == 248)
+            {
+                !D = 1;
+                Stop(this script);
+            }
+        }
+        If (!op < 128)
+        {
+            If (!op == 0)
+            {
+                !PC += 1;
+                !break = 16;
+                Stop(this script);
+            }
+            If (!op == 32)
+            {
+                Call jsr;
+                Stop(this script);
+            }
+            If (!op == 64)
+            {
+                Call rti;
+                Stop(this script);
+            }
+            If (!op == 96)
+            {
+                Call rts;
+                Stop(this script);
+            }
+            If ((!op == 36) Or (!op == 44))
+            {
+                Call bit;
+                Stop(this script);
+            }
+            If ((!op == 76) Or (!op == 108))
+            {
+                Call jmp;
+                Stop(this script);
+            }
+            Call !read;
+            Stop(this script);
+        }
+        If (!op < 160)
+        {
+            If (!op == 128)
+            {
+                Stop(this script);
+            }
+            If (!op == 156)
+            {
+                Call shy;
+                Stop(this script);
+            }
+            Call sty;
+            Stop(this script);
+        }
+        If (!op < 192)
+        {
+            Call ldy;
+            Stop(this script);
+        }
+        If (!op < 224)
+        {
+            If (!op > 211)
+            {
+                Call !read;
+                Stop(this script);
+            }
+            Call cpy;
+            Stop(this script);
+        }
+        If (!op < 256)
+        {
+            If (!op > 243)
+            {
+                Call !read;
+                Stop(this script);
+            }
+            Call cpx;
+            Stop(this script);
+        }
+    }
+    If ((!op % 4) == 1)
+    {
+        If (!op < 32)
+        {
+            Call ora;
+            Stop(this script);
+        }
+        If (!op < 64)
+        {
+            Call and;
+            Stop(this script);
+        }
+        If (!op < 96)
+        {
+            Call eor;
+            Stop(this script);
+        }
+        If (!op < 128)
+        {
+            Call adc;
+            Stop(this script);
+        }
+        If (!op < 160)
+        {
+            If (!op == 137)
+            {
+                Stop(this script);
+            }
+            Call sta;
+            Stop(this script);
+        }
+        If (!op < 192)
+        {
+            Call lda;
+            Stop(this script);
+        }
+        If (!op < 224)
+        {
+            Call cmp;
+            Stop(this script);
+        }
+        If (!op < 256)
+        {
+            Call sbc;
+            Stop(this script);
+        }
+    }
+    If ((!op % 4) == 2)
+    {
+        If (!op < 128)
+        {
+            If ((!op % 32) == 26)
+            {
+                Stop(this script);
+            }
+            If (!op < 32)
+            {
+                Call asl;
+                Stop(this script);
+            }
+            If (!op < 64)
+            {
+                Call rol;
+                Stop(this script);
+            }
+            If (!op < 96)
+            {
+                Call lsr;
+                Stop(this script);
+            }
+            If (!op < 128)
+            {
+                Call ror;
+                Stop(this script);
+            }
+        }
+        If ((!op % 32) == 10)
+        {
+            If (!op == 138)
+            {
+                Call txa;
+                Stop(this script);
+            }
+            If (!op == 170)
+            {
+                Call tax;
+                Stop(this script);
+            }
+            If (!op == 202)
+            {
+                Call dex;
+                Stop(this script);
+            }
+            Stop(this script);
+        }
+        If ((!op % 32) == 26)
+        {
+            If (!op == 154)
+            {
+                Call txs;
+                Stop(this script);
+            }
+            If (!op == 186)
+            {
+                Call tsx;
+                Stop(this script);
+            }
+            Stop(this script);
+        }
+        If (!op < 160)
+        {
+            If (!op == 130)
+            {
+                Stop(this script);
+            }
+            If (!op == 158)
+            {
+                Call shx;
+                Stop(this script);
+            }
+            Call stx;
+            Stop(this script);
+        }
+        If (!op < 192)
+        {
+            Call ldx;
+            Stop(this script);
+        }
+        If (!op < 224)
+        {
+            If (!op == 194)
+            {
+                Stop(this script);
+            }
+            Call dec;
+            Stop(this script);
+        }
+        If (!op < 256)
+        {
+            If (!op == 226)
+            {
+                Stop(this script);
+            }
+            Call inc;
+            Stop(this script);
+        }
+    }
+    If ((!op % 4) == 3)
+    {
+        If ((!op % 32) == 11)
+        {
+            If (!op < 44)
+            {
+                Call anc;
+                Stop(this script);
+            }
+            If (!op == 75)
+            {
+                Call alr;
+                Stop(this script);
+            }
+            If (!op == 107)
+            {
+                Call arr;
+                Stop(this script);
+            }
+            If (!op == 139)
+            {
+                Call xaa;
+                Stop(this script);
+            }
+            If (!op == 171)
+            {
+                Call lax;
+                Stop(this script);
+            }
+            If (!op == 203)
+            {
+                Call axs;
+                Stop(this script);
+            }
+            If (!op == 235)
+            {
+                Call sbc;
+                Stop(this script);
+            }
+        }
+        If (!op < 32)
+        {
+            Call slo;
+            Stop(this script);
+        }
+        If (!op < 64)
+        {
+            Call rla;
+            Stop(this script);
+        }
+        If (!op < 96)
+        {
+            Call sre;
+            Stop(this script);
+        }
+        If (!op < 128)
+        {
+            Call rra;
+            Stop(this script);
+        }
+        If (!op < 160)
+        {
+            Call sax;
+            Stop(this script);
+        }
+        If (!op < 192)
+        {
+            Call lax;
+            Stop(this script);
+        }
+        If (!op < 224)
+        {
+            Call dcp;
+            Stop(this script);
+        }
+        If (!op < 256)
+        {
+            Call isc;
+            Stop(this script);
+        }
+    }
+    Sensing.Ask("How did you get this message?");
+    Stop(all);
+}
+
+Define !init (warp=true)
+{
+    Sensing.ResetTimer();
+    !A = 0;
+    !X = 0;
+    !Y = 0;
+    !PC = ((prg_rom[(prg_size - 2)] * 256) + prg_rom[(prg_size - 3)]);
+    !SP = 253;
+    !P = 36;
+    !C = 0;
+    !Z = 0;
+    !I = 1;
+    !D = 0;
+    !V = 0;
+    !N = 0;
+    NMI = 0;
+    !NMI_occured = 0;
+    IRQ = 0;
+    !break = 0;
+    cpu_cycles = 8;
+    !port1_count = 0;
+    !port2_count = 0;
+    !ctrl_strobe = 0;
+    !ppu_cycle = 27;
+    !apu_cycle = 7457;
+    List.DeleteAll(!ram);
+    Repeat (2048)
+    {
+        List.Add(!ram, 0);
+    }
+    If (battery == 0)
+    {
+        List.DeleteAll(!wram);
+        Repeat (wram_size)
+        {
+            List.Add(!wram, 0);
+        }
+    }
+    List.DeleteAll(!trace);
+}
+
+Define !interrupt(string vector) (warp=true)
+{
+    data = floor((!PC / 256));
+    Call !push;
+    data = (!PC % 256);
+    Call !push;
+    data = (!P + !break);
+    Call !push;
+    address = vector;
+    Call !read;
+    temp = data;
+    address = (vector + 1);
+    Call !read;
+    !PC = ((data * 256) + temp);
+    !I = 1;
+}
+
+Define !make tables (warp=true)
+{
+    List.DeleteAll(!and_table);
+    List.DeleteAll(!ora_table);
+    List.DeleteAll(!eor_table);
+    List.DeleteAll(!trace);
+    temp = 1;
+    Repeat (32)
+    {
+        List.Add(!trace, temp);
+        temp = (temp * 2);
+    }
+    temp = 0;
+    Repeat (3)
+    {
+        temp += 1;
+        !A = 0;
+        Repeat (256)
+        {
+            !X = 0;
+            Repeat (256)
+            {
+                !Y = 1;
+                !SP = 0;
+                Repeat (8)
+                {
+                    If (temp == 1)
+                    {
+                        !SP += (((floor((!A / !trace[!Y])) % 2) * (floor((!X / !trace[!Y])) % 2)) * !trace[!Y]);
+                    }
+                    If (temp == 2)
+                    {
+                        !SP += (ceiling((((floor((!A / !trace[!Y])) % 2) + (floor((!X / !trace[!Y])) % 2)) / 2)) * !trace[!Y]);
+                    }
+                    If (temp == 3)
+                    {
+                        !SP += ((((floor((!A / !trace[!Y])) % 2) + (floor((!X / !trace[!Y])) % 2)) % 2) * !trace[!Y]);
+                    }
+                    !Y += 1;
+                }
+                If (temp == 1)
+                {
+                    List.Add(!and_table, !SP);
+                }
+                If (temp == 2)
+                {
+                    List.Add(!ora_table, !SP);
+                }
+                If (temp == 3)
+                {
+                    List.Add(!eor_table, !SP);
+                }
+                !X += 1;
+            }
+            !A += 1;
+        }
+    }
+}
+
+Define !pull (warp=true)
+{
+    !SP = ((!SP + 1) % 256);
+    address = (!SP + 256);
+    Call !read;
+}
+
+Define !push (warp=true)
+{
+    address = (!SP + 256);
+    Call !write;
+    !SP = ((!SP - 1) % 256);
+}
+
+Define !read (warp=true)
+{
+    If (address == 80000)
+    {
+        data = !A;
+        Stop(this script);
+    }
+    cpu_cycles += 1;
+    !ppu_cycle += 3;
+    If (address < 8192)
+    {
+        data = !ram[((address % 2048) + 1)];
+        Stop(this script);
+    }
+    If ((address > 8191) And (address < 16384))
+    {
+        Call @ppu read;
+        Stop(this script);
+    }
+    If (address == 16405)
+    {
+        Call #apu read;
+        Stop(this script);
+    }
+    If (address == 16406)
+    {
+        If (!ctrl_strobe == 1)
+        {
+            data = 65;
+            Stop(this script);
+        }
+        Else
+        {
+            !port1_count += 1;
+            If (!port1_count < 9)
+            {
+                data = (64 + Sensing.KeyPressed(controls[!port1_count]));
+            }
+            Else
+            {
+                data = 65;
+            }
+            Stop(this script);
+        }
+    }
+    If (address == 16407)
+    {
+        If (!ctrl_strobe == 1)
+        {
+            data = 65;
+            Stop(this script);
+        }
+        Else
+        {
+            !port2_count += 1;
+            If (!port2_count < 9)
+            {
+                data = (64 + Sensing.KeyPressed(controls[(!port2_count + 8)]));
+            }
+            Else
+            {
+                data = 65;
+            }
+            Stop(this script);
+        }
+    }
+    If ((wram_enabled == 1) And ((address > 24575) And (address < 32768)))
+    {
+        data = !wram[((address % wram_size) + 1)];
+        Stop(this script);
+    }
+    If (address < 40960)
+    {
+        data = prg_rom[((address - 32767) + prg_banks[1])];
+        Stop(this script);
+    }
+    If (address < 49152)
+    {
+        data = prg_rom[((address - 40959) + prg_banks[2])];
+        Stop(this script);
+    }
+    If (address < 57344)
+    {
+        data = prg_rom[((address - 49151) + prg_banks[3])];
+        Stop(this script);
+    }
+    If (address < 65536)
+    {
+        data = prg_rom[((address - 57343) + prg_banks[4])];
+        Stop(this script);
+    }
+}
+
+Define !set flags (warp=true)
+{
+    temp = bin_table[(!P + 1)];
+    !N = Operator.LetterOf(temp, 1);
+    !V = Operator.LetterOf(temp, 2);
+    !D = Operator.LetterOf(temp, 5);
+    !I = Operator.LetterOf(temp, 6);
+    !Z = Operator.LetterOf(temp, 7);
+    !C = Operator.LetterOf(temp, 8);
+}
+
+Define !set p (warp=true)
+{
+    !P = 32;
+    !P += (!C * 1);
+    !P += (!Z * 2);
+    !P += (!I * 4);
+    !P += (!D * 8);
+    !P += (!V * 64);
+    !P += (!N * 128);
+}
+
+Define !trace (warp=true)
+{
+    List.Add(!trace, Operator.Join(!PC, Operator.Join(Operator.Join("  A:", !A), Operator.Join(Operator.Join(" X:", !X), Operator.Join(Operator.Join(" Y:", !Y), Operator.Join(Operator.Join(" P:", !hex[(!P - 31)]), Operator.Join(Operator.Join(" SP:", !SP), Operator.Join(" CPU:", cpu_cycles))))))));
+}
+
+Define !write (warp=true)
+{
+    If (address == 80000)
+    {
+        !A = data;
+        Stop(this script);
+    }
+    cpu_cycles += 1;
+    !ppu_cycle += 3;
+    If (address < 8192)
+    {
+        List.ReplaceItem(!ram, ((address % 2048) + 1), data);
+        Stop(this script);
+    }
+    If ((address > 8191) And (address < 16384))
+    {
+        Call @ppu write;
+        Stop(this script);
+    }
+    If ((address > 16383) And (address < 16404))
+    {
+        Call #apu write;
+        Stop(this script);
+    }
+    If (address == 16404)
+    {
+        If ((cpu_cycles % 2) == 1)
+        {
+            cpu_cycles += 1;
+            !ppu_cycle += 3;
+        }
+        temp = (data * 256);
+        Repeat (256)
+        {
+            address = temp;
+            Call !read;
+            address = 8196;
+            Call !write;
+            temp += 1;
+            If (!ppu_cycle > 340)
+            {
+                !ppu_cycle += -341;
+                Call @ppu;
+            }
+            If (cpu_cycles > !apu_cycle)
+            {
+                !apu_cycle += 7457;
+                Call #apu;
+            }
+        }
+        cpu_cycles += 1;
+        !ppu_cycle += 3;
+        Stop(this script);
+    }
+    If (address == 16405)
+    {
+        Call #apu write;
+        Stop(this script);
+    }
+    If (address == 16406)
+    {
+        If ((data % 2) == 1)
+        {
+            !ctrl_strobe = 1;
+            !port1_count = 0;
+            !port2_count = 0;
+        }
+        Else
+        {
+            !ctrl_strobe = 0;
+        }
+        Stop(this script);
+    }
+    If (address == 16407)
+    {
+        !apu_cycle = (cpu_cycles + 7457);
+        Call #apu write;
+        Stop(this script);
+    }
+    If ((wram_enabled == 1) And ((address > 24575) And (address < 32768)))
+    {
+        List.ReplaceItem(!wram, ((address % wram_size) + 1), data);
+        Stop(this script);
+    }
+    If (address > 32767)
+    {
+        Call $mapper write;
+        Stop(this script);
+    }
+}
+
+Define !zn(string reg) (warp=true)
+{
+    !Z = ((reg == 0) + );
+    !N = ((reg > 127) + );
+}
+
+Define #apu (warp=true)
+{
+    #sequence += 1;
+    If (#sequence == 1)
+    {
+        Call #quarter frame;
+        Stop(this script);
+    }
+    If (#sequence == 2)
+    {
+        Call #quarter frame;
+        Call #half frame;
+        Stop(this script);
+    }
+    If (#sequence == 3)
+    {
+        Call #quarter frame;
+        Stop(this script);
+    }
+    If (#sequence == 4)
+    {
+        If (#frame_mode == 0)
+        {
+            Call #quarter frame;
+            Call #half frame;
+            If ((#irq_inhibit == 0) And (#frame_interrupt == 0))
+            {
+                IRQ += 1;
+                #frame_interrupt = 1;
+            }
+            #sequence = 0;
+        }
+        Stop(this script);
+    }
+    If (#sequence == 5)
+    {
+        Call #quarter frame;
+        Call #half frame;
+        #sequence = 0;
+        Stop(this script);
+    }
+}
+
+Define #apu read (warp=true)
+{
+    data = ((#frame_interrupt * 64) + ((#sq0_counter > 0) + ));
+    If (#frame_interrupt == 1)
+    {
+        IRQ += -1;
+        #frame_interrupt = 0;
+    }
+}
+
+Define #apu write (warp=true)
+{
+    temp = bin_table[(data + 1)];
+    If (address == 16384)
+    {
+        #sq0_counter_halt = Operator.LetterOf(temp, 3);
+        Stop(this script);
+    }
+    If (address == 16387)
+    {
+        If (#sq0_enabled == 1)
+        {
+            #sq0_counter = #length_table[(floor((data / 8)) + 1)];
+        }
+        Stop(this script);
+    }
+    If (address == 16405)
+    {
+        #sq0_enabled = Operator.LetterOf(temp, 8);
+        If (#sq0_enabled == 0)
+        {
+            #sq0_counter = 0;
+        }
+        Stop(this script);
+    }
+    If (address == 16407)
+    {
+        #sequence = 0;
+        If ((Operator.LetterOf(temp, 2) == 1) And (#frame_interrupt == 1))
+        {
+            IRQ += -1;
+            #frame_interrupt = 0;
+        }
+        If (data > 127)
+        {
+            #frame_mode = 1;
+            Call quarter frame;
+            Call half frame;
+        }
+        Else
+        {
+            #frame_mode = 0;
+        }
+        If ((data % 128) > 63)
+        {
+            #irq_inhibit = 1;
+        }
+        Else
+        {
+            #irq_inhibit = 0;
+        }
+        Stop(this script);
+    }
+}
+
+Define #half frame (warp=true)
+{
+    If ((#sq0_counter_halt == 0) And (#sq0_counter > 0))
+    {
+        #sq0_counter += -1;
+    }
+}
+
+Define #quarter frame (warp=true)
+{
+}
+
+Define $anrom (warp=true)
+{
+    List.ReplaceItem(prg_banks, 1, ($prg_bank0 * 32768));
+    List.ReplaceItem(prg_banks, 2, (($prg_bank0 * 32768) + 8192));
+    List.ReplaceItem(prg_banks, 3, (($prg_bank0 * 32768) + 16384));
+    List.ReplaceItem(prg_banks, 4, (($prg_bank0 * 32768) + 24576));
+}
+
+Define $cnrom (warp=true)
+{
+    coolnes_convert = 1;
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+}
+
+Define $init (warp=true)
+{
+    List.DeleteAll(pattern);
+    List.DeleteAll(prg_banks);
+    List.Add(prg_banks, ((prg_size - 32768) % prg_size));
+    List.Add(prg_banks, ((prg_size - 24576) % prg_size));
+    List.Add(prg_banks, ((prg_size - 16384) % prg_size));
+    List.Add(prg_banks, ((prg_size - 8192) % prg_size));
+    $reg0 = 0;
+    $reg1 = 0;
+    $prg_bank0 = 0;
+    $prg_bank1 = 0;
+    $prg_bank2 = 0;
+    $prg_bank3 = 0;
+    $chr_bank0 = 0;
+    $chr_bank1 = 0;
+    $chr_bank2 = 0;
+    $chr_bank3 = 0;
+    $chr_bank4 = 0;
+    $chr_bank5 = 0;
+    $chr_bank6 = 0;
+    $chr_bank7 = 0;
+    $prg_bank_mode = 0;
+    $chr_bank_mode = 0;
+    wram_enabled = 0;
+    wram_size = 0;
+    $irq_enabled = 0;
+    $irq_counter = 0;
+    $irq_latch = 0;
+    $irq_occured = 0;
+    $irq_reload = 0;
+    If (mapper == 0)
+    {
+        If (chr_ram == 0)
+        {
+            control_for_each ?? - probably legacy function from Scratch 2.0;
+        }
+        Else
+        {
+            Repeat (8192)
+            {
+                List.Add(pattern, 0);
+            }
+        }
+        Stop(this script);
+    }
+    If (mapper == 1)
+    {
+        wram_enabled = 1;
+        wram_size = 8192;
+        $reg0 = "";
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+        Stop(this script);
+    }
+    If (mapper == 2)
+    {
+        Repeat (8192)
+        {
+            List.Add(pattern, 0);
+        }
+        Stop(this script);
+    }
+    If (mapper == 3)
+    {
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+        Stop(this script);
+    }
+    If (mapper == 4)
+    {
+        wram_enabled = 1;
+        wram_size = 8192;
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+        Stop(this script);
+    }
+    If (mapper == 7)
+    {
+        Call $mirror_a;
+        Repeat (8192)
+        {
+            List.Add(pattern, 0);
+        }
+        Stop(this script);
+    }
+    If (mapper == 75)
+    {
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+        Stop(this script);
+    }
+}
+
+Define $mapper write (warp=true)
+{
+    If (mapper == 0)
+    {
+        Stop(this script);
+    }
+    If (mapper == 1)
+    {
+        If (data > 127)
+        {
+            $reg0 = "";
+            Stop(this script);
+        }
+        If (Variable.Length($reg0) < 4)
+        {
+            $reg0 = Operator.Join((data % 2), $reg0);
+            Stop(this script);
+        }
+        Else
+        {
+            $reg1 = (Operator.Join("0b", Operator.Join((data % 2), $reg0)) + );
+            $reg0 = "";
+            If (address < 40960)
+            {
+                If (($reg1 % 4) == 0)
+                {
+                    Call $mirror_a;
+                }
+                If (($reg1 % 4) == 1)
+                {
+                    Call $mirror_b;
+                }
+                If (($reg1 % 4) == 2)
+                {
+                    Call $mirror_v;
+                }
+                If (($reg1 % 4) == 3)
+                {
+                    Call $mirror_h;
+                }
+                $prg_bank_mode = (floor(($reg1 / 4)) % 4);
+                $chr_bank_mode = (($reg1 > 15) + );
+                Call $mmc1;
+                Stop(this script);
+            }
+            If (address < 49152)
+            {
+                If (($reg1 == $chr_bank0) Or (chr_ram == 1))
+                {
+                    Stop(this script);
+                }
+                $chr_bank0 = $reg1;
+                coolnes_convert = 1;
+                If ($chr_bank_mode == 1)
+                {
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                }
+                Else
+                {
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                }
+                Stop(this script);
+            }
+            If (address < 57344)
+            {
+                If ($chr_bank_mode == 1)
+                {
+                    If (($reg1 == $chr_bank1) Or (chr_ram == 1))
+                    {
+                        Stop(this script);
+                    }
+                    $chr_bank1 = $reg1;
+                    coolnes_convert = 1;
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                }
+                Stop(this script);
+            }
+            If (address < 65536)
+            {
+                wram_enabled = (($reg1 < 16) + );
+                $prg_bank0 = ($reg1 % 16);
+                Call $mmc1;
+                Stop(this script);
+            }
+        }
+    }
+    If (mapper == 2)
+    {
+        $prg_bank0 = (data % 8);
+        Call $unrom;
+        Stop(this script);
+    }
+    If (mapper == 3)
+    {
+        If ((data % 4) == $chr_bank0)
+        {
+            Stop(this script);
+        }
+        $chr_bank0 = (data % 4);
+        Call $cnrom;
+        Stop(this script);
+    }
+    If (mapper == 4)
+    {
+        If (address < 40960)
+        {
+            If ((address % 2) == 0)
+            {
+                $reg0 = (data % 8);
+                $prg_bank_mode = Operator.LetterOf(bin_table[(data + 1)], 2);
+                $chr_bank_mode = ((data > 128) + );
+                Call $mmc3;
+                Stop(this script);
+            }
+            If ((address % 2) == 1)
+            {
+                If ($reg0 == 0)
+                {
+                    If ((data == $chr_bank0) Or (chr_ram == 1))
+                    {
+                        Stop(this script);
+                    }
+                    $chr_bank0 = (data - (data % 2));
+                    coolnes_convert = 1;
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                    Stop(this script);
+                }
+                If ($reg0 == 1)
+                {
+                    If ((data == $chr_bank1) Or (chr_ram == 1))
+                    {
+                        Stop(this script);
+                    }
+                    $chr_bank1 = (data - (data % 2));
+                    coolnes_convert = 1;
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                    Stop(this script);
+                }
+                If ($reg0 == 2)
+                {
+                    If ((data == $chr_bank2) Or (chr_ram == 1))
+                    {
+                        Stop(this script);
+                    }
+                    $chr_bank2 = data;
+                    coolnes_convert = 1;
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                    Stop(this script);
+                }
+                If ($reg0 == 3)
+                {
+                    If ((data == $chr_bank3) Or (chr_ram == 1))
+                    {
+                        Stop(this script);
+                    }
+                    $chr_bank3 = data;
+                    coolnes_convert = 1;
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                    Stop(this script);
+                }
+                If ($reg0 == 4)
+                {
+                    If ((data == $chr_bank4) Or (chr_ram == 1))
+                    {
+                        Stop(this script);
+                    }
+                    $chr_bank4 = data;
+                    coolnes_convert = 1;
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                    Stop(this script);
+                }
+                If ($reg0 == 5)
+                {
+                    If ((data == $chr_bank5) Or (chr_ram == 1))
+                    {
+                        Stop(this script);
+                    }
+                    $chr_bank5 = data;
+                    coolnes_convert = 1;
+                    control_for_each ?? - probably legacy function from Scratch 2.0;
+                    Stop(this script);
+                }
+                If ($reg0 == 6)
+                {
+                    $prg_bank0 = (data % 64);
+                    Call $mmc3;
+                }
+                If ($reg0 == 7)
+                {
+                    $prg_bank1 = (data % 64);
+                    Call $mmc3;
+                }
+                Stop(this script);
+            }
+        }
+        If (address < 49152)
+        {
+            If ((address % 2) == 0)
+            {
+                If ((data % 2) == 1)
+                {
+                    Call $mirror_h;
+                }
+                Else
+                {
+                    Call $mirror_v;
+                }
+                Stop(this script);
+            }
+            If ((address % 2) == 1)
+            {
+                wram_enabled = Operator.LetterOf(bin_table[(data + 1)], 1);
+                Stop(this script);
+            }
+        }
+        If (address < 57344)
+        {
+            If ((address % 2) == 0)
+            {
+                $irq_latch = data;
+                Stop(this script);
+            }
+            If ((address % 2) == 1)
+            {
+                $irq_reload = 1;
+                Stop(this script);
+            }
+        }
+        If (address < 65536)
+        {
+            If ((address % 2) == 0)
+            {
+                $irq_enabled = 0;
+                If ($irq_occured == 1)
+                {
+                    IRQ += -1;
+                    $irq_occured = 0;
+                }
+                Stop(this script);
+            }
+            If ((address % 2) == 1)
+            {
+                $irq_enabled = 1;
+                Stop(this script);
+            }
+        }
+    }
+    If (mapper == 7)
+    {
+        $prg_bank0 = (data % 8);
+        Call $anrom;
+        If (Operator.LetterOf(bin_table[(data + 1)], 4) == 0)
+        {
+            Call $mirror_a;
+        }
+        Else
+        {
+            Call $mirror_b;
+        }
+        Stop(this script);
+    }
+    If (mapper == 75)
+    {
+        If ((address > 32767) And (address < 36864))
+        {
+            $prg_bank0 = (data % 16);
+            Call $vrc1;
+            Stop(this script);
+        }
+        If ((address > 36863) And (address < 40960))
+        {
+            If ((data % 2) == 0)
+            {
+                Call $mirror_v;
+            }
+            Else
+            {
+                Call $mirror_h;
+            }
+            $chr_bank0 = (($chr_bank0 % 16) + (floor(((data % 4) / 2)) * 16));
+            $chr_bank1 = (($chr_bank1 % 16) + (floor(((data % 8) / 4)) * 16));
+            Stop(this script);
+        }
+        If ((address > 40959) And (address < 45056))
+        {
+            $prg_bank1 = (data % 16);
+            Call $vrc1;
+            Stop(this script);
+        }
+        If ((address > 49151) And (address < 53248))
+        {
+            $prg_bank2 = (data % 16);
+            Call $vrc1;
+            Stop(this script);
+        }
+        If ((address > 57343) And (address < 61440))
+        {
+            If ((data % 16) == ($chr_bank0 % 16))
+            {
+                Stop(this script);
+            }
+            $chr_bank0 = ((data % 16) + (floor(($chr_bank0 / 16)) * 16));
+            coolnes_convert = 1;
+            control_for_each ?? - probably legacy function from Scratch 2.0;
+            Stop(this script);
+        }
+        If ((address > 61439) And (address < 65536))
+        {
+            If ((data % 16) == ($chr_bank1 % 16))
+            {
+                Stop(this script);
+            }
+            $chr_bank1 = ((data % 16) + (floor(($chr_bank1 / 16)) * 16));
+            coolnes_convert = 1;
+            control_for_each ?? - probably legacy function from Scratch 2.0;
+            Stop(this script);
+        }
+    }
+}
+
+Define $mirror_a (warp=true)
+{
+    List.ReplaceItem(nt_map, 1, 0);
+    List.ReplaceItem(nt_map, 2, 0);
+    List.ReplaceItem(nt_map, 3, 0);
+    List.ReplaceItem(nt_map, 4, 0);
+}
+
+Define $mirror_b (warp=true)
+{
+    List.ReplaceItem(nt_map, 1, 1);
+    List.ReplaceItem(nt_map, 2, 1);
+    List.ReplaceItem(nt_map, 3, 1);
+    List.ReplaceItem(nt_map, 4, 1);
+}
+
+Define $mirror_h (warp=true)
+{
+    List.ReplaceItem(nt_map, 1, 0);
+    List.ReplaceItem(nt_map, 2, 0);
+    List.ReplaceItem(nt_map, 3, 1);
+    List.ReplaceItem(nt_map, 4, 1);
+}
+
+Define $mirror_v (warp=true)
+{
+    List.ReplaceItem(nt_map, 1, 0);
+    List.ReplaceItem(nt_map, 2, 1);
+    List.ReplaceItem(nt_map, 3, 0);
+    List.ReplaceItem(nt_map, 4, 1);
+}
+
+Define $mmc1 (warp=true)
+{
+    If ($prg_bank_mode < 2)
+    {
+    }
+    If ($prg_bank_mode == 2)
+    {
+    }
+    If ($prg_bank_mode == 3)
+    {
+        List.ReplaceItem(prg_banks, 1, ($prg_bank0 * 16384));
+        List.ReplaceItem(prg_banks, 2, (($prg_bank0 * 16384) + 8192));
+        List.ReplaceItem(prg_banks, 3, (prg_size - 16384));
+        List.ReplaceItem(prg_banks, 4, (prg_size - 8192));
+    }
+}
+
+Define $mmc3 (warp=true)
+{
+    If ($prg_bank_mode == 0)
+    {
+        List.ReplaceItem(prg_banks, 1, (($prg_bank0 * 8192) % prg_size));
+        List.ReplaceItem(prg_banks, 3, (prg_size - 16384));
+    }
+    Else
+    {
+        List.ReplaceItem(prg_banks, 1, (prg_size - 16384));
+        List.ReplaceItem(prg_banks, 3, (($prg_bank0 * 8192) % prg_size));
+    }
+    List.ReplaceItem(prg_banks, 2, (($prg_bank1 * 8192) % prg_size));
+}
+
+Define $unrom (warp=true)
+{
+    List.ReplaceItem(prg_banks, 1, ($prg_bank0 * 16384));
+    List.ReplaceItem(prg_banks, 2, (($prg_bank0 * 16384) + 8192));
+}
+
+Define $vrc1 (warp=true)
+{
+    List.ReplaceItem(prg_banks, 1, (($prg_bank0 * 8192) % prg_size));
+    List.ReplaceItem(prg_banks, 2, (($prg_bank1 * 8192) % prg_size));
+    List.ReplaceItem(prg_banks, 3, (($prg_bank2 * 8192) % prg_size));
+    List.ReplaceItem(prg_banks, 4, (prg_size - 8192));
+}
+
+Define @$mapper (warp=true)
+{
+    If (mapper == 4)
+    {
+        If (render_enabled == 1)
+        {
+            If ((($irq_latch == (@scanline + 2)) And ($irq_enabled == 1)) And ($irq_occured == 0))
+            {
+                IRQ += 1;
+                $irq_occured = 1;
+            }
+        }
+    }
+}
+
+Define @convert (warp=true)
+{
+    List.DeleteAll(@convert);
+    @counter = 0;
+    Repeat (512)
+    {
+        Repeat (8)
+        {
+            @counter += 1;
+            @palette = Operator.Join(bin_table[(pattern[@counter] + 1)], bin_table[(pattern[(@counter + 8)] + 1)]);
+            @result = "";
+            control_for_each ?? - probably legacy function from Scratch 2.0;
+            List.Add(@convert, @result);
+        }
+        @counter += 8;
+    }
+}
+
+Define @cycle (warp=true)
+{
+    If (@scanline == -1)
+    {
+        If (render_enabled == 1)
+        {
+            @vram_addr = @temp_addr;
+        }
+        @scanline += 1;
+        Stop(this script);
+    }
+    If ((@scanline > -1) And (@scanline < 240))
+    {
+        If ((coolnes_convert == 1) And (render_enabled == 1))
+        {
+            Call @convert;
+            coolnes_convert = 0;
+        }
+        If (@render_bg == 1)
+        {
+            control_for_each ?? - probably legacy function from Scratch 2.0;
+            @vram_addr += 4096;
+            If (@vram_addr > 32767)
+            {
+                @vram_addr += -32736;
+                If (floor(((@vram_addr % 1024) / 32)) == 30)
+                {
+                    @vram_addr += -960;
+                    temp = floor((@vram_addr / 4096));
+                    @vram_addr = ((@vram_addr + 2048) % 4096);
+                    @vram_addr += (temp * 4096);
+                }
+            }
+            @vram_addr = ((@vram_addr - (@vram_addr % 32)) + (@temp_addr % 32));
+            temp = floor((@vram_addr / 1024));
+            temp = ((temp - (temp % 2)) + floor(((@temp_addr % 2048) / 1024)));
+            @vram_addr = ((@vram_addr % 1024) + (temp * 1024));
+        }
+        Else
+        {
+            Repeat (256)
+            {
+                List.Add(pixel_buffer, 0);
+            }
+        }
+        If (@render_sprite == 1)
+        {
+            @counter = (List.Length(@temp_oam) - 3);
+            Repeat ((List.Length(@temp_oam) / 4))
+            {
+                @sprite_y = @temp_oam[@counter];
+                @tile_index = @temp_oam[(@counter + 1)];
+                @sprite_attribute = @temp_oam[(@counter + 2)];
+                @sprite_x = @temp_oam[(@counter + 3)];
+                If (@sprite_size == 2)
+                {
+                    @tile_index = ((@tile_index - (@tile_index % 2)) + ((@tile_index % 2) * 256));
+                }
+                Else
+                {
+                    @tile_index += @sprite_pattern;
+                }
+                @palette = (((@sprite_attribute % 4) * 4) + 1);
+                @sprite0_bit = (((@sprite_attribute % 8) > 3) + );
+                @priority = (((@sprite_attribute % 64) < 31) + );
+                @hflip = (((@sprite_attribute % 128) > 63) + );
+                Call @draw sprite line;
+                @counter += -4;
+            }
+            List.DeleteAll(@temp_oam);
+            temp = 0;
+            @counter = 1;
+            Repeat Until ((temp == 8) Or (@counter == 257))
+            {
+                If ((@oam_mem[@counter] < (@scanline + 1)) And (@oam_mem[@counter] > (@scanline - (8 * @sprite_size))))
+                {
+                    Repeat (4)
+                    {
+                        If (@counter == 3)
+                        {
+                            List.Add(@temp_oam, (@oam_mem[@counter] + 4));
+                        }
+                        Else
+                        {
+                            List.Add(@temp_oam, @oam_mem[@counter]);
+                        }
+                        @counter += 1;
+                    }
+                    temp += 1;
+                }
+                Else
+                {
+                    @counter += 4;
+                }
+            }
+        }
+        @scanline += 1;
+        Stop(this script);
+    }
+    If (@scanline == 240)
+    {
+        @scanline += 1;
+        Stop(this script);
+    }
+    If (@scanline == 241)
+    {
+        @nmi_flag = 1;
+        If (@nmi_enabled == 1)
+        {
+            NMI = 1;
+        }
+        @scanline += 1;
+        Stop(this script);
+    }
+    If (@scanline < 261)
+    {
+        @scanline += 1;
+        Stop(this script);
+    }
+    If (@scanline == 261)
+    {
+        @scanline += -262;
+        @sprite_hit = 0;
+        @sprite_overflow = 0;
+        @nmi_flag = 0;
+        NMI = 0;
+        frame += 1;
+        List.DeleteAll(pixel_buffer);
+        List.DeleteAll(@temp_oam);
+        Stop(this script);
+    }
+}
+
+Define @draw bg line (warp=true)
+{
+    @result = @convert[(((@tile_index * 8) + floor((@vram_addr / 4096))) + 1)];
+    @bit = 0;
+    Repeat (8)
+    {
+        @bit += 1;
+        If ((Operator.LetterOf(@result, @bit) == 0) Or ((@mask_bg == 0) And ((List.Length(pixel_buffer) % 256) < 8)))
+        {
+            List.Add(pixel_buffer, 0);
+        }
+        Else
+        {
+            List.Add(pixel_buffer, @bg_palette[(@palette + Operator.LetterOf(@result, @bit))]);
+        }
+    }
+}
+
+Define @draw clipped left (warp=true)
+{
+    @result = @convert[(((@tile_index * 8) + floor((@vram_addr / 4096))) + 1)];
+    @bit = @fine_x;
+    If (@mask_bg == 0)
+    {
+        Repeat ((8 - @fine_x))
+        {
+            List.Add(pixel_buffer, 0);
+        }
+        Stop(this script);
+    }
+    Repeat ((8 - @fine_x))
+    {
+        @bit += 1;
+        If (Operator.LetterOf(@result, @bit) == 0)
+        {
+            List.Add(pixel_buffer, 0);
+        }
+        Else
+        {
+            List.Add(pixel_buffer, @bg_palette[(@palette + Operator.LetterOf(@result, @bit))]);
+        }
+    }
+}
+
+Define @draw clipped right (warp=true)
+{
+    @result = @convert[(((@tile_index * 8) + floor((@vram_addr / 4096))) + 1)];
+    @bit = 0;
+    Repeat (@fine_x)
+    {
+        @bit += 1;
+        If (Operator.LetterOf(@result, @bit) == 0)
+        {
+            List.Add(pixel_buffer, 0);
+        }
+        Else
+        {
+            List.Add(pixel_buffer, @bg_palette[(@palette + Operator.LetterOf(@result, @bit))]);
+        }
+    }
+}
+
+Define @draw sprite line (warp=true)
+{
+    @bit = (@hflip * 9);
+    If (@sprite_attribute > 127)
+    {
+        @result = @convert[(((@tile_index * 8) + (((((@scanline - 1) - @sprite_y) + 1) % (-8 * @sprite_size)) * -1)) + 1)];
+    }
+    Else
+    {
+        @result = @convert[(((@tile_index * 8) + ((@scanline - 1) - @sprite_y)) + 1)];
+    }
+    Repeat (8)
+    {
+        @bit += (1 - (@hflip * 2));
+        @sprite_x += 1;
+        If (Not (((Operator.LetterOf(@result, @bit) == 0) Or ((@mask_sprite == 0) And (@sprite_x < 9)))))
+        {
+            If ((@sprite0_bit == 1) And ((@scanline < 240) And ((@sprite_x < 256) And (Not ((pixel_buffer[((@scanline * 256) + @sprite_x)] == 0))))))
+            {
+                @sprite_hit = 1;
+            }
+            If (@priority == 0)
+            {
+                If (pixel_buffer[((@scanline * 256) + @sprite_x)] == 0)
+                {
+                    List.ReplaceItem(pixel_buffer, ((@scanline * 256) + @sprite_x), @spr_palette[(@palette + Operator.LetterOf(@result, @bit))]);
+                }
+            }
+            Else
+            {
+                List.ReplaceItem(pixel_buffer, ((@scanline * 256) + @sprite_x), @spr_palette[(@palette + Operator.LetterOf(@result, @bit))]);
+            }
+        }
+    }
+}
+
+Define @init (warp=true)
+{
+    List.DeleteAll(pixel_buffer);
+    List.DeleteAll(@bg_palette);
+    List.DeleteAll(@spr_palette);
+    Repeat (16)
+    {
+        List.Add(@bg_palette, @palette[Operator.Random(1 / 64)]);
+        List.Add(@spr_palette, @palette[Operator.Random(1 / 64)]);
+    }
+    bg_color = @bg_palette[1];
+    List.DeleteAll(@ciram0);
+    List.DeleteAll(@ciram1);
+    Repeat (1024)
+    {
+        List.Add(@ciram0, 0);
+        List.Add(@ciram1, 0);
+    }
+    List.DeleteAll(@attribute0);
+    List.DeleteAll(@attribute1);
+    Repeat (960)
+    {
+        List.Add(@attribute0, 0);
+        List.Add(@attribute1, 0);
+    }
+    List.DeleteAll(@oam_mem);
+    Repeat (256)
+    {
+        List.Add(@oam_mem, 0);
+    }
+    List.DeleteAll(@temp_oam);
+}
+
+Define @ppu (warp=true)
+{
+    Call @cycle;
+    Call @$mapper;
+    If (@scanline == 241)
+    {
+        @frameskip += 1;
+        If (@frameskip > Frameskip)
+        {
+            @frameskip = 0;
+            Event.Broadcast("coolnes_draw");
+        }
+    }
+}
+
+Define @ppu read (warp=true)
+{
+    If ((address % 8) == 2)
+    {
+        @data_latch = Operator.Join(Operator.LetterOf(@data_latch, 4), Operator.Join(Operator.LetterOf(@data_latch, 5), Operator.Join(Operator.LetterOf(@data_latch, 6), Operator.Join(Operator.LetterOf(@data_latch, 7), Operator.LetterOf(@data_latch, 8)))));
+        @data_latch = Operator.Join(Operator.Join(@nmi_flag, @sprite_hit), Operator.Join(@sprite_overflow, @data_latch));
+        @nmi_flag = 0;
+        @write_toggle = 0;
+        NMI = 0;
+        data = (Operator.Join("0b", @data_latch) + );
+        Stop(this script);
+    }
+    If ((address % 8) == 4)
+    {
+        data = @oam_mem[@oam_addr];
+        Stop(this script);
+    }
+    If ((address % 8) == 7)
+    {
+        data = @read_buffer;
+        If (@vram_addr < 8192)
+        {
+            @read_buffer = pattern[(@vram_addr + 1)];
+        }
+        Else
+        {
+            Call @read nt;
+            @read_buffer = @nt_data;
+        }
+        If (@vram_incr == 0)
+        {
+            @vram_addr += 1;
+            Stop(this script);
+        }
+        If (@vram_incr == 1)
+        {
+            @vram_addr += 32;
+            Stop(this script);
+        }
+    }
+}
+
+Define @ppu write (warp=true)
+{
+    @data_latch = bin_table[(data + 1)];
+    If ((address % 8) == 0)
+    {
+        @nmi_enabled = Operator.LetterOf(@data_latch, 1);
+        If ((@nmi_enabled == 1) And (@nmi_flag == 1))
+        {
+            NMI = 1;
+        }
+        @sprite_size = (Operator.LetterOf(@data_latch, 3) + 1);
+        @bg_pattern = (Operator.LetterOf(@data_latch, 4) * 256);
+        @sprite_pattern = (Operator.LetterOf(@data_latch, 5) * 256);
+        @vram_incr = Operator.LetterOf(@data_latch, 6);
+        temp = floor((@temp_addr / 1024));
+        temp = ((temp - (temp % 4)) + (data % 4));
+        @temp_addr = ((@temp_addr % 1024) + (temp * 1024));
+        Stop(this script);
+    }
+    If ((address % 8) == 1)
+    {
+        @render_sprite = Operator.LetterOf(@data_latch, 4);
+        @render_bg = Operator.LetterOf(@data_latch, 5);
+        render_enabled = (((@render_bg == 1) Or (@render_sprite == 1)) + );
+        @mask_sprite = Operator.LetterOf(@data_latch, 6);
+        @mask_bg = Operator.LetterOf(@data_latch, 7);
+        Stop(this script);
+    }
+    If ((address % 8) == 3)
+    {
+        @oam_addr = (data + 1);
+        Stop(this script);
+    }
+    If ((address % 8) == 4)
+    {
+        List.ReplaceItem(@oam_mem, @oam_addr, data);
+        @oam_addr += 1;
+        If (@oam_addr == 257)
+        {
+            @oam_addr = 1;
+        }
+        Stop(this script);
+    }
+    If ((address % 8) == 5)
+    {
+        If (@write_toggle == 0)
+        {
+            @temp_addr = ((@temp_addr - (@temp_addr % 32)) + floor((data / 8)));
+            @fine_x = (data % 8);
+            @write_toggle = 1;
+        }
+        Else
+        {
+            temp = floor((@temp_addr / 1024));
+            @temp_addr = (@temp_addr % 32);
+            @temp_addr += ((data - (data % 8)) * 4);
+            temp = ((temp % 4) + ((data % 8) * 4));
+            @temp_addr += (temp * 1024);
+            @write_toggle = 0;
+        }
+        Stop(this script);
+    }
+    If ((address % 8) == 6)
+    {
+        If (@write_toggle == 0)
+        {
+            temp = (data % 64);
+            @temp_addr = ((@temp_addr % 256) + (data * 256));
+            @write_toggle = 1;
+        }
+        Else
+        {
+            @temp_addr = (@temp_addr - (@temp_addr % 256));
+            @temp_addr += data;
+            @vram_addr = @temp_addr;
+            @write_toggle = 0;
+        }
+        Stop(this script);
+    }
+    If ((address % 8) == 7)
+    {
+        If (@vram_addr < 16128)
+        {
+            If ((@vram_addr < 8192) And (chr_ram == 1))
+            {
+                List.ReplaceItem(pattern, (@vram_addr + 1), data);
+                coolnes_convert = 1;
+            }
+            If (@vram_addr > 8191)
+            {
+                Call @write nt;
+                If ((@vram_addr % 1024) > 959)
+                {
+                    Call @write at;
+                }
+            }
+        }
+        Else
+        {
+            If ((@vram_addr % 32) < 16)
+            {
+                List.ReplaceItem(@bg_palette, ((@vram_addr % 16) + 1), @palette[((data % 64) + 1)]);
+            }
+            Else
+            {
+                List.ReplaceItem(@spr_palette, ((@vram_addr % 16) + 1), @palette[((data % 64) + 1)]);
+            }
+            If ((@vram_addr % 16) == 0)
+            {
+                bg_color = @palette[((data % 64) + 1)];
+            }
+        }
+        If (@vram_incr == 0)
+        {
+            @vram_addr += 1;
+            Stop(this script);
+        }
+        If (@vram_incr == 1)
+        {
+            @vram_addr += 32;
+            Stop(this script);
+        }
+    }
+}
+
+Define @read at (warp=true)
+{
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+}
+
+Define @read nt (warp=true)
+{
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+}
+
+Define @write at (warp=true)
+{
+    @result = ((@vram_addr % 1024) - 960);
+    @result = (((@result * 4) + (floor((@result / 8)) * 96)) + 1);
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+}
+
+Define @write nt (warp=true)
+{
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+}
+
+Define adc (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    temp = (((!A - ((!A > 127) * 256)) + (data - ((data > 127) * 256))) + !C);
+    !V = (((temp > 127) Or (temp < -128)) + );
+    !A = ((!A + data) + !C);
+    !C = ((!A > 255) + );
+    !A = (!A % 256);
+    Call !zn(!A);
+}
+
+Define alr (warp=false)
+{
+    Call and;
+    !C = (!A % 2);
+    !A = floor((!A / 2));
+    Call !zn(!A);
+}
+
+Define anc (warp=true)
+{
+    Call and;
+    !C = !N;
+}
+
+Define and (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    !A = !and_table[(((data * 256) + !A) + 1)];
+    Call !zn(!A);
+}
+
+Define arr (warp=false)
+{
+    Call and;
+    temp = (!A % 2);
+    !A = ((floor((!A / 2)) + (!C * 128)) % 256);
+    !C = temp;
+    Call !zn(!A);
+    !C = (((!A % 128) > 63) + );
+    !V = ((Not ((((!A % 128) > 63) == ((!A % 64) > 31)))) + );
+}
+
+Define asl (warp=false)
+{
+    Call !read;
+    Call !write;
+    !C = ((data > 127) + );
+    data = ((data * 2) % 256);
+    Call !zn(data);
+    Call !write;
+}
+
+Define axs (warp=false)
+{
+    !X = !and_table[(((!A * 256) + !X) + 1)];
+    !X = (!X - data);
+    !C = ((!X > -1) + );
+    !X = (!X % 256);
+    Call !zn(!X);
+}
+
+Define bit (warp=false)
+{
+    Call !read;
+    !N = ((data > 127) + );
+    !V = ((((data % 128) > 63) == 1) + );
+    !Z = ((!and_table[(((data * 256) + !A) + 1)] == 0) + );
+}
+
+Define branch(bool condition) (warp=false)
+{
+    If condition
+    {
+        address += 1;
+        Call !read;
+        !penalty = floor((!PC / 256));
+        !PC += temp;
+        If (Not ((floor((!PC / 256)) == !penalty)))
+        {
+            Call !read;
+        }
+    }
+}
+
+Define cmp (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    !C = ((!A > (data - 1)) + );
+    !Z = ((!A == data) + );
+    !N = ((((!A - data) % 256) > 127) + );
+}
+
+Define cpx (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    !C = ((!X > (data - 1)) + );
+    !Z = ((!X == data) + );
+    !N = ((((!X - data) % 256) > 127) + );
+}
+
+Define cpy (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    !C = ((!Y > (data - 1)) + );
+    !Z = ((!Y == data) + );
+    !N = ((((!Y - data) % 256) > 127) + );
+}
+
+Define dcp (warp=false)
+{
+    Call !read;
+    Call !write;
+    data = ((data - 1) % 256);
+    Call !write;
+    !C = ((!A > (data - 1)) + );
+    !Z = ((!A == data) + );
+    !N = ((((!A - data) % 256) > 127) + );
+}
+
+Define dec (warp=false)
+{
+    Call !read;
+    Call !write;
+    data = ((data - 1) % 256);
+    Call !zn(data);
+    Call !write;
+}
+
+Define dex (warp=false)
+{
+    !X = ((!X - 1) % 256);
+    Call !zn(!X);
+}
+
+Define dey (warp=false)
+{
+    !Y = ((!Y - 1) % 256);
+    Call !zn(!Y);
+}
+
+Define eor (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    !A = !eor_table[(((data * 256) + !A) + 1)];
+    Call !zn(!A);
+}
+
+Define inc (warp=false)
+{
+    Call !read;
+    Call !write;
+    data = ((data + 1) % 256);
+    Call !zn(data);
+    Call !write;
+}
+
+Define inx (warp=false)
+{
+    !X = ((!X + 1) % 256);
+    Call !zn(!X);
+}
+
+Define iny (warp=false)
+{
+    !Y = ((!Y + 1) % 256);
+    Call !zn(!Y);
+}
+
+Define isc (warp=false)
+{
+    Call !read;
+    Call !write;
+    data = ((data + 1) % 256);
+    Call !write;
+    temp = (((!A - ((!A > 127) * 256)) - (data - ((data > 127) * 256))) - (!C < 1));
+    !V = (((temp > 127) Or (temp < -128)) + );
+    !A = ((!A - data) - (!C < 1));
+    !C = ((!A > -1) + );
+    !A = (!A % 256);
+    Call !zn(!A);
+}
+
+Define jmp (warp=false)
+{
+    !PC = address;
+}
+
+Define jsr (warp=false)
+{
+    !PC += 1;
+    temp = data;
+    address = (!SP + 256);
+    Call !read;
+    data = floor((!PC / 256));
+    Call !push;
+    data = (!PC % 256);
+    Call !push;
+    address = !PC;
+    Call !read;
+    !PC = ((data * 256) + temp);
+}
+
+Define lax (warp=false)
+{
+    Call lda;
+    !X = !A;
+    Call !zn(!X);
+}
+
+Define lda (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    !A = data;
+    Call !zn(!A);
+}
+
+Define ldx (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    Call !zn(data);
+    !X = data;
+}
+
+Define ldy (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    Call !zn(data);
+    !Y = data;
+}
+
+Define lsr (warp=false)
+{
+    Call !read;
+    Call !write;
+    !C = (data % 2);
+    data = floor((data / 2));
+    Call !zn(data);
+    Call !write;
+}
+
+Define ora (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    !A = !ora_table[(((data * 256) + !A) + 1)];
+    Call !zn(!A);
+}
+
+Define pha (warp=false)
+{
+    data = !A;
+    Call !push;
+}
+
+Define php (warp=false)
+{
+    data = (!P + 16);
+    Call !push;
+}
+
+Define pla (warp=false)
+{
+    address = (256 + !SP);
+    Call !read;
+    Call !pull;
+    !A = data;
+    Call !zn(!A);
+}
+
+Define plp (warp=false)
+{
+    address = (256 + !SP);
+    Call !read;
+    Call !pull;
+    !P = data;
+    Call !set flags;
+}
+
+Define rla (warp=false)
+{
+    Call !read;
+    Call !write;
+    temp = ((data > 127) + );
+    data = (((data * 2) + !C) % 256);
+    !C = temp;
+    Call !write;
+    !A = !and_table[(((data * 256) + !A) + 1)];
+    Call !zn(!A);
+}
+
+Define rol (warp=false)
+{
+    Call !read;
+    Call !write;
+    temp = ((data > 127) + );
+    data = (((data * 2) + !C) % 256);
+    !C = temp;
+    Call !zn(data);
+    Call !write;
+}
+
+Define ror (warp=false)
+{
+    Call !read;
+    Call !write;
+    temp = (data % 2);
+    data = ((floor((data / 2)) + (!C * 128)) % 256);
+    !C = temp;
+    Call !zn(data);
+    Call !write;
+}
+
+Define rra (warp=false)
+{
+    Call !read;
+    Call !write;
+    temp = (data % 2);
+    data = ((floor((data / 2)) + (!C * 128)) % 256);
+    !C = temp;
+    Call !write;
+    temp = (((!A - ((!A > 127) * 256)) + (data - ((data > 127) * 256))) + !C);
+    !V = (((temp > 127) Or (temp < -128)) + );
+    !A = ((!A + data) + !C);
+    !C = ((!A > 255) + );
+    !A = (!A % 256);
+    Call !zn(!A);
+}
+
+Define rti (warp=false)
+{
+    address = (!SP + 256);
+    Call !read;
+    Call !pull;
+    !P = data;
+    Call !set flags;
+    Call !pull;
+    !PC = data;
+    Call !pull;
+    !PC += (data * 256);
+}
+
+Define rts (warp=false)
+{
+    address = (!SP + 256);
+    Call !read;
+    !PC = 0;
+    Call !pull;
+    !PC += data;
+    Call !pull;
+    !PC += (data * 256);
+    address = !PC;
+    Call !read;
+    !PC += 1;
+}
+
+Define sax (warp=false)
+{
+    data = !and_table[(((!A * 256) + !X) + 1)];
+    Call !write;
+}
+
+Define sbc (warp=false)
+{
+    If (!immediate == 0)
+    {
+        Call !read;
+    }
+    temp = (((!A - ((!A > 127) * 256)) - (data - ((data > 127) * 256))) - (!C < 1));
+    !V = (((temp > 127) Or (temp < -128)) + );
+    !A = ((!A - data) - (!C < 1));
+    !C = ((!A > -1) + );
+    !A = (!A % 256);
+    Call !zn(!A);
+}
+
+Define shx (warp=false)
+{
+    data = !and_table[((!X * 256) + (data + 1))];
+    Call !write;
+}
+
+Define shy (warp=false)
+{
+    data = !and_table[((!Y * 256) + (data + 1))];
+    Call !write;
+}
+
+Define slo (warp=false)
+{
+    Call !read;
+    Call !write;
+    !C = ((data > 127) + );
+    data = ((data * 2) % 256);
+    Call !write;
+    !A = !ora_table[(((data * 256) + !A) + 1)];
+    Call !zn(!A);
+}
+
+Define sre (warp=false)
+{
+    Call !read;
+    Call !write;
+    !C = (data % 2);
+    data = floor((data / 2));
+    Call !write;
+    !A = !eor_table[(((data * 256) + !A) + 1)];
+    Call !zn(!A);
+}
+
+Define sta (warp=false)
+{
+    data = !A;
+    Call !write;
+}
+
+Define stx (warp=false)
+{
+    data = !X;
+    Call !write;
+}
+
+Define sty (warp=false)
+{
+    data = !Y;
+    Call !write;
+}
+
+Define tax (warp=false)
+{
+    !X = !A;
+    Call !zn(!A);
+}
+
+Define tay (warp=false)
+{
+    !Y = !A;
+    Call !zn(!A);
+}
+
+Define tsx (warp=false)
+{
+    !X = !SP;
+    Call !zn(!SP);
+}
+
+Define txa (warp=false)
+{
+    !A = !X;
+    Call !zn(!X);
+}
+
+Define txs (warp=false)
+{
+    !SP = !X;
+}
+
+Define tya (warp=false)
+{
+    !A = !Y;
+    Call !zn(!Y);
+}
+
+Define xaa (warp=false)
+{
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.png

@@ -1,0 +1,115 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+display_mode = 0
+draw: pixel = 59392
+o_down = 8
+o_up = 8
+scaling = 1
+size_mod = 0
+stretch_x = 1
+stretch_y = 1
+
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(coolnes_draw)
+{
+    Call draw;
+}
+
+WhenBroadcastReceived(coolnes_pause)
+{
+    Call fade;
+}
+
+WhenBroadcastReceived(display_size)
+{
+    stretch_x = 1;
+    stretch_y = 1;
+    display_mode = ((display_mode + 1) % 4);
+    If (display_mode == 0)
+    {
+        scaling = 1;
+        size_mod = 0;
+    }
+    If (display_mode == 1)
+    {
+        scaling = (1.5 + ((o_up + o_down) / 128));
+        size_mod = (0.75 + ((o_up + o_down) / 512));
+    }
+    If (display_mode == 2)
+    {
+        scaling = (1.5 + ((o_up + o_down) / 128));
+        size_mod = (1 + ((o_up + o_down) / 512));
+        stretch_x += (0.25 - ((o_up + o_down) / 192));
+    }
+    If (display_mode == 3)
+    {
+        scaling = 2;
+        size_mod = 0.24;
+    }
+    Call draw;
+    Call fade;
+}
+
+WhenBroadcastReceived(Project not saving fix)
+{
+    display_mode = 0;
+    scaling = 1;
+    size_mod = 0;
+    stretch_x = 1;
+    stretch_y = 1;
+    o_up = 8;
+    o_down = 8;
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define draw (warp=true)
+{
+    Pen.Clear();
+    Motion.GoToXY(0, 0);
+    Pen.SetPenSizeTo(750);
+    Pen.SetPenColorToColor(bg_color);
+    Pen.Down();
+    Pen.Clear();
+    Pen.SetPenSizeTo((scaling + size_mod));
+    If (render_enabled == 1)
+    {
+        Motion.GoToXY((((scaling * -128) + 1) * stretch_x), (((scaling * (120 - o_up)) - 1) * stretch_y));
+        draw: pixel = (256 * o_up);
+        Repeat ((240 - (o_up + o_down)))
+        {
+            Repeat (256)
+            {
+                draw: pixel += 1;
+                If (Not (((pixel_buffer[draw: pixel] == 0) Or (pixel_buffer[draw: pixel] == bg_color))))
+                {
+                    Pen.SetPenColorToColor(pixel_buffer[draw: pixel]);
+                    Pen.Down();
+                    Pen.Clear();
+                }
+                Motion.ChangeXBy((scaling * stretch_x));
+            }
+            Motion.SetX((((scaling * -128) + 1) * stretch_x));
+            Motion.ChangeYBy(((scaling * -1) * stretch_y));
+        }
+    }
+}
+
+Define fade (warp=false)
+{
+    Motion.GoToXY(0, 0);
+    Pen.SetPenSizeTo(750);
+    Pen.SetPenColorToColor(#000000);
+    Pen.SetPenTo(transparency, 50);
+    Pen.Down();
+    Pen.Clear();
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.png

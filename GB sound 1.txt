@@ -1,0 +1,128 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+-chnumber = 4
+-soundnumber = 4
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+noisepitch = { 
+    110.41
+    98.41
+    86.41
+    74.41
+    62.41
+    55.39
+    50.41
+    46.55
+    42.51
+    38.55
+    31.57
+    26.55
+    19.53
+    14.55
+    2.5
+    -9.47
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(create sound)
+{
+    Call generate;
+}
+
+WhenBroadcastReceived(prune)
+{
+    Control.DeleteThisClone();
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        If ((voice[-chnumber] == -soundnumber) And (Sound.Volume() > 0))
+        {
+            Sound.PlayUntilDone(Operator.Join(soundnames[-chnumber], -soundnumber));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        If ((pitches[-chnumber] > -1) And (voice[-chnumber] == -soundnumber))
+        {
+            Sound.SetVolumeTo((volume[-chnumber] * (100 / 15)));
+        }
+        Else
+        {
+            Sound.SetVolumeTo(0);
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        Sound.SetEffectTo(PITCH, ((pitches[-chnumber] - 69) * 10));
+    }
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define generate (warp=true)
+{
+    -chnumber = 0;
+    List.DeleteAll(pitches);
+    List.DeleteAll(voice);
+    List.DeleteAll(volume);
+    List.DeleteAll(soundnames);
+    List.Add(soundnames, "P0");
+    List.Add(soundnames, "P1");
+    List.Add(soundnames, "WZ");
+    List.Add(soundnames, "N0");
+    Sound.SetVolumeTo(0);
+    Repeat (List.Length(soundnames))
+    {
+        -chnumber += 1;
+        -soundnumber = 0;
+        Repeat (4)
+        {
+            If (Not ((-soundnumber == 3)))
+            {
+                Control.CreateCloneOf(_myself_);
+            }
+            -soundnumber += 1;
+        }
+        List.Add(pitches, -1);
+        List.Add(voice, 0);
+        List.Add(volume, 0);
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+N00.wav
+N01.wav
+P00.wav
+P01.wav
+P02.wav
+P03.wav
+P10.wav
+P11.wav
+P12.wav
+P13.wav

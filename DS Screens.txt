@@ -1,0 +1,301 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+arm7.read_return = 0
+arm9.read_return = 0
+core.byte_return = 0
+render.dummy = 0
+x = 256
+y = 192
+
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(render_screen)
+{
+    Call display.render_screen;
+}
+
+WhenBroadcastReceived(start game)
+{
+    Pen.Clear();
+    Pen.SetPenSizeTo(2);
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define arm7.list_read_memory(string addr) (warp=true)
+{
+    If (addr > "0x05FFFFFF")
+    {
+        If (addr > "0x07FFFFFF")
+        {
+            If (addr > "0x09FFFFFF")
+            {
+            }
+            Else
+            {
+            }
+        }
+        Else
+        {
+            arm7.read_return = arm7.vwram[(1 + floor(((addr - 0x06000000) / 4)))];
+        }
+    }
+    Else
+    {
+        If (addr > "0x037FFFFF")
+        {
+            If (addr > "0x03FFFFFF")
+            {
+                If (addr > "0x047FFFFF")
+                {
+                    If (addr > "0x04807FFF")
+                    {
+                        arm7.read_return = arm7.wireless.state_1[(1 + floor(((addr - 0x04808000) / 4)))];
+                    }
+                    Else
+                    {
+                        arm7.read_return = arm7.wireless.state_0[(1 + floor(((addr - 0x04800000) / 4)))];
+                    }
+                }
+                Else
+                {
+                    arm7.read_return = arm7.io_ports[(1 + floor(((addr - 0x04000000) / 4)))];
+                }
+            }
+            Else
+            {
+                arm7.read_return = arm7.wram[(1 + floor(((addr - 0x03800000) / 4)))];
+            }
+        }
+        Else
+        {
+            If (addr > "0x02FFFFFF")
+            {
+                arm7.read_return = core.shared_wram[(1 + floor(((addr - 0x03000000) / 4)))];
+            }
+            Else
+            {
+                If (addr > "0x020C34FF")
+                {
+                    If (addr > "0x020F423F")
+                    {
+                        If (addr > "0x02124F7F")
+                        {
+                            arm7.read_return = arm7.memory6[(1 + floor(((addr - 0x02124F80) / 4)))];
+                        }
+                        Else
+                        {
+                            arm7.read_return = arm7.memory5[(1 + floor(((addr - 0x020F4240) / 4)))];
+                        }
+                    }
+                    Else
+                    {
+                        arm7.read_return = arm7.memory4[(1 + floor(((addr - 0x020C3500) / 4)))];
+                    }
+                }
+                Else
+                {
+                    If (addr > "0x02030D3F")
+                    {
+                        If (addr > "0x020927BF")
+                        {
+                            arm7.read_return = arm7.memory3[(1 + floor(((addr - 0x020927C0) / 4)))];
+                        }
+                        Else
+                        {
+                            arm7.read_return = arm7.memory2[(1 + floor(((addr - 0x02030D40) / 4)))];
+                        }
+                    }
+                    Else
+                    {
+                        arm7.read_return = arm7.memory1[(1 + floor(((addr - 0x02000000) / 4)))];
+                    }
+                }
+            }
+        }
+    }
+}
+
+Define arm7.read_byte(string addr) (warp=true)
+{
+    Call arm7.list_read_memory(addr);
+    Call core.get_byte(arm7.read_return)((addr % 4));
+    arm7.read_return = core.byte_return;
+}
+
+Define arm9.list_read_memory(string addr) (warp=true)
+{
+    If (addr > "0x061FFFFF")
+    {
+        If (addr > "0x06FFFFFF")
+        {
+            If (addr > "0x07FFFFFF")
+            {
+            }
+            Else
+            {
+                arm9.read_return = oam[(1 + floor(((addr - 0x07000000) / 4)))];
+            }
+        }
+        Else
+        {
+            If (addr > "0x065FFFFF")
+            {
+                If (addr > "0x067FFFFF")
+                {
+                    arm9.read_return = vram.lcdc[(1 + floor(((addr - 0x06800000) / 4)))];
+                }
+                Else
+                {
+                    arm9.read_return = vram.engine_b.obj[(1 + floor(((addr - 0x06600000) / 4)))];
+                }
+            }
+            Else
+            {
+                If (addr > "0x063FFFFF")
+                {
+                    arm9.read_return = vram.engine_a.obj[(1 + floor(((addr - 0x06400000) / 4)))];
+                }
+                Else
+                {
+                    arm9.read_return = vram.engine_b.bg[(1 + floor(((addr - 0x06200000) / 4)))];
+                }
+            }
+        }
+    }
+    Else
+    {
+        If (addr > "0x03FFFFFF")
+        {
+            If (addr > "0x05FFFFFF")
+            {
+                arm9.read_return = vram.engine_a.bg[(1 + floor(((addr - 0x06000000) / 4)))];
+            }
+            Else
+            {
+                If (addr > "0x04FFFFFF")
+                {
+                    arm9.read_return = arm9.standard_palettes[(1 + floor(((addr - 0x05000000) / 4)))];
+                }
+                Else
+                {
+                    arm9.read_return = arm9.io_ports[(1 + floor(((addr - 0x04000000) / 4)))];
+                }
+            }
+        }
+        Else
+        {
+            If (addr > "0x01FFFFFF")
+            {
+                If (addr > "0x02FFFFFF")
+                {
+                    arm9.read_return = core.shared_wram[(1 + floor(((addr - 0x03000000) / 4)))];
+                }
+                Else
+                {
+                    If (addr > "0x020C34FF")
+                    {
+                        If (addr > "0x020F423F")
+                        {
+                            If (addr > "0x02124F7F")
+                            {
+                                arm9.read_return = arm9.memory6[(1 + floor(((addr - 0x02124F80) / 4)))];
+                            }
+                            Else
+                            {
+                                arm9.read_return = arm9.memory5[(1 + floor(((addr - 0x020F4240) / 4)))];
+                            }
+                        }
+                        Else
+                        {
+                            arm9.read_return = arm9.memory4[(1 + floor(((addr - 0x020C3500) / 4)))];
+                        }
+                    }
+                    Else
+                    {
+                        If (addr > "0x02030D3F")
+                        {
+                            If (addr > "0x020927BF")
+                            {
+                                arm9.read_return = arm9.memory3[(1 + floor(((addr - 0x020927C0) / 4)))];
+                            }
+                            Else
+                            {
+                                arm9.read_return = arm9.memory2[(1 + floor(((addr - 0x02030D40) / 4)))];
+                            }
+                        }
+                        Else
+                        {
+                            arm9.read_return = arm9.memory1[(1 + floor(((addr - 0x02000000) / 4)))];
+                        }
+                    }
+                }
+            }
+            Else
+            {
+                If (addr > "0xXXXXFFFF")
+                {
+                }
+                Else
+                {
+                }
+            }
+        }
+    }
+}
+
+Define arm9.read_byte(string addr) (warp=true)
+{
+    Call arm9.list_read_memory(addr);
+    Call core.get_byte(arm9.read_return)((addr % 4));
+    arm9.read_return = core.byte_return;
+}
+
+Define core.get_byte(string number)(string byte) (warp=true)
+{
+    core.byte_return = floor(((number / Operator.Round(e ^((5.545177444479562 * (3 - (byte % 4)))))) % 256));
+}
+
+Define display.render_screen (warp=true)
+{
+    y = 0;
+    Repeat (192)
+    {
+        x = 0;
+        Repeat (256)
+        {
+            Call goto pixel at(x)(y) on screen(0);
+            render.dummy = display.screen[(1 + (x + (256 * y)))];
+            Pen.SetPenColorToColor(((524288 * (render.dummy % 32)) + ((2048 * (floor((render.dummy / 32)) % 32)) + (8 * (floor((render.dummy / 1024)) % 32)))));
+            Pen.Down();
+            x += 1;
+        }
+        Pen.Clear();
+        y += 1;
+    }
+}
+
+Define goto pixel at(string x)(string y) on screen(string screen) (warp=true)
+{
+    If (options.vertical_screens == "true")
+    {
+        Motion.GoToXY(Operator.Round(((x / 1.06666667) - (240 * (1 - screen)))), Operator.Round((102.4 - (y / 1.06666667))));
+    }
+    Else
+    {
+        Motion.GoToXY(Operator.Round(((x / 1.06666667) - 120)), Operator.Round(((180 - (y / 1.06666667)) - (180 * screen))));
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+pop.wav
