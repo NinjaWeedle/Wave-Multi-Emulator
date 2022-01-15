@@ -10,7 +10,11 @@ If you are looking for information on the HyperWaveCHIP-64 extension for CHIP-8,
 Changelog:
 
 V0.7.X:
-
+V0.7.9: Fixed a variety of audio issues with Chip-8 that caused audio to not play in any CHIP-8/SCHIP games, and also added debug info to the pause menu.
+V0.7.8: Add very early Mega-Chip support.
+V0.7.7: Fix hi-res CHIP8 games taking forever to load.
+V0.7.6: Add Boot-128 support, Fix bitshifts not setting VF correctly in CHIP-8
+V0.7.5: Update DualGB to Early GBC build.
 0.7.4: Major GUI overhaul, add BBC micro:bit integration. CHIP8: Change 00F0 to 00E1. Goddess A: Minor updates to CPU structure. GBA: ROM importer fixed.
 0.7.3: GUI update by @Executec
 0.7.2: bugfixes
