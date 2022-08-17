@@ -9,7 +9,12 @@ If you are looking for information on the HyperWaveCHIP-64 extension for CHIP-8,
 
 Changelog:
 
+V0.8.X:
+
+V0.8: Implemented a new rom importer system. Updated DualGB to the latest build. Updated CoolNES to 2.4. Added CLS V-blank behavior to WAVE-8's MegaChip mode.
+
 V0.7.X:
+
 V0.7.9: Fixed a variety of audio issues with Chip-8 that caused audio to not play in any CHIP-8/SCHIP games, and also added debug info to the pause menu.
 V0.7.8: Add very early Mega-Chip support.
 V0.7.7: Fix hi-res CHIP8 games taking forever to load.
