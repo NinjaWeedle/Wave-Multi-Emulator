@@ -11,6 +11,12 @@ Changelog:
 
 V0.8.X:
 
+V0.8.7: Fix LY=LYC check in DualGB
+V0.8.6: Add row 256 wrapping behavior to MegaChip
+V0.8.5: MegaChip: Fix 256-dimension sprites not rendering, fix transparencies and collisions, add 09NN
+V0.8.4: Add mostly functional MegaChip support (No audio, transparencies, or sprite blending)
+V0.8.3: Have VF be set after shifting in 8XY6 & 8XYE instead of before; fixes Danm8ku
+V0.8.2: Fixed an issue where the HPS flag wasn't reset upon resetting Wave-8
 V0.8: Implemented a new rom importer system. Updated DualGB to the latest build. Updated CoolNES to 2.4. Added CLS V-blank behavior to WAVE-8's MegaChip mode.
 
 V0.7.X:
