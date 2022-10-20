@@ -1,0 +1,319 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+a_enabled = 0
+a_freq = 522.7140771028
+a_period = 107
+a_volume = 0
+b_enabled = 1
+b_freq = 329.00238970588
+b_period = 170
+b_volume = 0
+command = 0
+c_enabled = 1
+c_freq = 527.64534198113
+c_period = 106
+c_volume = 0
+id = 9
+
+
+
+//----- Green flag events ---------------------------------------------------------------------------------------------
+
+WhenGreenFlagClicked()
+{
+    a_volume = 0;
+    b_volume = 0;
+    c_volume = 0;
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(5b)
+{
+    command = Sensing.Of($5b_command, nes);
+    If (command == 0)
+    {
+        a_period = ((a_period - (a_period % 256)) + Sensing.Of(nes: data, nes));
+    }
+    If (command == 1)
+    {
+        a_period = ((a_period % 256) + ((Sensing.Of(nes: data, nes) % 16) * 256));
+    }
+    If (command == 2)
+    {
+        b_period = ((b_period - (b_period % 256)) + Sensing.Of(nes: data, nes));
+    }
+    If (command == 3)
+    {
+        b_period = ((b_period % 256) + ((Sensing.Of(nes: data, nes) % 16) * 256));
+    }
+    If (command == 4)
+    {
+        c_period = ((c_period - (c_period % 256)) + Sensing.Of(nes: data, nes));
+    }
+    If (command == 5)
+    {
+        c_period = ((c_period % 256) + ((Sensing.Of(nes: data, nes) % 16) * 256));
+    }
+    If (command == 7)
+    {
+        a_enabled = (1 - (Sensing.Of(nes: data, nes) % 2));
+        b_enabled = (1 - (floor((Sensing.Of(nes: data, nes) / 2)) % 2));
+        c_enabled = (1 - (floor((Sensing.Of(nes: data, nes) / 4)) % 2));
+    }
+    If (command == 8)
+    {
+        a_volume = ((Sensing.Of(nes: data, nes) % 16) * 5);
+    }
+    If (command == 9)
+    {
+        b_volume = ((Sensing.Of(nes: data, nes) % 16) * 5);
+    }
+    If (command == 10)
+    {
+        c_volume = ((Sensing.Of(nes: data, nes) % 16) * 5);
+    }
+    a_freq = (1789773 / (32 * a_period));
+    b_freq = (1789773 / (32 * b_period));
+    c_freq = (1789773 / (32 * c_period));
+}
+
+WhenBroadcastReceived(pause)
+{
+    Sound.StopAllSounds();
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(unpause)
+{
+    If (Enable APU == 1)
+    {
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+    }
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Sound.SetVolumeTo(0);
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((a_volume * (a_freq < 300)) * a_enabled));
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((a_volume * ((a_freq > 300) And (a_freq < 600))) * a_enabled));
+        }
+    }
+    If (id == 3)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((a_volume * (a_freq > 600)) * a_enabled));
+        }
+    }
+    If (id == 4)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((b_volume * (b_freq < 300)) * b_enabled));
+        }
+    }
+    If (id == 5)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((b_volume * ((b_freq > 300) And (b_freq < 600))) * b_enabled));
+        }
+    }
+    If (id == 6)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((b_volume * (b_freq > 600)) * b_enabled));
+        }
+    }
+    If (id == 7)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((c_volume * (c_freq < 300)) * c_enabled));
+        }
+    }
+    If (id == 8)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((c_volume * ((c_freq > 300) And (c_freq < 600))) * c_enabled));
+        }
+    }
+    If (id == 9)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo(((c_volume * (c_freq > 600)) * c_enabled));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Sound.ClearEffects();
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((a_freq / 200))));
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((a_freq / 400))));
+        }
+    }
+    If (id == 3)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((a_freq / 800))));
+        }
+    }
+    If (id == 4)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((b_freq / 200))));
+        }
+    }
+    If (id == 5)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((b_freq / 400))));
+        }
+    }
+    If (id == 6)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((b_freq / 800))));
+        }
+    }
+    If (id == 7)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((c_freq / 200))));
+        }
+    }
+    If (id == 8)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((c_freq / 400))));
+        }
+    }
+    If (id == 9)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((c_freq / 800))));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Control.Wait(0);
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(0200);
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(0400);
+        }
+    }
+    If (id == 3)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(0800);
+        }
+    }
+    If (id == 4)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(1200);
+        }
+    }
+    If (id == 5)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(1400);
+        }
+    }
+    If (id == 6)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(1800);
+        }
+    }
+    If (id == 7)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(2200);
+        }
+    }
+    If (id == 8)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(2400);
+        }
+    }
+    If (id == 9)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(2800);
+        }
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+0200.wav
+0400.wav
+0800.wav
+1200.wav
+1400.wav
+1800.wav
+2200.wav
+2400.wav
+2800.wav

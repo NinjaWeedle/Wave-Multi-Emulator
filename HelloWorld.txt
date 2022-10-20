@@ -1,7 +1,7 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
 Ahello = 1
-Input = 0
+Input = exit
 
 
 
@@ -151,10 +151,10 @@ WhenBroadcastReceived(HelloInter)
                                                     List.Add(MainHello, "Concept: @Geotale/@EmulatorsOnScratch");
                                                     List.Add(MainHello, "Menu: @Geotale @Executec @oxiti8");
                                                     List.Add(MainHello, "Chip 8 Emulator: @Geotale @Kouzeru @oxiti8 @52525rr");
-                                                    List.Add(MainHello, "Game Boy Emulator: @52525rr");
+                                                    List.Add(MainHello, "Game Boy/Game Boy Color: @52525rr");
                                                     List.Add(MainHello, "Game Boy Advance Emulator: @Geotale/@EmulatorsOnScratch");
                                                     List.Add(MainHello, "Nintendo DS Emulator: @Geotale/@EmulatorsOnScratch");
-                                                    List.Add(MainHello, "NES Emulator: @GenericHeroGuy");
+                                                    List.Add(MainHello, "Nintendo Entertainment System Emulator: @GenericHeroGuy");
                                                     List.Add(MainHello, "Bytepusher: @52525rr");
                                                     List.Add(MainHello, "UHWEI Wave edition: @oxiti8");
                                                     List.Add(MainHello, "Music: Purple Planet Music - Chilled - Global Tech, Nintendo 3DS HOME menu BGM, Mario Paint - Special Stamps, NOW'S YOUR CHANCE TO BE A");

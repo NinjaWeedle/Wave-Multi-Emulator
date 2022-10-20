@@ -1,8 +1,8 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
-arm7.pc = 140197
+arm7.pc = 1493841
 arm7.read_return = 0x00000000
-arm9.pc = 140201
+arm9.pc = 1493846
 arm9.read_return = 0x00000000
 core.byte_return = 31
 core.condition_test = false

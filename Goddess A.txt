@@ -15,6 +15,7 @@ V = 0
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+GA.Display = { }
 GA.L1 = { 
     0
     0
@@ -358,9 +359,6 @@ GA.ROM = {
     0
     0
 }
-Goddess A: RAM = { }
-Goddess A: ROM = { }
-Goddess A: VRAM = { }
 
 
 //----- Broadcast received events -------------------------------------------------------------------------------------
@@ -790,6 +788,7 @@ Define GA.draw (warp=true)
         }
         Motion.ChangeYBy(-25);
     }
+    microbit_displaySymbol ?? - probably legacy function from Scratch 2.0;
 }
 
 Define GA.get_keyboard (warp=true)
@@ -846,6 +845,8 @@ Define GA.Initialize (warp=true)
 //----- Orphaned blocks -----------------------------------------------------------------------------------------------
 
 GA.P = 0
+
+matrix ?? - probably legacy function from Scratch 2.0
 
 
 //----- Costumes ------------------------------------------------------------------------------------------------------

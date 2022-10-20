@@ -2,13 +2,13 @@
 
 c8.Load/Save_Quirk = 0
 c8.Shift_quirk = 0
-c8scrnsize = 2
+c8scrnsize = 6
 chip8.audio toggle = 0
 chip8.audio_buffer = 1
 chip8.delay_timer = 0
 chip8.drawflag = 0
 chip8.drawmode = Fast/Sharp
-chip8.drawplane = 1
+chip8.drawplane = 2
 chip8.drawtoggle = 1
 chip8.drawvariety = 0
 chip8.dummy = 8193
@@ -16,16 +16,19 @@ chip8.dummy2 = 128
 chip8.dummy3 = 3
 chip8.dummy4 = 1
 chip8.dummy5 = 129
-chip8.HPSFlag = 1
-chip8.I = 811
-chip8.pc = 730
+chip8.HPSFlag = 0
+chip8.I = 783
+chip8.pc = 690
 chip8.pitch = 64
-chip8.rand = 48
+chip8.rand = 112
 chip8.return = 0
 chip8.screenheight = 64
 chip8.screenwidth = 128
-chip8.sound_timer = -535
-CPF = 30
+chip8.sound_timer = 0
+chip8.spritewidth = 0x08
+chip8m.collisioncolor = 0
+CPF = 60
+mchip8sprite width = 0
 SF2091! fix = 0
 VIP jumps = 1
 _id = 0
@@ -34,25 +37,155 @@ _pitch = 0
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+Boot-128 = { 
+    0x00
+    0x01
+    0x63
+    0x02
+    0x35
+    0x00
+    0x11
+    0x24
+    0xF3
+    0x29
+    0x21
+    0x70
+    0x80
+    0x40
+    0x80
+    0x06
+    0x80
+    0x06
+    0x80
+    0x06
+    0x80
+    0x06
+    0xF0
+    0x29
+    0x21
+    0x70
+    0xF4
+    0x29
+    0x21
+    0x70
+    0xA1
+    0x76
+    0x21
+    0x70
+    0x75
+    0xFF
+    0x21
+    0x66
+    0x87
+    0x80
+    0x87
+    0x0E
+    0x87
+    0x0E
+    0x87
+    0x0E
+    0x87
+    0x0E
+    0x21
+    0x66
+    0x88
+    0x74
+    0xA0
+    0x00
+    0xF4
+    0x1E
+    0x80
+    0x30
+    0x61
+    0x80
+    0xF1
+    0x1E
+    0xF1
+    0x1E
+    0x70
+    0xFF
+    0x30
+    0x00
+    0x11
+    0x3C
+    0x80
+    0x80
+    0xF0
+    0x55
+    0x74
+    0x01
+    0x44
+    0x00
+    0x73
+    0x01
+    0x43
+    0x10
+    0x12
+    0x00
+    0x35
+    0x27
+    0x11
+    0x04
+    0x65
+    0x00
+    0x46
+    0x18
+    0x11
+    0x62
+    0x76
+    0x06
+    0x11
+    0x04
+    0x00
+    0x00
+    0x11
+    0x04
+    0xA1
+    0x7A
+    0xD5
+    0x66
+    0xF8
+    0x0A
+    0xD5
+    0x66
+    0xF8
+    0x29
+    0xD5
+    0x65
+    0x75
+    0x05
+    0x00
+    0xEE
+    0x00
+    0x40
+    0x00
+    0x40
+    0x00
+    0x00
+    0x00
+    0x00
+    0x00
+    0xF0
+}
 chip8.keyboard = { }
 chip8.memory = { }
 chip8.registers = { 
-    35
+    13
     0
     0
     0
     8
-    158
-    36
-    32
-    35
+    116
+    216
+    8
+    13
     0
-    4
+    3
     0
     0
     0x00
     6
-    1
+    0
 }
 chip8.screen = { }
 chip8.screen2 = { }
@@ -245,7 +378,8 @@ WhenGreenFlagClicked()
 {
     Looks.Say("");
     chip8.starting address = 512;
-    Variable.Hide(chip8.DrawType);
+    chip8.CompatMode = "Octo";
+    Variable.Hide(chip8.CompatMode);
     List.DeleteAll(chip8.stack);
     List.DeleteAll(chip8.memory);
     List.DeleteAll(chip8.screen);
@@ -311,22 +445,19 @@ WhenKeyPressed(7)
 
 WhenKeyPressed(0)
 {
-    If (chip8.DrawType == "Octo")
+    If (chip8.CompatMode == "Octo")
     {
-        Variable.Show(rom.title);
-        chip8.DrawType = "SCHIP";
+        chip8.CompatMode = "SCHIP";
     }
     Else
     {
-        If (chip8.DrawType == "SCHIP")
+        If (chip8.CompatMode == "SCHIP")
         {
-            Variable.Show(rom.title);
-            chip8.DrawType = "SCHIP+HPS";
+            chip8.CompatMode = "SCHIP+HPS";
         }
         Else
         {
-            chip8.DrawType = "Octo";
-            Variable.Hide(rom.title);
+            chip8.CompatMode = "Octo";
         }
     }
 }
@@ -352,28 +483,23 @@ WhenBroadcastReceived(Chip-8)
     {
         SF2091! fix = 1;
         Variable.Show(rom.title);
-        chip8.DrawType = "SCHIP";
+        chip8.CompatMode = "SCHIP";
     }
     Event.Broadcast("WAVE-8_drawkeys");
-    If ((chip8.memory[(chip8.pc + 1)] == 18) And (chip8.memory[(chip8.pc + 2)] == 96))
+    If ((chip8.memory[513] == 18) And (chip8.memory[514] == 96))
     {
-        chip8.screenheight = 64;
-        chip8.screenwidth = 64;
         chip8.drawflag = 1;
-        c8scrnsize = 1;
-        chip8.pc = "0x2c0";
-        Repeat Until (4095 < List.Length(chip8.screen))
-        {
-            List.Add(chip8.screen, 0);
-            List.Add(chip8.screen2, 0);
-        }
+        c8scrnsize = 3;
+        chip8.pc = 704;
+        Call Screen Resize(64)(64);
     }
     Event.BroadcastAndWait("wave create");
+    Control.Wait(0.1);
     Forever
     {
         Call chip8.get_keyboard;
         Call chip8.frame(CPF);
-        If ((chip8.drawtoggle == 1) And (Operator.Contains(chip8.drawmode, "Accurate") Or (0 < chip8.drawflag)))
+        If ((Not ((chip8.screenwidth == 256))) And ((chip8.drawtoggle == 1) And ((Operator.LetterOf(chip8.drawmode, 1) == "A") Or (0 < chip8.drawflag))))
         {
             Call chip8.render;
         }
@@ -381,7 +507,8 @@ WhenBroadcastReceived(Chip-8)
         {
             List.Show(chip8.stack);
             List.Show(chip8.registers);
-            Sensing.Ask("Type the number of Cycles Per Frame to run at.");
+            Call chip8.render;
+            Sensing.Ask(Operator.Join("Type the number of Cycles Per Frame to run at. (PC: ", Operator.Join(Operator.Join(chip8.pc, Operator.Join(" I: ", Operator.Join(chip8.I, Operator.Join(" DT: ", Operator.Join(chip8.delay_timer, Operator.Join(" ST: ", chip8.sound_timer)))))), ")")));
             If (Not ((Sensing.Answer() == 0)))
             {
                 CPF = abs(Sensing.Answer());
@@ -410,8 +537,8 @@ WhenBroadcastReceived(exit emulator)
     chip8.audio toggle = 0;
     List.Hide(chip8.stack);
     Variable.Hide(SF2091! fix);
-    c8scrnsize = 2;
-    Variable.Hide(chip8.DrawType);
+    c8scrnsize = 6;
+    Variable.Hide(chip8.CompatMode);
     Variable.Hide(chip8.drawmode);
     List.Hide(chip8.registers);
     Stop(other scripts in sprite);
@@ -426,8 +553,8 @@ WhenBroadcastReceived(Project not saving fix)
     List.DeleteAll(chip8.stack);
     c8.Load/Save_Quirk = 0;
     c8.Shift_quirk = 0;
-    CPF = 30;
-    chip8.DrawType = "Octo";
+    CPF = 60;
+    chip8.CompatMode = "Octo";
     VIP jumps = 1;
     SF2091! fix = 0;
 }
@@ -453,10 +580,10 @@ Define chip8.frame(string cycles) (warp=true)
                 chip8.audioflag = 0;
             }
         }
+        chip8.sound_timer += -1;
     }
     Else
     {
-        chip8.sound_timer += -1;
         List.ReplaceItem(pitches, 3, -1);
         pitch = "-Infinity";
     }
@@ -495,6 +622,10 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
         If (0 < chip8.drawplane)
         {
             chip8.drawflag = 1;
+            If ((op2 == "0xe0") And (chip8.screenwidth == 256))
+            {
+                Call chip8.render;
+            }
             If (Not ((chip8.drawplane == 2)))
             {
                 List.DeleteAll(chip8.screen);
@@ -522,7 +653,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
             {
                 chip8.drawflag = 1;
                 chip8.dummy4 = (op2 % 16);
-                If (((chip8.screenwidth == 64) And (0 < ((op2 % 16) % 2))) And (chip8.DrawType == "SCHIP+HPS"))
+                If (((chip8.screenwidth == 64) And (0 < ((op2 % 16) % 2))) And (chip8.CompatMode == "SCHIP+HPS"))
                 {
                     If (chip8.HPSFlag == 0)
                     {
@@ -550,12 +681,25 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
             }
             Stop(this script);
         }
-        If (op2 < 224)
+        If ((174 < op2) And (op2 < 224))
         {
             If (0 < chip8.drawplane)
             {
                 chip8.drawflag = 1;
-                Repeat ((chip8.screenwidth * (op2 % 16)))
+                chip8.dummy4 = (op2 % 16);
+                If (((chip8.screenwidth == 64) And (0 < ((op2 % 16) % 2))) And (chip8.CompatMode == "SCHIP+HPS"))
+                {
+                    If (chip8.HPSFlag == 0)
+                    {
+                        chip8.dummy4 += -1;
+                        chip8.HPSFlag = 1;
+                    }
+                    Else
+                    {
+                        chip8.HPSFlag = 0;
+                    }
+                }
+                Repeat ((chip8.screenwidth * chip8.dummy4))
                 {
                     If (Not ((chip8.drawplane == 2)))
                     {
@@ -623,7 +767,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
             If (0 < chip8.drawplane)
             {
                 chip8.drawflag = 1;
-                If (chip8.DrawType == "SCHIP+HPS")
+                If (chip8.CompatMode == "SCHIP+HPS")
                 {
                     chip8.dummy3 = (chip8.screenwidth / 32);
                 }
@@ -699,7 +843,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
             If (0 < chip8.drawplane)
             {
                 chip8.drawflag = 1;
-                If (chip8.DrawType == "SCHIP+HPS")
+                If (chip8.CompatMode == "SCHIP+HPS")
                 {
                     chip8.dummy3 = (chip8.screenwidth / 32);
                 }
@@ -779,36 +923,97 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
         }
         If (op2 == "0xFE")
         {
-            chip8.screenheight = 32;
-            chip8.screenwidth = 64;
-            c8scrnsize = 2;
-            List.DeleteAll(chip8.screen);
-            List.DeleteAll(chip8.screen2);
-            Repeat (2048)
-            {
-                List.Add(chip8.screen, 0);
-                List.Add(chip8.screen2, 0);
-            }
+            c8scrnsize = 6;
+            Call Screen Resize(64)(32);
             Stop(this script);
         }
         If (op2 == "0xFF")
         {
             chip8.drawflag = 1;
-            chip8.screenheight = 64;
-            chip8.screenwidth = 128;
+            c8scrnsize = 3;
+            Call Screen Resize(128)(64);
+            Stop(this script);
+        }
+        If (op2 == "0x10")
+        {
+            chip8.CompatMode = "SCHIP";
+        }
+        If (op2 == "0x11")
+        {
+            chip8.CompatMode = "Megachip";
+            chip8.drawplane = 1;
+            chip8.drawvariety = 0;
             c8scrnsize = 1;
-            List.DeleteAll(chip8.screen);
-            List.DeleteAll(chip8.screen2);
-            Repeat Until (((chip8.screenheight * chip8.screenwidth) - 1) < List.Length(chip8.screen))
+            Call Screen Resize(256)(192);
+        }
+        Stop(this script);
+    }
+    If (op1 < 16)
+    {
+        If (op1 == 1)
+        {
+            chip8.pc += 2;
+            chip8.I = ((op2 * 65536) + ((256 * chip8.memory[(chip8.pc - 1)]) + chip8.memory[chip8.pc]));
+            Stop(this script);
+        }
+        If (op1 == 2)
+        {
+            chip8.drawflag = 1;
+            chip8.dummy3 = 1;
+            chip8.dummy4 = 2;
+            Repeat (op2)
             {
-                List.Add(chip8.screen, 0);
-            }
-            Repeat Until (((chip8.screenheight * chip8.screenwidth) - 1) < List.Length(chip8.screen2))
-            {
-                List.Add(chip8.screen2, 0);
+                chip8.dummy2 = (((chip8.memory[(chip8.I + chip8.dummy3)] * 16777216) + (chip8.memory[((chip8.I + chip8.dummy3) + 1)] * 65536)) + ((chip8.memory[((chip8.I + chip8.dummy3) + 2)] * 256) + chip8.memory[((chip8.I + chip8.dummy3) + 3)]));
+                chip8.dummy3 += 4;
+                List.ReplaceItem(_colours, chip8.dummy4, chip8.dummy2);
+                chip8.dummy4 += 1;
             }
             Stop(this script);
         }
+        If (op1 == 3)
+        {
+            If (op2 == 0)
+            {
+                chip8.spritewidth = 256;
+            }
+            Else
+            {
+                chip8.spritewidth = op2;
+            }
+            Stop(this script);
+        }
+        If (op1 == 4)
+        {
+            If (op2 == 0)
+            {
+                chip8.spriteheight = 256;
+            }
+            Else
+            {
+                chip8.spriteheight = op2;
+            }
+            Stop(this script);
+        }
+        If (op1 == 5)
+        {
+            Stop(this script);
+        }
+        If (op1 == 6)
+        {
+            Stop(this script);
+        }
+        If (op1 == 7)
+        {
+            Sound.StopAllSounds();
+        }
+        If (op1 == 8)
+        {
+        }
+        If (op1 == 9)
+        {
+            chip8m.collisioncolor = op2;
+        }
+        Stop(this script);
     }
     If (op1 < 32)
     {
@@ -825,7 +1030,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
     {
         If (op2 == chip8.registers[(1 + (op1 % 16))])
         {
-            If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+            If ((1 == chip8.memory[(chip8.pc + 1)]) Or ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0)))
             {
                 chip8.pc += 2;
             }
@@ -837,7 +1042,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
     {
         If (Not ((op2 == chip8.registers[(1 + (op1 % 16))])))
         {
-            If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+            If ((1 == chip8.memory[(chip8.pc + 1)]) Or ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0)))
             {
                 chip8.pc += 2;
             }
@@ -863,7 +1068,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
         {
             If (chip8.registers[(1 + (op1 % 16))] > chip8.registers[(1 + floor((op2 / 16)))])
             {
-                If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+                If ((1 == chip8.memory[(chip8.pc + 1)]) Or ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0)))
                 {
                     chip8.pc += 2;
                 }
@@ -974,16 +1179,16 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
         }
         If ((op2 % 16) == 6)
         {
+            chip8.dummy = chip8.registers[(1 + (op1 % 16))];
             If (c8.Shift_quirk == 1)
             {
                 List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), floor((chip8.registers[(1 + floor((op2 / 16)))] / 2)));
-                List.ReplaceItem(chip8.registers, 16, (chip8.registers[(1 + (op1 % 16))] % 2));
             }
             Else
             {
                 List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), floor((chip8.registers[(1 + (op1 % 16))] / 2)));
-                List.ReplaceItem(chip8.registers, 16, (chip8.registers[(1 + (op1 % 16))] % 2));
             }
+            List.ReplaceItem(chip8.registers, 16, (chip8.dummy % 2));
             Stop(this script);
         }
         If ((op2 % 16) == 7)
@@ -1048,16 +1253,17 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
         }
         If ((op2 % 16) == 14)
         {
+            chip8.dummy = chip8.registers[(1 + (op1 % 16))];
             If (c8.Shift_quirk == 1)
             {
                 List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), ((2 * chip8.registers[(1 + floor((op2 / 16)))]) % 256));
-                List.ReplaceItem(chip8.registers, 16, (chip8.registers[(1 + (op1 % 16))] > 127));
             }
             Else
             {
                 List.ReplaceItem(chip8.registers, (1 + (op1 % 16)), ((2 * chip8.registers[(1 + (op1 % 16))]) % 256));
-                List.ReplaceItem(chip8.registers, 16, (chip8.registers[(1 + (op1 % 16))] > 127));
             }
+            List.ReplaceItem(chip8.registers, 16, (chip8.dummy > 127));
+            Stop(this script);
         }
         If ((op2 % 16) == 15)
         {
@@ -1077,7 +1283,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
     {
         If (Not ((chip8.registers[(1 + (op1 % 16))] == chip8.registers[(1 + floor((op2 / 16)))])))
         {
-            If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+            If ((1 == chip8.memory[(chip8.pc + 1)]) Or ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0)))
             {
                 chip8.pc += 2;
             }
@@ -1124,15 +1330,126 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
         If (chip8.drawplane > 0)
         {
             chip8.drawflag = 1;
-            If ((((op2 % 16) == 0) And (chip8.DrawType == "Octo")) Or (((op2 % 16) == 0) And (chip8.screenwidth == 128)))
+            If ((chip8.CompatMode == "Megachip") And (chip8.I > 255))
             {
-                If (Not ((chip8.drawplane == 2)))
+                Repeat (chip8.spriteheight)
                 {
-                    Repeat (16)
+                    chip8.dummy = chip8.registers[((op1 % 16) + 1)];
+                    Repeat (chip8.spritewidth)
                     {
-                        chip8.dummy = chip8.registers[((op1 % 16) + 1)];
-                        Repeat (2)
+                        If ((chip8.screen[(1 + ((chip8.dummy % 256) + (chip8.screenwidth * (chip8.dummy2 % 256))))] == chip8m.collisioncolor) And (Not ((chip8.memory[(chip8.dummy3 + 1)] == 0))))
                         {
+                            control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                        }
+                        List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % 256) + (chip8.screenwidth * (chip8.dummy2 % 256)))), chip8.memory[(chip8.dummy3 + 1)]);
+                        chip8.dummy += 1;
+                        chip8.dummy3 += 1;
+                    }
+                    chip8.dummy2 += 1;
+                }
+            }
+            Else
+            {
+                If (((op2 % 16) == 0) And ((chip8.CompatMode == "Octo") Or (chip8.screenwidth == 128)))
+                {
+                    If (Not ((chip8.drawplane == 2)))
+                    {
+                        Repeat (16)
+                        {
+                            chip8.dummy = chip8.registers[((op1 % 16) + 1)];
+                            Repeat (2)
+                            {
+                                chip8.return = chip8.memory[(chip8.dummy3 + 1)];
+                                Repeat (8)
+                                {
+                                    If (chip8.return > 127)
+                                    {
+                                        If (chip8.screen[(1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight))))] == 0)
+                                        {
+                                            If (Not ((chip8.drawvariety == 2)))
+                                            {
+                                                List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 1);
+                                            }
+                                        }
+                                        Else
+                                        {
+                                            If (Not ((chip8.drawvariety == 1)))
+                                            {
+                                                List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 0);
+                                            }
+                                            control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                                        }
+                                    }
+                                    chip8.return = ((chip8.return * 2) % 256);
+                                    chip8.dummy += 1;
+                                }
+                                chip8.dummy3 += 1;
+                            }
+                            chip8.dummy2 += 1;
+                        }
+                    }
+                    If (chip8.drawplane == 3)
+                    {
+                        chip8.I += 32;
+                        chip8.dummy3 = chip8.I;
+                        chip8.dummy2 = chip8.registers[(1 + floor((op2 / 16)))];
+                    }
+                    If (1 < chip8.drawplane)
+                    {
+                        Repeat (16)
+                        {
+                            chip8.dummy = chip8.registers[((op1 % 16) + 1)];
+                            Repeat (2)
+                            {
+                                chip8.return = chip8.memory[(chip8.dummy3 + 1)];
+                                Repeat (8)
+                                {
+                                    If (chip8.return > 127)
+                                    {
+                                        If (chip8.screen2[(1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight))))] == 0)
+                                        {
+                                            If (Not ((chip8.drawvariety == 2)))
+                                            {
+                                                List.ReplaceItem(chip8.screen2, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 1);
+                                            }
+                                        }
+                                        Else
+                                        {
+                                            If (Not ((chip8.drawvariety == 1)))
+                                            {
+                                                List.ReplaceItem(chip8.screen2, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 0);
+                                            }
+                                            control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                                        }
+                                    }
+                                    chip8.return = ((chip8.return * 2) % 256);
+                                    chip8.dummy += 1;
+                                }
+                                chip8.dummy3 += 1;
+                            }
+                            chip8.dummy2 += 1;
+                        }
+                    }
+                    If (chip8.drawplane == 3)
+                    {
+                        chip8.I += -32;
+                    }
+                }
+                Else
+                {
+                    If ((op2 % 16) == 0)
+                    {
+                        chip8.dummy4 = 16;
+                    }
+                    Else
+                    {
+                        chip8.dummy4 = (op2 % 16);
+                    }
+                    If (Not ((chip8.drawplane == 2)))
+                    {
+                        Repeat (chip8.dummy4)
+                        {
+                            chip8.dummy = chip8.registers[((op1 % 16) + 1)];
                             chip8.return = chip8.memory[(chip8.dummy3 + 1)];
                             Repeat (8)
                             {
@@ -1158,23 +1475,20 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
                                 chip8.dummy += 1;
                             }
                             chip8.dummy3 += 1;
+                            chip8.dummy2 += 1;
                         }
-                        chip8.dummy2 += 1;
                     }
-                }
-                If (chip8.drawplane == 3)
-                {
-                    chip8.I += 32;
-                    chip8.dummy3 = chip8.I;
-                    chip8.dummy2 = chip8.registers[(1 + floor((op2 / 16)))];
-                }
-                If (1 < chip8.drawplane)
-                {
-                    Repeat (16)
+                    If (chip8.drawplane == 3)
                     {
-                        chip8.dummy = chip8.registers[((op1 % 16) + 1)];
-                        Repeat (2)
+                        chip8.I += chip8.dummy4;
+                        chip8.dummy3 = chip8.I;
+                        chip8.dummy2 = chip8.registers[(1 + floor((op2 / 16)))];
+                    }
+                    If (1 < chip8.drawplane)
+                    {
+                        Repeat (chip8.dummy4)
                         {
+                            chip8.dummy = chip8.registers[((op1 % 16) + 1)];
                             chip8.return = chip8.memory[(chip8.dummy3 + 1)];
                             Repeat (8)
                             {
@@ -1200,97 +1514,13 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
                                 chip8.dummy += 1;
                             }
                             chip8.dummy3 += 1;
+                            chip8.dummy2 += 1;
                         }
-                        chip8.dummy2 += 1;
                     }
-                }
-                If (chip8.drawplane == 3)
-                {
-                    chip8.I += -32;
-                }
-            }
-            Else
-            {
-                chip8.dummy4 = (op2 % 16);
-                If (chip8.dummy4 == 0)
-                {
-                    chip8.dummy4 = 16;
-                }
-                If (Not ((chip8.drawplane == 2)))
-                {
-                    Repeat (chip8.dummy4)
+                    If (chip8.drawplane == 3)
                     {
-                        chip8.dummy = chip8.registers[((op1 % 16) + 1)];
-                        chip8.return = chip8.memory[(chip8.dummy3 + 1)];
-                        Repeat (8)
-                        {
-                            If (chip8.return > 127)
-                            {
-                                If (chip8.screen[(1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight))))] == 0)
-                                {
-                                    If (Not ((chip8.drawvariety == 2)))
-                                    {
-                                        List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 1);
-                                    }
-                                }
-                                Else
-                                {
-                                    If (Not ((chip8.drawvariety == 1)))
-                                    {
-                                        List.ReplaceItem(chip8.screen, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 0);
-                                    }
-                                    control_incr_counter ?? - probably legacy function from Scratch 2.0;
-                                }
-                            }
-                            chip8.return = ((chip8.return * 2) % 256);
-                            chip8.dummy += 1;
-                        }
-                        chip8.dummy3 += 1;
-                        chip8.dummy2 += 1;
+                        chip8.I += ( - chip8.dummy4);
                     }
-                }
-                If (chip8.drawplane == 3)
-                {
-                    chip8.I += chip8.dummy4;
-                    chip8.dummy3 = chip8.I;
-                    chip8.dummy2 = chip8.registers[(1 + floor((op2 / 16)))];
-                }
-                If (1 < chip8.drawplane)
-                {
-                    Repeat (chip8.dummy4)
-                    {
-                        chip8.dummy = chip8.registers[((op1 % 16) + 1)];
-                        chip8.return = chip8.memory[(chip8.dummy3 + 1)];
-                        Repeat (8)
-                        {
-                            If (chip8.return > 127)
-                            {
-                                If (chip8.screen2[(1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight))))] == 0)
-                                {
-                                    If (Not ((chip8.drawvariety == 2)))
-                                    {
-                                        List.ReplaceItem(chip8.screen2, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 1);
-                                    }
-                                }
-                                Else
-                                {
-                                    If (Not ((chip8.drawvariety == 1)))
-                                    {
-                                        List.ReplaceItem(chip8.screen2, (1 + ((chip8.dummy % chip8.screenwidth) + (chip8.screenwidth * (chip8.dummy2 % chip8.screenheight)))), 0);
-                                    }
-                                    control_incr_counter ?? - probably legacy function from Scratch 2.0;
-                                }
-                            }
-                            chip8.return = ((chip8.return * 2) % 256);
-                            chip8.dummy += 1;
-                        }
-                        chip8.dummy3 += 1;
-                        chip8.dummy2 += 1;
-                    }
-                }
-                If (chip8.drawplane == 3)
-                {
-                    chip8.I += ( - chip8.dummy4);
                 }
             }
         }
@@ -1303,7 +1533,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
         {
             If (chip8.keyboard[(chip8.registers[(1 + (op1 % 16))] + 1)] == 1)
             {
-                If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+                If ((1 == chip8.memory[(chip8.pc + 1)]) Or ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0)))
                 {
                     chip8.pc += 2;
                 }
@@ -1314,7 +1544,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
         {
             If ((2 - (2 * chip8.keyboard[(chip8.registers[(1 + (op1 % 16))] + 1)])) == 2)
             {
-                If ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0))
+                If ((1 == chip8.memory[(chip8.pc + 1)]) Or ((239 < chip8.memory[(chip8.pc + 1)]) And (chip8.memory[(chip8.pc + 2)] == 0)))
                 {
                     chip8.pc += 2;
                 }
@@ -1511,7 +1741,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
     If (op2 == "0x75")
     {
         chip8.dummy = 0;
-        If ((7 < (op1 % 16)) And (Not ((chip8.DrawType == "Octo"))))
+        If ((7 < (op1 % 16)) And (Not ((chip8.CompatMode == "Octo"))))
         {
             Repeat Until (chip8.dummy > 7)
             {
@@ -1532,7 +1762,7 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
     If (op2 == "0x85")
     {
         chip8.dummy = 0;
-        If ((7 < (op1 % 16)) And (Not ((chip8.DrawType == "Octo"))))
+        If ((7 < (op1 % 16)) And (Not ((chip8.CompatMode == "Octo"))))
         {
             Repeat Until (chip8.dummy > 7)
             {
@@ -1548,12 +1778,12 @@ Define chip8.opcode(string op1)(string op2) (warp=true)
                 chip8.dummy += 1;
             }
         }
+        Stop(this script);
     }
     If (op2 == "0xA2")
     {
         chip8.I = chip8.memory[(((chip8.registers[(1 + (op1 % 16))] + chip8.I) % 65536) + 1)];
     }
-    Stop(this script);
 }
 
 Define chip8.render (warp=true)
@@ -1576,13 +1806,13 @@ Define chip8.render (warp=true)
                 chip8.dummy2 += 1;
                 If (Not ((chip8.dummy3 == _scanline[last])))
                 {
-                    List.Add(_scanline, (chip8.dummy2 * (3 * c8scrnsize)));
+                    List.Add(_scanline, (chip8.dummy2 * c8scrnsize));
                     List.Add(_scanline, chip8.dummy3);
                     chip8.dummy2 = 0;
                 }
             }
-            List.Add(_scanline, (chip8.dummy2 * (3 * c8scrnsize)));
-            Repeat ((3 * c8scrnsize))
+            List.Add(_scanline, (chip8.dummy2 * c8scrnsize));
+            Repeat (c8scrnsize)
             {
                 Motion.SetX(-192);
                 chip8.dummy3 = 1;
@@ -1602,7 +1832,7 @@ Define chip8.render (warp=true)
     }
     Else
     {
-        Pen.SetPenSizeTo((3 * c8scrnsize));
+        Pen.SetPenSizeTo(c8scrnsize);
         Repeat (chip8.screenheight)
         {
             Motion.SetX(-192);
@@ -1633,12 +1863,12 @@ Define chip8.render (warp=true)
                 }
                 If (Not (((chip8.dummy % chip8.screenwidth) == 0)))
                 {
-                    Motion.ChangeXBy((3 * c8scrnsize));
+                    Motion.ChangeXBy(c8scrnsize);
                 }
                 chip8.dummy += 1;
             }
             Pen.Clear();
-            Motion.ChangeYBy((-3 * c8scrnsize));
+            Motion.ChangeYBy((-1 * c8scrnsize));
         }
     }
 }
@@ -1652,6 +1882,7 @@ Define chip8.reset (warp=true)
     Variable.Hide(chip8.pc);
     chip8.pc = chip8.starting address;
     chip8.delay_timer = 0;
+    Variable.Show(rom.title);
     chip8.sound_timer = 0;
     List.Hide(chip8.stack);
     List.Hide(chip8.registers);
@@ -1738,29 +1969,39 @@ Define chip8.reset (warp=true)
     List.Add(chip8.memory, "0x80");
     List.Add(chip8.memory, "0x80");
     List.DeleteAll(_colours);
-    List.Add(_colours, "0x000000");
+    List.Add(_colours, "0x00000000");
     List.Add(_colours, "0x00FF00");
     List.Add(_colours, "0xFF0000");
     List.Add(_colours, "0xFFFF00");
+    Repeat (252)
+    {
+        List.Add(_colours, 0);
+    }
     chip8.dummy = 1;
     Repeat (List.Length(schip8.font))
     {
         List.Add(chip8.memory, schip8.font[chip8.dummy]);
         chip8.dummy += 1;
     }
-    Repeat ((512 - List.Length(chip8.memory)))
+    Repeat ((65536 - List.Length(chip8.memory)))
     {
         List.Add(chip8.memory, 0);
     }
-    chip8.dummy = 1;
+    chip8.dummy2 = 256;
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
+    Repeat (128)
+    {
+        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+        chip8.dummy2 += 1;
+        List.ReplaceItem(chip8.memory, chip8.dummy2, Boot-128[control_get_counter ?? - probably legacy function from Scratch 2.0]);
+    }
+    chip8.dummy2 = chip8.starting address;
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
     Repeat (List.Length(_rom))
     {
-        List.Add(chip8.memory, _rom[chip8.dummy]);
-        chip8.dummy += 1;
-    }
-    Repeat ((4096 - List.Length(chip8.memory)))
-    {
-        List.Add(chip8.memory, 0);
+        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+        chip8.dummy2 += 1;
+        List.ReplaceItem(chip8.memory, chip8.dummy2, _rom[control_get_counter ?? - probably legacy function from Scratch 2.0]);
     }
     List.DeleteAll(chip8.registers);
     Repeat (16)
@@ -1788,22 +2029,25 @@ Define chip8.reset (warp=true)
     chip8.I = 0;
     chip8.pitch = 64;
     chip8.drawflag = 1;
+    chip8m.collisioncolor = 0;
     Variable.Show(c8.Load/Save_Quirk);
     Variable.Show(c8.Shift_quirk);
     List.DeleteAll(chip8.audiobuffer);
     chip8.drawtoggle = 1;
+    chip8.HPSFlag = 0;
+    chip8.audio toggle = 0;
     Repeat (8)
     {
         List.Add(chip8.audiobuffer, 0);
         List.Add(chip8.audiobuffer, 255);
     }
-    Variable.Show(chip8.DrawType);
+    Variable.Show(chip8.CompatMode);
     Variable.Show(chip8.pc);
     Variable.Show(VIP jumps);
     Variable.Show(SF2091! fix);
     Variable.Show(chip8.drawmode);
     chip8.drawvariety = 0;
-    chip8.audioflag = 0;
+    chip8.audioflag = 1;
     Pen.Clear();
     Sensing.ResetTimer();
 }
@@ -1813,14 +2057,17 @@ Define Convert(string Decimal Number) to hex (warp=true)
     chip8.dummy = Operator.Join(Operator.Join(Operator.LetterOf("0123456789ABCDEF", ((Decimal Number % 16) + 1)), Operator.LetterOf("0123456789ABCDEF", ((floor((Decimal Number / 16)) % 16) + 1))), Operator.Join(Operator.LetterOf("0123456789ABCDEF", ((floor((Decimal Number / 256)) % 16) + 1)), Operator.LetterOf("0123456789ABCDEF", ((floor((Decimal Number / 4096)) % 16) + 1))));
 }
 
-
-//----- Orphaned blocks -----------------------------------------------------------------------------------------------
-
-If (rom.title == "SpaceFight2091 ")
+Define Screen Resize(string horizontal)(string vertical) (warp=true)
 {
-    SF2091! fix = 1;
-    Variable.Show(rom.title);
-    chip8.DrawType = "SCHIP";
+    List.DeleteAll(chip8.screen);
+    List.DeleteAll(chip8.screen2);
+    chip8.screenheight = vertical;
+    chip8.screenwidth = horizontal;
+    Repeat Until (((horizontal * vertical) - 1) < List.Length(chip8.screen))
+    {
+        List.Add(chip8.screen, 0);
+        List.Add(chip8.screen2, 0);
+    }
 }
 
 

@@ -6,35 +6,43 @@ calc.char = 0
 calc.return = 0
 calc.temp = 0
 calc.temp2 = 0
+chip8.audio toggle = 0
+chip8.audio_buffer = 0
 chip8.delay_timer = 0
 chip8.drawflag = 0
 chip8.drawmode = 0
 chip8.drawplane = 0
+chip8.drawtoggle = 0
+chip8.drawvariety = 0
 chip8.dummy = 0
 chip8.dummy2 = 0
 chip8.dummy3 = 0
 chip8.dummy4 = 0
+chip8.dummy5 = 0
 chip8.HPS = 0
 chip8.HPSFlag = 0
 chip8.I = 0
 chip8.Load/Save_Quirk = 0
 chip8.pc = 0
+chip8.pitch = 0
 chip8.rand = 0
 chip8.return = 0
 chip8.screenheight = 0
 chip8.screenwidth = 0
 chip8.Shift_quirk = 0
 chip8.sound_timer = 0
+chip8.spritewidth = 0
 flags.met = 0
 import.ascii =  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
 import.binary = 000000
-import.char = 12
+import.char = 68
 import.dummy = 1
 import.percent = 0
-import.read_return = 241
+import.read_return = 163
 import.rom_length = 0
 import.status = (2/2) Importing rom... (16%)
 load = 
+mchip8sprite width = 0
 op.opcode = 0
 op.pos = 0
 op.temp = 0
@@ -47,13 +55,16 @@ scanY = 0
 SF2091! fix = 0
 speed (CPF) = 0
 storage.byte = 0
-temp = 49185
+temp = 786465
 tile_mode = 0
 VIP jumps = 0
+_id = 0
+_pitch = 0
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+Boot-128 = { }
 chip8.audio = { }
 chip8.keyboard = { }
 chip8.memory = { }
@@ -62,11 +73,11 @@ chip8.screen = { }
 chip8.screen2 = { }
 chip8.stack = { }
 load = { 
-    16384
-    8192
-    24576
+    262144
+    131072
+    393216
     0
-    0
+    4
 }
 Load ROMs: _rom = { }
 mappers = { 
@@ -76,7 +87,10 @@ mappers = {
     3
     4
     7
+    69
     75
+    90
+    206
 }
 schip8.font = { }
 schip8.RPL = { }
@@ -90,43 +104,45 @@ WhenBroadcastReceived(exit emulator)
     Variable.Hide(import.status);
     Variable.Hide(rom.designation);
     Variable.Hide(rom.title);
+    Romimportflag = 0;
 }
 
 WhenBroadcastReceived(get_rom)
 {
-    Motion.GoToXY(0, 45);
-    Looks.Show();
-    Costume.GoToFrontBack(front);
-    Looks.SwitchCostumeTo(A);
-    import.ascii = " !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-    microbit_displaySymbol ?? - probably legacy function from Scratch 2.0;
-    Sensing.Ask("");
-    Sound.Play(423930__mudkip2016__correct4);
-    If (Sensing.Answer() == "base64")
+    If (Romimportflag == 0)
     {
-        Looks.SwitchCostumeTo(C);
-        Sensing.Ask("");
-        If (Not ((Sensing.Answer() == "")))
+        Romimportflag = 1;
+        Motion.GoToXY(0, 45);
+        Looks.Show();
+        Costume.GoToFrontBack(front);
+        Looks.SwitchCostumeTo(A);
+        import.ascii = " !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+        microbit_displaySymbol ?? - probably legacy function from Scratch 2.0;
+        Sound.Play(423930__mudkip2016__correct4);
+        Wait Until (Not ((Romimportflag == 1)));
+        If ((Romimportflag / -200) > 1)
         {
-            Call convert_b64(Sensing.Answer());
-            Sound.Play(423930__mudkip2016__correct2);
-        }
-    }
-    Else
-    {
-        If (Sensing.Answer() == "NDS")
-        {
-            Looks.SwitchCostumeTo(B);
-            Sensing.Ask("");
-            If (Not ((Sensing.Answer() == "")))
+            If (Romimportflag == -800)
             {
-                Call load rom;
-                Sound.Play(423930__mudkip2016__correct2);
+                Looks.SwitchCostumeTo(C);
+                Sensing.Ask("");
+                If (Not ((Sensing.Answer() == "")))
+                {
+                    Call convert_b64(Sensing.Answer());
+                    Sound.Play(423930__mudkip2016__correct2);
+                }
             }
-        }
-        Else
-        {
-            If (Sensing.Answer() == "NES")
+            If (Romimportflag == -1000)
+            {
+                Looks.SwitchCostumeTo(B);
+                Sensing.Ask("");
+                If (Not ((Sensing.Answer() == "")))
+                {
+                    Call load rom;
+                    Sound.Play(423930__mudkip2016__correct2);
+                }
+            }
+            If (Romimportflag == -1200)
             {
                 Looks.SwitchCostumeTo(D);
                 Sensing.Ask("");
@@ -136,18 +152,41 @@ WhenBroadcastReceived(get_rom)
                     Sound.Play(423930__mudkip2016__correct2);
                 }
             }
-            Else
+            If (Romimportflag == -600)
             {
+                Looks.SwitchCostumeTo(S);
+                Sensing.Ask("");
+                If (Not ((Sensing.Answer() == "")))
+                {
+                    Call import_rom(Sensing.Answer())(1);
+                    Sound.Play(423930__mudkip2016__correct2);
+                }
+            }
+            If ((Romimportflag == -400) Or (Romimportflag == -1400))
+            {
+                Looks.SwitchCostumeTo(T);
+                Sensing.Ask("");
                 If (Not ((Sensing.Answer() == "")))
                 {
                     Call import_rom(Sensing.Answer())(0);
                     Sound.Play(423930__mudkip2016__correct2);
+                }
+                If (Romimportflag == -1800)
+                {
+                    Looks.SwitchCostumeTo(S);
+                    Sensing.Ask("");
+                    If (Not ((Sensing.Answer() == "")))
+                    {
+                        Call import_rom(Sensing.Answer())(0);
+                        Sound.Play(423930__mudkip2016__correct2);
+                    }
                 }
             }
         }
     }
     microbit_displayClear ?? - probably legacy function from Scratch 2.0;
     Looks.Hide();
+    Romimportflag = 0;
 }
 
 WhenBroadcastReceived(Load_Prebuilt_game)
@@ -233,47 +272,51 @@ Define convert_b64(string code) (warp=true)
 
 Define import_rom(string rom)(string flag) (warp=true)
 {
-    If (Not ((flag == 1)))
+    If (flag == 1)
     {
         Looks.SwitchCostumeTo(I);
         _ROM = Sensing.Answer();
-    }
-    Looks.SwitchCostumeTo(J);
-    List.DeleteAll(_rom);
-    import.char = 1;
-    If (Operator.LetterOf(rom, 2) == "x")
-    {
-        Repeat ((Variable.Length(rom) / 6))
+        Looks.SwitchCostumeTo(L);
+        rom.designation = "";
+        import.char = 1234;
+        List.DeleteAll(_gametitle);
+        Repeat (68)
         {
-            List.Add(_rom, ( + Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, (import.char + 2)), Operator.LetterOf(rom, (import.char + 3))))));
-            import.char += 6;
+            Call read byte(import.char);
+            rom.designation = Operator.Join(rom.designation, Operator.LetterOf(import.ascii, (import.read_return - 31)));
+            import.char += 1;
         }
     }
     Else
     {
-        Repeat ((Variable.Length(rom) / 2))
+        Looks.SwitchCostumeTo(J);
+        List.DeleteAll(_rom);
+        import.char = 1;
+        If (Operator.LetterOf(rom, 2) == "x")
         {
-            List.Add(_rom, Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, import.char), Operator.LetterOf(rom, (import.char + 1)))));
-            import.char += 2;
+            Repeat ((Variable.Length(rom) / 6))
+            {
+                List.Add(_rom, ( + Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, (import.char + 2)), Operator.LetterOf(rom, (import.char + 3))))));
+                import.char += 6;
+            }
         }
-    }
-    Looks.SwitchCostumeTo(K);
-    rom.title = "";
-    import.char = 8;
-    Repeat (60)
-    {
-        Call read byte(import.char);
-        rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (import.read_return - 31)));
-        import.char += 1;
-    }
-    Looks.SwitchCostumeTo(L);
-    rom.designation = "";
-    import.char = 1234;
-    Repeat (68)
-    {
-        Call read byte(import.char);
-        rom.designation = Operator.Join(rom.designation, Operator.LetterOf(import.ascii, (import.read_return - 31)));
-        import.char += 1;
+        Else
+        {
+            Repeat ((Variable.Length(rom) / 2))
+            {
+                List.Add(_rom, Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, import.char), Operator.LetterOf(rom, (import.char + 1)))));
+                import.char += 2;
+            }
+        }
+        Looks.SwitchCostumeTo(K);
+        rom.title = "";
+        import.char = 8;
+        Repeat (60)
+        {
+            Call read byte(import.char);
+            rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (import.read_return - 31)));
+            import.char += 1;
+        }
     }
 }
 
@@ -284,8 +327,21 @@ Define load NES(string data) (warp=true)
     List.Add(load, (Operator.Join("0x", Operator.Join(Operator.LetterOf(data, 9), Operator.LetterOf(data, 10))) * 16384));
     List.Add(load, (Operator.Join("0x", Operator.Join(Operator.LetterOf(data, 11), Operator.LetterOf(data, 12))) * 8192));
     List.Add(load, (load[1] + load[2]));
-    List.Add(load, (Operator.Join("0x", Operator.LetterOf(data, 14)) % 2));
+    If (Operator.Join("0x", Operator.LetterOf(data, 14)) > 7)
+    {
+        List.Add(load, 4);
+    }
+    Else
+    {
+        List.Add(load, (Operator.Join("0x", Operator.LetterOf(data, 14)) % 2));
+    }
     List.Add(load, (Operator.Join("0x", Operator.Join(Operator.LetterOf(data, 15), Operator.LetterOf(data, 13))) + ));
+    If Operator.Contains(data, 554E4946)
+    {
+        Looks.SwitchCostumeTo(U);
+        Sensing.Ask("Error");
+        Stop(this script);
+    }
     If (Not (Operator.Contains(data, "4E45531A")))
     {
         Looks.SwitchCostumeTo(E);
@@ -308,23 +364,43 @@ Define load NES(string data) (warp=true)
         Stop(this script);
     }
     prg_size = load[1];
-    chr_size = load[2];
-    mapper = load[5];
-    chr_ram = ((chr_size == 0) + );
-    List.DeleteAll(nt_map);
-    If (load[4] == 1)
+    If (load[2] == 0)
     {
-        List.Add(nt_map, 0);
-        List.Add(nt_map, 1);
-        List.Add(nt_map, 0);
-        List.Add(nt_map, 1);
+        chr_size = 8192;
+        chr_ram = 1;
     }
     Else
     {
-        List.Add(nt_map, 0);
+        chr_size = load[2];
+        chr_ram = 0;
+    }
+    mapper = load[5];
+    wram_enabled = 1;
+    wram_size = 8192;
+    List.DeleteAll(nt_map);
+    If (load[4] == 4)
+    {
         List.Add(nt_map, 0);
         List.Add(nt_map, 1);
-        List.Add(nt_map, 1);
+        List.Add(nt_map, 2);
+        List.Add(nt_map, 3);
+    }
+    Else
+    {
+        If (load[4] == 1)
+        {
+            List.Add(nt_map, 0);
+            List.Add(nt_map, 1);
+            List.Add(nt_map, 0);
+            List.Add(nt_map, 1);
+        }
+        Else
+        {
+            List.Add(nt_map, 0);
+            List.Add(nt_map, 0);
+            List.Add(nt_map, 1);
+            List.Add(nt_map, 1);
+        }
     }
     List.DeleteAll(prg_rom);
     List.DeleteAll(chr_rom);
@@ -447,28 +523,28 @@ B.svg
 b.svg
 C.svg
 c.svg
-d.svg
 D.svg
+d.svg
 E.svg
 e.svg
 F.svg
 f.svg
 G.svg
 g.svg
-h.svg
 H.svg
+h.svg
 I.svg
 i.svg
 J.svg
 j.svg
 K.svg
 k.svg
-l.svg
 L.svg
+l.svg
 M.svg
 m.svg
-n.svg
 N.svg
+n.svg
 O.svg
 o.svg
 P.svg

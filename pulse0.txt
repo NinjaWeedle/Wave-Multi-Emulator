@@ -1,0 +1,186 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+id = 12
+
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(pause)
+{
+    Sound.StopAllSounds();
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(unpause)
+{
+    If (Enable APU == 1)
+    {
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+    }
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Control.Wait(0);
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square0_200);
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square1_200);
+        }
+    }
+    If (id == 3)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square2_200);
+        }
+    }
+    If (id == 4)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square3_200);
+        }
+    }
+    If (id == 5)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square0_400);
+        }
+    }
+    If (id == 6)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square1_400);
+        }
+    }
+    If (id == 7)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square2_400);
+        }
+    }
+    If (id == 8)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square3_400);
+        }
+    }
+    If (id == 9)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square0_800);
+        }
+    }
+    If (id == 10)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square1_800);
+        }
+    }
+    If (id == 11)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square2_800);
+        }
+    }
+    If (id == 12)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(square3_800);
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Sound.SetVolumeTo(0);
+    If (id < 5)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[2] * ((apu[1] < 300) * (apu[3] == (id - 1)))));
+        }
+    }
+    If (id < 9)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[2] * (((apu[1] > 300) And (apu[1] < 600)) * (apu[3] == (id - 5)))));
+        }
+    }
+    If (id < 13)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[2] * ((apu[1] > 600) * (apu[3] == (id - 9)))));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Sound.ClearEffects();
+    If (id < 5)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[1] / 200))));
+        }
+    }
+    If (id < 9)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[1] / 400))));
+        }
+    }
+    If (id < 13)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[1] / 800))));
+        }
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+square0_200.wav
+square0_400.wav
+square0_800.wav
+square1_200.wav
+square1_400.wav
+square1_800.wav
+square2_200.wav
+square2_400.wav
+square2_800.wav
+square3_200.wav
+square3_400.wav
+square3_800.wav

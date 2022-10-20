@@ -1,0 +1,271 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+!A = 0
+!apu_cycle = 0
+!break = 0
+!C = 0
+!ctrl_strobe = 0
+!D = 0
+!I = 0
+!idle_skip = 0
+!immediate = 0
+!N = 0
+!NMI_occured = 0
+!op = 0
+!P = 0
+!PC = 0
+!penalty = 0
+!port1_count = 0
+!port2_count = 0
+!ppu_cycle = 0
+!SP = 0
+!sprite_dma = 0
+!V = 0
+!X = 0
+!Y = 0
+!Z = 0
+#dmc_address = 0
+#dmc_enabled = 0
+#dmc_length = 0
+#dmc_rate = 0
+#frame_interrupt = 0
+#frame_mode = 0
+#irq_inhibit = 0
+#noise_constant = 0
+#noise_counter_halt = 0
+#noise_decay = 0
+#noise_divider = 0
+#noise_enabled = 0
+#noise_lengthcounter = 0
+#noise_mode = 0
+#noise_period = 0
+#noise_start = 0
+#noise_volume = 0
+#sequence = 0
+#sq0_constant = 0
+#sq0_counter_halt = 0
+#sq0_decay = 0
+#sq0_divider = 0
+#sq0_duty = 0
+#sq0_enabled = 0
+#sq0_lengthcounter = 0
+#sq0_period = 0
+#sq0_start = 0
+#sq0_swcounter = 0
+#sq0_swenable = 0
+#sq0_swnegate = 0
+#sq0_swperiod = 0
+#sq0_swreload = 0
+#sq0_swshift = 0
+#sq0_swtarget = 0
+#sq0_volume = 0
+#sq1_constant = 0
+#sq1_counter_halt = 0
+#sq1_decay = 0
+#sq1_divider = 0
+#sq1_duty = 0
+#sq1_enabled = 0
+#sq1_lengthcounter = 0
+#sq1_period = 0
+#sq1_start = 0
+#sq1_swcounter = 0
+#sq1_swenable = 0
+#sq1_swnegate = 0
+#sq1_swperiod = 0
+#sq1_swreload = 0
+#sq1_swshift = 0
+#sq1_swtarget = 0
+#sq1_volume = 0
+#tri_control = 0
+#tri_enabled = 0
+#tri_lengthcounter = 0
+#tri_linearcounter = 0
+#tri_period = 0
+#tri_reload = 0
+#tri_reloadflag = 0
+$5b_command = 0
+$chr_bank0 = 0
+$chr_bank1 = 0
+$chr_bank2 = 0
+$chr_bank3 = 0
+$chr_bank4 = 0
+$chr_bank5 = 0
+$chr_bank6 = 0
+$chr_bank7 = 0
+$chr_bank_mode = 0
+$irq_counter = 0
+$irq_enabled = 0
+$irq_latch = 0
+$irq_mode = 0
+$irq_occured = 0
+$irq_reload = 0
+$jy_swaplastbank = 0
+$prg_bank0 = 0
+$prg_bank1 = 0
+$prg_bank2 = 0
+$prg_bank3 = 0
+$prg_banks = 0
+$prg_bank_mode = 0
+$reg0 = 0
+$reg1 = 0
+@bg_pattern = 0
+@bit = 0
+@counter = 0
+@data_latch = 0
+@fine_x = 0
+@frameskip = 0
+@hflip = 0
+@lastframe = 0
+@mask_bg = 0
+@mask_sprite = 0
+@nametable_index = 0
+@nmi_enabled = 0
+@nmi_flag = 0
+@nt_data = 0
+@oam_addr = 0
+@palette = 0
+@pattern_addr = 0
+@read_buffer = 0
+@render_bg = 0
+@render_sprite = 0
+@result = 0
+@scanline = 0
+@sprite0_bit = 0
+@sprite_attribute = 0
+@sprite_hit = 0
+@sprite_overflow = 0
+@sprite_pattern = 0
+@sprite_priority = 0
+@sprite_size = 0
+@sprite_x = 0
+@sprite_y = 0
+@temp_addr = 0
+@tile_index = 0
+@vram_addr = 0
+@vram_incr = 0
+@write_toggle = 0
+cpu_cycle = 0
+id = 2
+nes: address = 0
+nes: data = 0
+nes: IRQ = 0
+nes: NMI = 0
+temp = 0
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+!and_table = { }
+!eor_table = { }
+!hex = { }
+!modes = { }
+!ora_table = { }
+!prg_banks = { }
+!ram = { }
+!trace = { }
+!wram = { }
+#length_table = { }
+#noise_period = { }
+@attribute0 = { }
+@attribute1 = { }
+@attribute2 = { }
+@attribute3 = { }
+@bg_palette = { }
+@chr_banks = { }
+@ciram0 = { }
+@ciram1 = { }
+@ciram2 = { }
+@ciram3 = { }
+@convert = { }
+@oam_mem = { }
+@palette = { }
+@spr_palette = { }
+@temp_oam = { }
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(pause)
+{
+    Sound.StopAllSounds();
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(unpause)
+{
+    If (Enable APU == 1)
+    {
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+    }
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Sound.SetVolumeTo(0);
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[8] * (apu[7] < 300)));
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[8] * (apu[7] > 300)));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Sound.ClearEffects();
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[7] / 200))));
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[7] / 400))));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Control.Wait(0);
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(triangle_200);
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(triangle_400);
+        }
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+triangle_200.wav
+triangle_400.wav

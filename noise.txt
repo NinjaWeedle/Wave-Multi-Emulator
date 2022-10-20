@@ -1,0 +1,196 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+id = 8
+
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(pause)
+{
+    Sound.StopAllSounds();
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(unpause)
+{
+    If (Enable APU == 1)
+    {
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+    }
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Control.Wait(0);
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(noise_11);
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(noise_8);
+        }
+    }
+    If (id == 3)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(noise_5);
+        }
+    }
+    If (id == 4)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(noise_2);
+        }
+    }
+    If (id == 5)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(noisem_11);
+        }
+    }
+    If (id == 6)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(noisem_8);
+        }
+    }
+    If (id == 7)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(noisem_5);
+        }
+    }
+    If (id == 8)
+    {
+        Forever
+        {
+            Sound.PlayUntilDone(noisem_2);
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Sound.ClearEffects();
+    If ((id == 1) Or (id == 5))
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[9] / 3523.1751968503936))));
+        }
+    }
+    If ((id == 2) Or (id == 6))
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[9] / 8860.262376237624))));
+        }
+    }
+    If ((id == 3) Or (id == 7))
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[9] / 18643.46875))));
+        }
+    }
+    If ((id == 4) Or (id == 8))
+    {
+        Forever
+        {
+            Sound.SetEffectTo(PITCH, (398.64460836 * log((apu[9] / 111860.8125))));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Sound.SetVolumeTo(0);
+    If (id == 1)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[11] * ((apu[10] > 9) And (apu[10] < 16))));
+        }
+    }
+    If (id == 2)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[11] * ((apu[10] > 6) And (apu[10] < 10))));
+        }
+    }
+    If (id == 3)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[11] * ((apu[10] < 7) And (apu[10] > 3))));
+        }
+    }
+    If (id == 4)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[11] * (apu[10] < 4)));
+        }
+    }
+    If (id == 5)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[11] * ((apu[10] > 25) And (apu[10] < 32))));
+        }
+    }
+    If (id == 6)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[11] * ((apu[10] > 22) And (apu[10] < 26))));
+        }
+    }
+    If (id == 7)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[11] * ((apu[10] < 23) And (apu[10] > 19))));
+        }
+    }
+    If (id == 8)
+    {
+        Forever
+        {
+            Sound.SetVolumeTo((apu[11] * ((apu[10] > 15) And (apu[10] < 20))));
+        }
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+noisem_2.wav
+noisem_5.wav
+noisem_8.wav
+noisem_11.wav
+noise_2.wav
+noise_5.wav
+noise_8.wav
+noise_11.wav

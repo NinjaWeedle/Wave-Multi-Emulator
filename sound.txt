@@ -1,0 +1,191 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+-chnumber = 4
+-pitchnumber = 4
+-soundnumber = 2
+-z = 0
+
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(create sound)
+{
+    Call generate;
+}
+
+WhenBroadcastReceived(prune)
+{
+    Control.DeleteThisClone();
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        If (Sound.Volume() > 0)
+        {
+            Sound.PlayUntilDone(Operator.Join(Operator.Join(soundnames[-chnumber], -soundnumber), -pitchnumber));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        If (+AUDIO ENGINE duty cycle[-chnumber] == -soundnumber)
+        {
+            -z = +AUDIO ENGINE pitch[-chnumber];
+            If (-z > -1)
+            {
+                -z = (Operator.Round(((-z - 69) / 12)) + 2);
+                -z = ((-z * (-z > 0)) - ((-z - 3) * (-z > 3)));
+                If (-z == -pitchnumber)
+                {
+                    Sound.SetVolumeTo((+AUDIO ENGINE volume[-chnumber] * (20 / 16)));
+                }
+                Else
+                {
+                    Sound.SetVolumeTo(0);
+                }
+            }
+            Else
+            {
+                Sound.SetVolumeTo(0);
+            }
+        }
+        Else
+        {
+            Sound.SetVolumeTo(0);
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        If (Sound.Volume() > 0)
+        {
+            Sound.SetEffectTo(PITCH, (((+AUDIO ENGINE pitch[-chnumber] - 69) + ((2 - -pitchnumber) * 12)) * 10));
+        }
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        If (Sound.Volume() > 0)
+        {
+            Sound.SetEffectTo(PAN, (100 * +AUDIO ENGINE pan[-chnumber]));
+        }
+    }
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define generate (warp=true)
+{
+    -chnumber = 0;
+    List.DeleteAll(+AUDIO ENGINE pitch);
+    List.DeleteAll(+AUDIO ENGINE duty cycle);
+    List.DeleteAll(+AUDIO ENGINE volume);
+    List.DeleteAll(+AUDIO ENGINE pan);
+    List.DeleteAll(soundnames);
+    List.Add(soundnames, "p0");
+    List.Add(soundnames, "p1");
+    List.Add(soundnames, "");
+    List.Add(soundnames, "no");
+    Sound.SetVolumeTo(0);
+    Repeat (List.Length(soundnames))
+    {
+        -chnumber += 1;
+        -pitchnumber = 0;
+        Repeat (4)
+        {
+            -soundnumber = 0;
+            If (-chnumber == 3)
+            {
+            }
+            Else
+            {
+                If (-chnumber == 4)
+                {
+                    Repeat (2)
+                    {
+                        Control.CreateCloneOf(_myself_);
+                        -soundnumber += 1;
+                    }
+                }
+                Else
+                {
+                    Repeat (4)
+                    {
+                        Control.CreateCloneOf(_myself_);
+                        -soundnumber += 1;
+                    }
+                }
+            }
+            -pitchnumber += 1;
+        }
+        List.Add(+AUDIO ENGINE pitch, -1);
+        List.Add(+AUDIO ENGINE duty cycle, 0);
+        List.Add(+AUDIO ENGINE volume, 0);
+        List.Add(+AUDIO ENGINE pan, 0);
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+no00.wav
+no01.wav
+no02.wav
+no03.wav
+no10.wav
+no11.wav
+no12.wav
+no13.wav
+p000.wav
+p001.wav
+p002.wav
+p003.wav
+p010.wav
+p011.wav
+p012.wav
+p013.wav
+p020.wav
+p021.wav
+p022.wav
+p023.wav
+p030.wav
+p031.wav
+p032.wav
+p033.wav
+p100.wav
+p101.wav
+p102.wav
+p103.wav
+p110.wav
+p111.wav
+p112.wav
+p113.wav
+p120.wav
+p121.wav
+p122.wav
+p123.wav
+p130.wav
+p131.wav
+p132.wav
+p133.wav

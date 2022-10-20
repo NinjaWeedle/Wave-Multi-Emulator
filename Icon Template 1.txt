@@ -1,18 +1,54 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
 Ahello = 0
+c8.Load/Save_Quirk = 0
+c8.Shift_quirk = 0
+c8scrnsize = 0
+chip8.audio toggle = 0
+chip8.audio_buffer = 0
+chip8.delay_timer = 0
+chip8.drawflag = 0
+chip8.drawmode = 0
+chip8.drawplane = 0
+chip8.drawtoggle = 0
+chip8.drawvariety = 0
+chip8.dummy = 0
+chip8.dummy2 = 0
+chip8.dummy3 = 0
+chip8.dummy4 = 0
+chip8.dummy5 = 0
+chip8.HPSFlag = 0
+chip8.I = 0
+chip8.pc = 0
+chip8.pitch = 0
+chip8.rand = 0
+chip8.return = 0
+chip8.screenheight = 0
+chip8.screenwidth = 0
+chip8.sound_timer = 0
+chip8.spritewidth = 0
+CPF = 0
 Input = 0
+mchip8sprite width = 0
 S = 0
+SF2091! fix = 0
 Velocity = -5
+VIP jumps = 0
+_id = 0
+_pitch = 0
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+Boot-128 = { }
 chip8.keyboard = { }
 chip8.memory = { }
 chip8.registers = { }
 chip8.screen = { }
+chip8.screen2 = { }
 chip8.stack = { }
+schip8.font = { }
+schip8.RPL = { }
 
 
 //----- Sprite clicked events -----------------------------------------------------------------------------------------
