@@ -1,7 +1,7 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
 _id = 1
-_pitch = 0
+_pitch = -333.76316562296
 
 
 
@@ -35,36 +35,6 @@ WhenBroadcastReceived(sound.updatech8buffer)
 
 WhenBroadcastReceived(wave)
 {
-    Forever
-    {
-        If (pitch == (-1 / 0))
-        {
-            If (Not ((Sound.Volume() == 0)))
-            {
-                Sound.SetVolumeTo(0);
-                Sound.StopAllSounds();
-            }
-            Wait Until (pitch > (-1 / 0));
-        }
-        If (_id > q)
-        {
-            If (Sound.Volume() > 0)
-            {
-                Sound.SetVolumeTo(0);
-            }
-        }
-        Else
-        {
-            If (Not ((Sound.Volume() == vol[_id])))
-            {
-                Sound.SetVolumeTo(vol[_id]);
-            }
-        }
-    }
-}
-
-WhenBroadcastReceived(wave)
-{
     Sound.SetVolumeTo(0);
     Forever
     {
@@ -80,15 +50,39 @@ WhenBroadcastReceived(wave)
 {
     Forever
     {
-        If (pitch == (-1 / 0))
+        If ((Not ((pitch == -400))) And (Not ((_pitch == pitch))))
         {
+            _pitch = pitch;
+            Sound.SetEffectTo(PITCH, pitch);
+        }
+    }
+}
+
+WhenBroadcastReceived(wave)
+{
+    Forever
+    {
+        If (pitch == -400)
+        {
+            If (Not ((Sound.Volume() == 0)))
+            {
+                Sound.SetVolumeTo(0);
+                Sound.StopAllSounds();
+            }
+            Wait Until (pitch > -400);
+        }
+        If (_id > q)
+        {
+            If (Sound.Volume() > 0)
+            {
+                Sound.SetVolumeTo(0);
+            }
         }
         Else
         {
-            If (Not ((_pitch == pitch)))
+            If (Not ((Sound.Volume() == vol[_id])))
             {
-                _pitch = pitch;
-                Sound.SetEffectTo(PITCH, pitch);
+                Sound.SetVolumeTo(vol[_id]);
             }
         }
     }
@@ -206,10 +200,10 @@ Define FFT(bool I) (warp=true)
         }
         r.1 += r.1;
     }
-    control_clear_counter ?? - probably legacy function from Scratch 2.0;
     List.DeleteItem(FT.re, all);
     List.DeleteItem(FT.im, all);
     r.1 = sqrt(List.Length(temp.0));
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
     Repeat (List.Length(temp.0))
     {
         control_incr_counter ?? - probably legacy function from Scratch 2.0;
@@ -241,6 +235,20 @@ Define put Input (warp=true)
         List.Add(FT.re, (wave[control_get_counter ?? - probably legacy function from Scratch 2.0] / 15));
         List.Add(FT.re, (wave[control_get_counter ?? - probably legacy function from Scratch 2.0] / 15));
     }
+}
+
+Define tick(string sample) (warp=true)
+{
+    List.DeleteAll(chip8.audiobuffer);
+    r.0 = 1;
+    Repeat (64)
+    {
+        List.Add(chip8.audiobuffer, chip8m.PCM[(sample + r.0)]);
+        r.0 += 1;
+    }
+    Call convert buffer to bits;
+    Call put Input;
+    Call FFT();
 }
 
 

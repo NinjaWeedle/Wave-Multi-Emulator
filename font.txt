@@ -2,12 +2,13 @@
 
 i = 0
 i = 0
+j = 0
 k = 1
-l = 9
+l = 11
 m = 16
-v = 0
-x = 230
-z = 0.1
+v = 21.194893155674
+x = -166
+z = 0.01
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
@@ -279,11 +280,6 @@ Define c (warp=true)
     Call renchar x((x - 5)) y(-156) s(2) d(46);
     x += 4;
     Call d(1);
-    x = 160;
-    v = .RLE segments;
-    z = 10000;
-    Call fc(((1 - (v / 23040)) * 60));
-    Call d(5);
 }
 
 Define d(string n) (warp=true)
@@ -337,7 +333,7 @@ Define render4px(string x)(string y)(string s)(string d) (warp=true)
         k = (k / 2);
         If (Not ((i == (floor((d / k)) % 2))))
         {
-            j = (1 - j);
+            j2 = (1 - j2);
             Call px;
         }
         Motion.ChangeXBy(s);

@@ -16,11 +16,17 @@ WhenBroadcastReceived(exit emulator)
 {
     Stop(other scripts in sprite);
     Motion.GoToXY(0, 0);
+    Looks.Show();
     Looks.SetEffectTo(GHOST, 100);
     Looks.SetSizeTo(100);
     Looks.SwitchCostumeTo(costume1);
     Looks.Show();
     Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(remapwave8)
+{
+    Call Draw Keys starting at(-67)(105) With(4) rows and(4) columns;
 }
 
 WhenBroadcastReceived(WAVE-8_drawkeys)

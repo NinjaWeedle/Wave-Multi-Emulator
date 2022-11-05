@@ -1,8 +1,85 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
 Ahello = 1
+bg_mode = 0
+c8scrnsize = 0
+calc.char = 0
+calc.return = 0
+calc.temp = 0
+calc.temp2 = 0
+chip8.audio toggle = 0
+chip8.audio_buffer = 0
+chip8.delay_timer = 0
+chip8.drawflag = 0
+chip8.drawmode = 0
+chip8.drawplane = 0
+chip8.drawtoggle = 0
+chip8.drawvariety = 0
+chip8.dummy = 0
+chip8.dummy2 = 0
+chip8.dummy3 = 0
+chip8.dummy4 = 0
+chip8.dummy5 = 0
+chip8.fx0aflag = 0
+chip8.HPS = 0
+chip8.HPSFlag = 0
+chip8.I = 0
+chip8.Load/Save_Quirk = 0
+chip8.pc = 0
+chip8.pitch = 0
+chip8.rand = 0
+chip8.return = 0
+chip8.screenheight = 0
+chip8.screenwidth = 0
+chip8.Shift_quirk = 0
+chip8.sound_timer = 0
+chip8.spritewidth = 0
+chip8m.collisioncolor = 0
+flags.met = 0
+import.ascii = 0
+import.binary = 0
+import.char = 0
+import.dummy = 0
+import.percent = 0
+import.read_return = 0
+import.rom_length = 0
+import.status = 0
 Input = exit
+load = 0
+op.opcode = 0
+op.pos = 0
+op.temp = 0
+program.done = 0
+read.return = 0
+read.single.return = 0
+rom.name = 0
+scanX = 0
+scanY = 0
+SF2091! fix = 0
+speed (CPF) = 0
+storage.byte = 0
+temp = 0
+tile_mode = 0
+VIP jumps = 0
+_id = 0
+_pitch = 0
 
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+Boot-128 = { }
+chip8.audio = { }
+chip8.keyboard = { }
+chip8.memory = { }
+chip8.registers = { }
+chip8.screen = { }
+chip8.screen2 = { }
+chip8.stack = { }
+load = { }
+Load ROMs: _rom = { }
+mappers = { }
+schip8.font = { }
+schip8.RPL = { }
 
 
 //----- Green flag events ---------------------------------------------------------------------------------------------
@@ -84,7 +161,6 @@ WhenBroadcastReceived(HelloInter)
                                     {
                                         If (Operator.Join(Operator.LetterOf(Input, 1), Operator.Join(Operator.LetterOf(Input, 2), Operator.Join(Operator.LetterOf(Input, 3), Operator.LetterOf(Input, 4)))) == "Load")
                                         {
-                                            Load Rom Flag = 1;
                                             If Operator.Contains(Input, "Rocket Launcher")
                                             {
                                                 _ROM = "00E0A260600761386219D027D127A25E60006118D011700830401214681E69112258600FE09E12246008F018225879FF22586002F015F007300012366001F0183900122C00E0640CC520C640D65174FF34001248691A122EA268D89700EEFF0080808080808080002070707070F85000";
@@ -128,7 +204,6 @@ WhenBroadcastReceived(HelloInter)
                                                                 }
                                                                 Else
                                                                 {
-                                                                    Load Rom Flag = 0;
                                                                     Event.Broadcast("get_rom");
                                                                 }
                                                             }
@@ -150,14 +225,15 @@ WhenBroadcastReceived(HelloInter)
                                                 {
                                                     List.Add(MainHello, "Concept: @Geotale/@EmulatorsOnScratch");
                                                     List.Add(MainHello, "Menu: @Geotale @Executec @oxiti8");
-                                                    List.Add(MainHello, "Chip 8 Emulator: @Geotale @Kouzeru @oxiti8 @52525rr");
-                                                    List.Add(MainHello, "Game Boy/Game Boy Color: @52525rr");
+                                                    List.Add(MainHello, "WAVE-8: @Geotale @oxiti8 @Kouzeru @52525rr");
+                                                    List.Add(MainHello, "DualGB: @52525rr");
                                                     List.Add(MainHello, "Game Boy Advance Emulator: @Geotale/@EmulatorsOnScratch");
                                                     List.Add(MainHello, "Nintendo DS Emulator: @Geotale/@EmulatorsOnScratch");
-                                                    List.Add(MainHello, "Nintendo Entertainment System Emulator: @GenericHeroGuy");
+                                                    List.Add(MainHello, "Cool NES Emulator: @GenericHeroGuy");
                                                     List.Add(MainHello, "Bytepusher: @52525rr");
-                                                    List.Add(MainHello, "UHWEI Wave edition: @oxiti8");
-                                                    List.Add(MainHello, "Music: Purple Planet Music - Chilled - Global Tech, Nintendo 3DS HOME menu BGM, Mario Paint - Special Stamps, NOW'S YOUR CHANCE TO BE A");
+                                                    List.Add(MainHello, "UHWEI Wave Edition: @oxiti8");
+                                                    List.Add(MainHello, "SI8080: @oxiti8");
+                                                    List.Add(MainHello, "Music: Purple Planet Music - Chilled - Global Tech, Nintendo 3DS HOME menu BGM, Mario Paint - Special Stamps");
                                                     List.Add(MainHello, "Special Thanks: StinkerB06 and Tobiasvl for helping with DXYN ");
                                                     List.Add(MainHello, "@AArt1256, @52525rr, and @Kouzeru for help with XO-CHIP");
                                                     List.Add(MainHello, "CHIP8 Wave logo ROM by @AArt1256");
@@ -240,6 +316,13 @@ WhenBroadcastReceived(Load_Prebuilt_game)
 {
     List.Add(MainHello, "ROM Loaded!");
 }
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+Event.Broadcast("Project not saving fix")
+
+Event.Broadcast("Nuke all lists")
 
 
 //----- Costumes ------------------------------------------------------------------------------------------------------

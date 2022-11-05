@@ -4,8 +4,8 @@ arm7.read_return = 0
 arm9.read_return = 0
 core.byte_return = 0
 render.dummy = 0
-x = 178
-y = 146
+x = 100
+y = 0
 
 
 

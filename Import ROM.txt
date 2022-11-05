@@ -8,6 +8,7 @@ calc.temp = 0
 calc.temp2 = 0
 chip8.audio toggle = 0
 chip8.audio_buffer = 0
+chip8.blendmode = 0
 chip8.delay_timer = 0
 chip8.drawflag = 0
 chip8.drawmode = 0
@@ -19,6 +20,7 @@ chip8.dummy2 = 0
 chip8.dummy3 = 0
 chip8.dummy4 = 0
 chip8.dummy5 = 0
+chip8.fx0aflag = 0
 chip8.HPS = 0
 chip8.HPSFlag = 0
 chip8.I = 0
@@ -32,17 +34,17 @@ chip8.screenwidth = 0
 chip8.Shift_quirk = 0
 chip8.sound_timer = 0
 chip8.spritewidth = 0
+chip8m.collisioncolor = 0
 flags.met = 0
-import.ascii =  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+import.ascii =  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~▒∠ā∇√∫Σ▶π	∂≤≥≠α→←↓↑γδεηθλρστωΔΠΩ■∞ ¡¢£¤¥¦§¨©ª«¬
 import.binary = 000000
-import.char = 68
+import.char = 1302
 import.dummy = 1
 import.percent = 0
-import.read_return = 163
+import.read_return = 0
 import.rom_length = 0
 import.status = (2/2) Importing rom... (16%)
 load = 
-mchip8sprite width = 0
 op.opcode = 0
 op.pos = 0
 op.temp = 0
@@ -55,7 +57,7 @@ scanY = 0
 SF2091! fix = 0
 speed (CPF) = 0
 storage.byte = 0
-temp = 786465
+temp = 49185
 tile_mode = 0
 VIP jumps = 0
 _id = 0
@@ -73,11 +75,11 @@ chip8.screen = { }
 chip8.screen2 = { }
 chip8.stack = { }
 load = { 
-    262144
-    131072
-    393216
+    16384
+    8192
+    24576
     0
-    4
+    0
 }
 Load ROMs: _rom = { }
 mappers = { 
@@ -104,6 +106,128 @@ WhenBroadcastReceived(exit emulator)
     Variable.Hide(import.status);
     Variable.Hide(rom.designation);
     Variable.Hide(rom.title);
+    List.Hide(controls.chip8);
+    List.Hide(controls.GB);
+    List.Hide(controls.NES);
+    Romimportflag = 0;
+}
+
+WhenBroadcastReceived(get_controls)
+{
+    Costume.GoToFrontBack(front);
+    If (Romimportflag == 0)
+    {
+        Romimportflag = 2;
+        Motion.GoToXY(0, 45);
+        Looks.Show();
+        Costume.GoToFrontBack(front);
+        Looks.SwitchCostumeTo(a);
+        microbit_displaySymbol ?? - probably legacy function from Scratch 2.0;
+        Sound.Play(423930correct4);
+        Wait Until (Not ((Romimportflag == 2)));
+        Inemu? = 1;
+        If ((Romimportflag / -200) > 1)
+        {
+            If (Romimportflag == -400)
+            {
+                Looks.SwitchCostumeTo(b);
+                List.Show(controls.chip8);
+                Sound.Play(423930__mudkip2016__correct2);
+                Forever
+                {
+                    Wait Until (Not ((Sensing.MouseDown() Or Sensing.KeyPressed(space))));
+                    Wait Until ((Sensing.MouseDown() And Sensing.TouchingObject(_mouse_)) Or Sensing.KeyPressed(space));
+                    Sensing.Ask("Which list entry do you want to edit? Leave blank to exit.");
+                    If (Sensing.Answer() == "")
+                    {
+                        Stop(other scripts in sprite);
+                        Event.Broadcast("exit emulator");
+                        Stop(this script);
+                    }
+                    Else
+                    {
+                        r.0 = (Sensing.Answer() + );
+                        Sensing.Ask(Operator.Join("Type the name of the key you want to use in item ", Operator.Join(r.0, " of the WAVE-8 controls list.")));
+                        If (Not ((Sensing.Answer() == "")))
+                        {
+                            List.ReplaceItem(controls.chip8, r.0, Sensing.Answer());
+                        }
+                    }
+                }
+            }
+            If (Romimportflag == -600)
+            {
+                Looks.SwitchCostumeTo(c);
+                List.Show(controls.GB);
+                Sound.Play(423930__mudkip2016__correct2);
+                Forever
+                {
+                    Wait Until (Not ((Sensing.MouseDown() Or Sensing.KeyPressed(space))));
+                    Wait Until ((Sensing.MouseDown() And Sensing.TouchingObject(_mouse_)) Or Sensing.KeyPressed(space));
+                    Sensing.Ask("Which list entry do you want to edit? Leave blank to exit.");
+                    If (Sensing.Answer() == "")
+                    {
+                        Stop(other scripts in sprite);
+                        Event.Broadcast("exit emulator");
+                        Stop(this script);
+                    }
+                    Else
+                    {
+                        r.0 = (Sensing.Answer() + );
+                        Sensing.Ask(Operator.Join("Type the name of the key you want to use in item ", Operator.Join(r.0, " of the DualGB controls list.")));
+                        If (Not ((Sensing.Answer() == "")))
+                        {
+                            List.ReplaceItem(controls.GB, r.0, Sensing.Answer());
+                        }
+                    }
+                }
+            }
+            If (Romimportflag == -800)
+            {
+            }
+            If (Romimportflag == -1000)
+            {
+            }
+            If (Romimportflag == -1200)
+            {
+                Looks.SwitchCostumeTo(d);
+                List.Show(controls.NES);
+                Sound.Play(423930__mudkip2016__correct2);
+                Forever
+                {
+                    Wait Until (Not ((Sensing.MouseDown() Or Sensing.KeyPressed(space))));
+                    Wait Until ((Sensing.MouseDown() And Sensing.TouchingObject(_mouse_)) Or Sensing.KeyPressed(space));
+                    Sensing.Ask("Which list entry do you want to edit? Leave blank to exit.");
+                    If (Sensing.Answer() == "")
+                    {
+                        Stop(other scripts in sprite);
+                        Event.Broadcast("exit emulator");
+                        Stop(this script);
+                    }
+                    Else
+                    {
+                        r.0 = (Sensing.Answer() + );
+                        Sensing.Ask(Operator.Join("Type the name of the key you want to use in item ", Operator.Join(r.0, " of the Cool NES controls list.")));
+                        If (Not ((Sensing.Answer() == "")))
+                        {
+                            List.ReplaceItem(controls.NES, r.0, Sensing.Answer());
+                        }
+                    }
+                }
+            }
+            If (Romimportflag == -1800)
+            {
+                Looks.SwitchCostumeTo(e);
+                Sound.Play(423930__mudkip2016__correct2);
+                Stop(other scripts in sprite);
+                Event.Broadcast("exit emulator");
+                Stop(this script);
+            }
+        }
+    }
+    microbit_displayClear ?? - probably legacy function from Scratch 2.0;
+    Looks.Hide();
+    Inemu? = 0;
     Romimportflag = 0;
 }
 
@@ -116,10 +240,11 @@ WhenBroadcastReceived(get_rom)
         Looks.Show();
         Costume.GoToFrontBack(front);
         Looks.SwitchCostumeTo(A);
-        import.ascii = " !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+        import.ascii = " !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~▒∠ā∇√∫Σ▶π	∂≤≥≠α→←↓↑γδεηθλρστωΔΠΩ■∞ ¡¢£¤¥¦§¨©ª«¬";
         microbit_displaySymbol ?? - probably legacy function from Scratch 2.0;
-        Sound.Play(423930__mudkip2016__correct4);
+        Sound.Play(423930correct4);
         Wait Until (Not ((Romimportflag == 1)));
+        Inemu? = 1;
         If ((Romimportflag / -200) > 1)
         {
             If (Romimportflag == -800)
@@ -171,27 +296,60 @@ WhenBroadcastReceived(get_rom)
                     Call import_rom(Sensing.Answer())(0);
                     Sound.Play(423930__mudkip2016__correct2);
                 }
-                If (Romimportflag == -1800)
+            }
+            If (Romimportflag == -1800)
+            {
+                Looks.SwitchCostumeTo(V);
+                List.DeleteAll(_rom);
+                import.status = 1;
+                Repeat (4)
                 {
-                    Looks.SwitchCostumeTo(S);
                     Sensing.Ask("");
-                    If (Not ((Sensing.Answer() == "")))
+                    Call import_rom(Sensing.Answer())(2);
+                    If (import.status == 1)
                     {
-                        Call import_rom(Sensing.Answer())(0);
-                        Sound.Play(423930__mudkip2016__correct2);
+                        Repeat Until ("0x7FF" < List.Length(_rom))
+                        {
+                            List.Add(_rom, 0);
+                        }
                     }
+                    If (import.status == 2)
+                    {
+                        Repeat Until ("0xFFF" < List.Length(_rom))
+                        {
+                            List.Add(_rom, 0);
+                        }
+                    }
+                    If (import.status == 3)
+                    {
+                        Repeat Until ("0x17FF" < List.Length(_rom))
+                        {
+                            List.Add(_rom, 0);
+                        }
+                    }
+                    If (import.status == 4)
+                    {
+                        Repeat Until ("0x1FFF" < List.Length(_rom))
+                        {
+                            List.Add(_rom, 0);
+                        }
+                    }
+                    import.status += 1;
+                    Sound.Play(423930__mudkip2016__correct2);
+                    Looks.NextCostume();
                 }
             }
         }
     }
     microbit_displayClear ?? - probably legacy function from Scratch 2.0;
+    Inemu? = 0;
     Looks.Hide();
     Romimportflag = 0;
 }
 
 WhenBroadcastReceived(Load_Prebuilt_game)
 {
-    Call import_rom(_ROM)(Load Rom Flag);
+    Call import_rom(_ROM)(0);
 }
 
 
@@ -289,15 +447,29 @@ Define import_rom(string rom)(string flag) (warp=true)
     }
     Else
     {
-        Looks.SwitchCostumeTo(J);
-        List.DeleteAll(_rom);
+        If (flag == 0)
+        {
+            Looks.SwitchCostumeTo(J);
+            List.DeleteAll(_rom);
+        }
         import.char = 1;
         If (Operator.LetterOf(rom, 2) == "x")
         {
-            Repeat ((Variable.Length(rom) / 6))
+            If (Operator.LetterOf(rom, 5) == ",")
             {
-                List.Add(_rom, ( + Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, (import.char + 2)), Operator.LetterOf(rom, (import.char + 3))))));
-                import.char += 6;
+                Repeat ((Variable.Length(rom) / 6))
+                {
+                    List.Add(_rom, Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, (import.char + 2)), Operator.LetterOf(rom, (import.char + 3)))));
+                    import.char += 6;
+                }
+            }
+            Else
+            {
+                Repeat ((Variable.Length(rom) / 5))
+                {
+                    List.Add(_rom, Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, (import.char + 2)), Operator.LetterOf(rom, (import.char + 3)))));
+                    import.char += 5;
+                }
             }
         }
         Else
@@ -308,14 +480,17 @@ Define import_rom(string rom)(string flag) (warp=true)
                 import.char += 2;
             }
         }
-        Looks.SwitchCostumeTo(K);
-        rom.title = "";
-        import.char = 8;
-        Repeat (60)
+        If (flag == 0)
         {
-            Call read byte(import.char);
-            rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (import.read_return - 31)));
-            import.char += 1;
+            Looks.SwitchCostumeTo(K);
+            rom.title = "";
+            import.char = 8;
+            Repeat (60)
+            {
+                Call read byte(import.char);
+                rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (import.read_return - 31)));
+                import.char += 1;
+            }
         }
     }
 }
@@ -561,7 +736,6 @@ U.svg
 u.svg
 V.svg
 v.svg
-W.svg
 w.svg
 X.svg
 x.svg
@@ -573,5 +747,5 @@ z.svg
 
 //----- Sounds --------------------------------------------------------------------------------------------------------
 
+423930correct4.wav
 423930__mudkip2016__correct2.wav
-423930__mudkip2016__correct4.wav

@@ -1,28 +1,28 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
-!A = 0
-!apu_cycle = 2929308
+!A = 15
+!apu_cycle = 554901
 !break = 0
-!C = 0
+!C = 1
 !ctrl_strobe = 0
 !D = 0
-!I = 0
+!I = 1
 !idle_skip = 0
 !immediate = 0
 !N = 0
 !NMI_occured = 0
-!op = 16
-!P = 34
-!PC = 43036
-!penalty = 168
+!op = 197
+!P = 39
+!PC = 49809
+!penalty = 0
 !port1_count = 8
 !port2_count = 0
-!ppu_cycle = 3
-!SP = 251
+!ppu_cycle = 328
+!SP = 253
 !sprite_dma = 768
 !V = 0
 !X = 0
-!Y = 0
+!Y = 242
 !Z = 1
 #dmc_address = 59776
 #dmc_enabled = 0
@@ -35,23 +35,23 @@
 #noise_counter_halt = 0
 #noise_decay = 0
 #noise_divider = 0
-#noise_enabled = 1
+#noise_enabled = 0
 #noise_lengthcounter = 0
 #noise_mode = 0
 #noise_period = 0
 #noise_start = 0
 #noise_volume = 0
-#sequence = 3
+#sequence = 1
 #sq0_constant = 1
 #sq0_counter_halt = 0
 #sq0_decay = 0
 #sq0_divider = 0
 #sq0_duty = 1
-#sq0_enabled = 1
+#sq0_enabled = 0
 #sq0_lengthcounter = 0
 #sq0_period = 253
 #sq0_start = 0
-#sq0_swcounter = 4
+#sq0_swcounter = 3
 #sq0_swenable = 0
 #sq0_swnegate = 0
 #sq0_swperiod = 7
@@ -64,11 +64,11 @@
 #sq1_decay = 0
 #sq1_divider = 0
 #sq1_duty = 1
-#sq1_enabled = 1
+#sq1_enabled = 0
 #sq1_lengthcounter = 0
 #sq1_period = 189
 #sq1_start = 0
-#sq1_swcounter = 4
+#sq1_swcounter = 3
 #sq1_swenable = 0
 #sq1_swnegate = 0
 #sq1_swperiod = 7
@@ -77,85 +77,83 @@
 #sq1_swtarget = 190
 #sq1_volume = 0
 #tri_control = 1
-#tri_enabled = 1
+#tri_enabled = 0
 #tri_lengthcounter = 0
 #tri_linearcounter = 0
 #tri_period = 380
 #tri_reload = 0
 #tri_reloadflag = 0
 $5b_command = 7
-$chr_bank0 = 32
-$chr_bank1 = 33
-$chr_bank2 = 4
-$chr_bank3 = 127
-$chr_bank4 = 120
-$chr_bank5 = 122
+$chr_bank0 = 0
+$chr_bank1 = 0
+$chr_bank2 = 0
+$chr_bank3 = 0
+$chr_bank4 = 0
+$chr_bank5 = 0
 $chr_bank6 = 0
 $chr_bank7 = 0
 $chr_bank_mode = 0
-$irq_counter = 148
+$irq_counter = 0
 $irq_enabled = 0
-$irq_latch = 193
+$irq_latch = 0
 $irq_mode = 0
 $irq_occured = 0
 $irq_reload = 0
 $jy_swaplastbank = 1
-$prg_bank0 = 25
-$prg_bank1 = 24
+$prg_bank0 = 0
+$prg_bank1 = 0
 $prg_bank2 = 0
 $prg_bank3 = 0
 $prg_banks = 32
-$prg_bank_mode = 1
-$reg0 = 7
+$prg_bank_mode = 0
+$reg0 = 0
 $reg1 = 0
 @bg_pattern = 0
 @bit = 8
-@counter = 257
-@data_latch = 11101111
+@counter = 8192
+@data_latch = 00000000
 @fine_x = 0
 @frameskip = 0
 @hflip = 1
-@lastframe = 8322.4954347106
+@lastframe = 8339.6056596296
 @mask_bg = 1
 @mask_sprite = 1
-@nametable_index = 4
+@nametable_index = 2
 @nmi_enabled = 1
-@nmi_flag = 0
+@nmi_flag = 1
 @nt_data = 0
 @oam_addr = 1
 @palette = 1
-@pattern_addr = 2020
+@pattern_addr = 259
 @read_buffer = 0
 @render_bg = 1
-@render_sprite = 1
-@result = 11111111
-@scanline = 241
+@render_sprite = 0
+@result = 00000000
+@scanline = 100
 @sprite0_bit = 0
 @sprite_attribute = 66
 @sprite_hit = 0
 @sprite_overflow = 0
-@sprite_pattern = 256
+@sprite_pattern = 0
 @sprite_priority = 1
-@sprite_size = 2
+@sprite_size = 1
 @sprite_x = 172
 @sprite_y = 128
-@temp_addr = 29600
-@tile_index = 252
-@vram_addr = 23456
+@temp_addr = 0
+@tile_index = 32
+@vram_addr = 16768
 @vram_incr = 0
 @write_toggle = 0
-cpu_cycle = 2927144
-nes: address = 43040
-nes: data = 169
+cpu_cycle = 549573
+nes: address = 210
+nes: data = 15
 nes: IRQ = 0
 nes: NMI = 0
-temp = -4
+temp = 2
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
-!and_table = { }
-!eor_table = { }
 !hex = { 
     00
     01
@@ -687,7 +685,6 @@ temp = -4
     +32: penalty
     
 }
-!ora_table = { }
 !prg_banks = { }
 !ram = { }
 !trace = { }
@@ -836,53 +833,6 @@ WhenKeyPressed(6)
 
 //----- Broadcast received events -------------------------------------------------------------------------------------
 
-WhenBroadcastReceived(coolnesreset)
-{
-    Call !reset;
-}
-
-WhenBroadcastReceived(init)
-{
-    !A = 0;
-    !X = 0;
-    !Y = 0;
-    !PC = ((prg_rom[(prg_size - 2)] * 256) + prg_rom[(prg_size - 3)]);
-    !SP = 253;
-    !P = 36;
-    !C = 0;
-    !Z = 0;
-    !I = 1;
-    !D = 0;
-    !V = 0;
-    !N = 0;
-    nes: NMI = 0;
-    !NMI_occured = 0;
-    nes: IRQ = 0;
-    !break = 0;
-    cpu_cycle = 8;
-    !port1_count = 0;
-    !port2_count = 0;
-    !ctrl_strobe = 0;
-    !ppu_cycle = 27;
-    !apu_cycle = 7457;
-    !idle_skip = 0;
-    List.DeleteAll(!ram);
-    Repeat (2048)
-    {
-        List.Add(!ram, 0);
-    }
-    If (battery == 1)
-    {
-        List.DeleteAll(!wram);
-        Repeat (wram_size)
-        {
-            List.Add(!wram, 0);
-        }
-        battery = 0;
-    }
-    List.DeleteAll(!trace);
-}
-
 WhenBroadcastReceived(init)
 {
     frame = 1;
@@ -1029,62 +979,44 @@ WhenBroadcastReceived(init)
     }
 }
 
-WhenBroadcastReceived(make_tables)
+WhenBroadcastReceived(init)
 {
-    List.DeleteAll(!and_table);
-    List.DeleteAll(!ora_table);
-    List.DeleteAll(!eor_table);
-    List.DeleteAll(!trace);
-    temp = 1;
-    Repeat (32)
+    !A = 0;
+    !X = 0;
+    !Y = 0;
+    !PC = ((prg_rom[(prg_size - 2)] * 256) + prg_rom[(prg_size - 3)]);
+    !SP = 253;
+    !P = 36;
+    !C = 0;
+    !Z = 0;
+    !I = 1;
+    !D = 0;
+    !V = 0;
+    !N = 0;
+    nes: NMI = 0;
+    !NMI_occured = 0;
+    nes: IRQ = 0;
+    !break = 0;
+    cpu_cycle = 8;
+    !port1_count = 0;
+    !port2_count = 0;
+    !ctrl_strobe = 0;
+    !ppu_cycle = 27;
+    !apu_cycle = 7457;
+    !idle_skip = 0;
+    List.DeleteAll(!ram);
+    Repeat (2048)
     {
-        List.Add(!trace, temp);
-        temp = (temp * 2);
+        List.Add(!ram, 0);
     }
-    temp = 0;
-    Repeat (3)
+    If (battery == 1)
     {
-        temp += 1;
-        !A = 0;
-        Repeat (256)
+        List.DeleteAll(!wram);
+        Repeat (wram_size)
         {
-            !X = 0;
-            Repeat (256)
-            {
-                !Y = 1;
-                !SP = 0;
-                Repeat (8)
-                {
-                    If (temp == 1)
-                    {
-                        !SP += (((floor((!A / !trace[!Y])) % 2) * (floor((!X / !trace[!Y])) % 2)) * !trace[!Y]);
-                    }
-                    If (temp == 2)
-                    {
-                        !SP += (ceiling((((floor((!A / !trace[!Y])) % 2) + (floor((!X / !trace[!Y])) % 2)) / 2)) * !trace[!Y]);
-                    }
-                    If (temp == 3)
-                    {
-                        !SP += ((((floor((!A / !trace[!Y])) % 2) + (floor((!X / !trace[!Y])) % 2)) % 2) * !trace[!Y]);
-                    }
-                    !Y += 1;
-                }
-                If (temp == 1)
-                {
-                    List.Add(!and_table, !SP);
-                }
-                If (temp == 2)
-                {
-                    List.Add(!ora_table, !SP);
-                }
-                If (temp == 3)
-                {
-                    List.Add(!eor_table, !SP);
-                }
-                !X += 1;
-            }
-            !A += 1;
+            List.Add(!wram, 0);
         }
+        battery = 0;
     }
 }
 
@@ -1096,9 +1028,9 @@ WhenBroadcastReceived(pause)
 WhenBroadcastReceived(Project not saving fix)
 {
     List.DeleteAll(!prg_banks);
-    List.DeleteAll(!ora_table);
-    List.DeleteAll(!and_table);
-    List.DeleteAll(!eor_table);
+    List.DeleteAll(or_table);
+    List.DeleteAll(and_table);
+    List.DeleteAll(xor_table);
     List.DeleteAll(!ram);
     List.DeleteAll(!wram);
     List.DeleteAll(!trace);
@@ -1117,6 +1049,7 @@ WhenBroadcastReceived(Project not saving fix)
     List.DeleteAll(@oam_mem);
     List.DeleteAll(@temp_oam);
     List.DeleteAll(pixel_buffer);
+    coolnes_regenerate = 1;
     battery = 1;
 }
 
@@ -1883,7 +1816,7 @@ Define !read (warp=true)
     {
         If (!ctrl_strobe == 1)
         {
-            nes: data = (64 + Sensing.KeyPressed(controls[1]));
+            nes: data = (64 + Sensing.KeyPressed(controls.NES[1]));
             Stop(this script);
         }
         Else
@@ -1891,7 +1824,7 @@ Define !read (warp=true)
             !port1_count += 1;
             If (!port1_count < 9)
             {
-                nes: data = (64 + Sensing.KeyPressed(controls[!port1_count]));
+                nes: data = (64 + Sensing.KeyPressed(controls.NES[!port1_count]));
             }
             Else
             {
@@ -1904,7 +1837,7 @@ Define !read (warp=true)
     {
         If (!ctrl_strobe == 1)
         {
-            nes: data = (64 + Sensing.KeyPressed(controls[9]));
+            nes: data = (64 + Sensing.KeyPressed(controls.NES[9]));
             Stop(this script);
         }
         Else
@@ -1912,7 +1845,7 @@ Define !read (warp=true)
             !port2_count += 1;
             If (!port2_count < 9)
             {
-                nes: data = (64 + Sensing.KeyPressed(controls[(!port2_count + 8)]));
+                nes: data = (64 + Sensing.KeyPressed(controls.NES[(!port2_count + 8)]));
             }
             Else
             {
@@ -3886,7 +3819,7 @@ Define and (warp=false)
     {
         Call !read;
     }
-    !A = !and_table[(((nes: data * 256) + !A) + 1)];
+    !A = and_table[(((nes: data * 256) + !A) + 1)];
     Call !zn(!A);
 }
 
@@ -3913,7 +3846,7 @@ Define asl (warp=false)
 
 Define axs (warp=false)
 {
-    !X = !and_table[(((!A * 256) + !X) + 1)];
+    !X = and_table[(((!A * 256) + !X) + 1)];
     !X = (!X - nes: data);
     !C = ((!X > -1) + );
     !X = (!X % 256);
@@ -3925,7 +3858,7 @@ Define bit (warp=false)
     Call !read;
     !N = ((nes: data > 127) + );
     !V = ((((nes: data % 128) > 63) == 1) + );
-    !Z = ((!and_table[(((nes: data * 256) + !A) + 1)] == 0) + );
+    !Z = ((and_table[(((nes: data * 256) + !A) + 1)] == 0) + );
 }
 
 Define branch(bool condition) (warp=false)
@@ -4014,7 +3947,7 @@ Define eor (warp=false)
     {
         Call !read;
     }
-    !A = !eor_table[(((nes: data * 256) + !A) + 1)];
+    !A = xor_table[(((nes: data * 256) + !A) + 1)];
     Call !zn(!A);
 }
 
@@ -4181,7 +4114,7 @@ Define ora (warp=false)
     {
         Call !read;
     }
-    !A = !ora_table[(((nes: data * 256) + !A) + 1)];
+    !A = or_table[(((nes: data * 256) + !A) + 1)];
     Call !zn(!A);
 }
 
@@ -4223,7 +4156,7 @@ Define rla (warp=false)
     nes: data = (((nes: data * 2) + !C) % 256);
     !C = temp;
     Call !write;
-    !A = !and_table[(((nes: data * 256) + !A) + 1)];
+    !A = and_table[(((nes: data * 256) + !A) + 1)];
     Call !zn(!A);
 }
 
@@ -4294,7 +4227,7 @@ Define rts (warp=false)
 
 Define sax (warp=false)
 {
-    nes: data = !and_table[(((!A * 256) + !X) + 1)];
+    nes: data = and_table[(((!A * 256) + !X) + 1)];
     Call !write;
 }
 
@@ -4314,13 +4247,13 @@ Define sbc (warp=false)
 
 Define shx (warp=false)
 {
-    nes: data = !and_table[((!X * 256) + (nes: data + 1))];
+    nes: data = and_table[((!X * 256) + (nes: data + 1))];
     Call !write;
 }
 
 Define shy (warp=false)
 {
-    nes: data = !and_table[((!Y * 256) + (nes: data + 1))];
+    nes: data = and_table[((!Y * 256) + (nes: data + 1))];
     Call !write;
 }
 
@@ -4331,7 +4264,7 @@ Define slo (warp=false)
     !C = ((nes: data > 127) + );
     nes: data = ((nes: data * 2) % 256);
     Call !write;
-    !A = !ora_table[(((nes: data * 256) + !A) + 1)];
+    !A = or_table[(((nes: data * 256) + !A) + 1)];
     Call !zn(!A);
 }
 
@@ -4342,7 +4275,7 @@ Define sre (warp=false)
     !C = (nes: data % 2);
     nes: data = floor((nes: data / 2));
     Call !write;
-    !A = !eor_table[(((nes: data * 256) + !A) + 1)];
+    !A = xor_table[(((nes: data * 256) + !A) + 1)];
     Call !zn(!A);
 }
 
@@ -4402,6 +4335,11 @@ Define tya (warp=false)
 Define xaa (warp=false)
 {
 }
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+Call !reset
 
 
 //----- Costumes ------------------------------------------------------------------------------------------------------

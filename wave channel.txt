@@ -44,7 +44,7 @@
 .windowflag = 0
 @PAL = 0
 @PIX = 0
-fftlast = 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15 3 4 0 2 0 0 0 4 3 5 8 0 0 14 4 14 4 2 12 2 8 15 0 0 0 15 15 0 0 0 0
+fftlast = 0
 FPS = 0
 g = 0
 Game Boy: _HALT = 0
@@ -149,6 +149,19 @@ WhenBroadcastReceived(create sound)
 
 WhenBroadcastReceived(m1)
 {
+    Sound.SetVolumeTo(0);
+    Forever
+    {
+        If (Sound.Volume() == 0)
+        {
+            Wait Until (Sound.Volume() > 0);
+        }
+        Sound.PlayUntilDone(_id);
+    }
+}
+
+WhenBroadcastReceived(m1)
+{
     Forever
     {
         If (pitch == (-1 / 0))
@@ -191,19 +204,6 @@ WhenBroadcastReceived(m1)
                 Sound.SetEffectTo(PITCH, pitch);
             }
         }
-    }
-}
-
-WhenBroadcastReceived(m1)
-{
-    Sound.SetVolumeTo(0);
-    Forever
-    {
-        If (Sound.Volume() == 0)
-        {
-            Wait Until (Sound.Volume() > 0);
-        }
-        Sound.PlayUntilDone(_id);
     }
 }
 

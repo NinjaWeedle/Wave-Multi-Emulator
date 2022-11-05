@@ -40,6 +40,7 @@ chip8.stack = { }
 
 WhenBroadcastReceived(exit emulator)
 {
+    Call get stage size;
     Looks.Hide();
     Sensing.ResetTimer();
     Forever
@@ -79,14 +80,27 @@ WhenBroadcastReceived(stop_scripts)
 
 //----- Custom blocks -------------------------------------------------------------------------------------------------
 
+Define get stage size (warp=true)
+{
+    Looks.Show();
+    Looks.SwitchCostumeTo(2x2 svg);
+    Motion.GoToXY(-1, 0);
+    Repeat Until Sensing.TouchingObject(_edge_)
+    {
+        Motion.ChangeXBy(2);
+    }
+    stage width = ((Motion.XPosition() * 2) - 2);
+    Looks.SwitchCostumeTo(costume1);
+}
+
 Define render(string timer)(string height) (warp=true)
 {
     Pen.Clear();
     Pen.SetPenColorToColor(#6cb7ff);
     Pen.SetPenTo(transparency, 30);
-    Pen.ChangePenBy(color, (Operator.Join(Menu Theme[5], Menu Theme[6]) * 5));
-    Motion.SetX(-240);
-    Repeat (480)
+    Pen.ChangePenBy(color, (Operator.Round(Operator.Join("0x", Operator.Join(Menu Theme[5], Menu Theme[6]))) / 2));
+    Motion.SetX((stage width / -2));
+    Repeat (stage width)
     {
         Pen.Down();
         Motion.SetY((((10 * sin((Motion.XPosition() + (50 * timer)))) - (50 * sin((8 * ((Motion.XPosition() / 100) + timer))))) - height));
@@ -100,4 +114,5 @@ Define render(string timer)(string height) (warp=true)
 
 //----- Costumes ------------------------------------------------------------------------------------------------------
 
+2x2 svg.svg
 costume1.svg

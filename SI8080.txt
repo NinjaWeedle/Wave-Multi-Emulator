@@ -1,0 +1,1412 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
+8080.cycles = 7924012
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+_flags = { 
+    0
+    1
+    0
+    0
+    0
+    0
+    0
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(8080)
+{
+    Call initialize;
+    Forever
+    {
+        Call cycle("");
+    }
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    Stop(other scripts in sprite);
+    Variable.Hide(_PC);
+    List.Hide(_registers);
+}
+
+WhenBroadcastReceived(Project not saving fix)
+{
+    List.DeleteAll(_memory);
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define cycle(string cycles) (warp=true)
+{
+    Call opcode(_memory[(_PC + 1)]);
+    _PC += 1;
+}
+
+Define initialize (warp=true)
+{
+    _SP = 0;
+    Pen.SetPenSizeTo(1);
+    _PC = 0;
+    8080.cycles = 0;
+    List.DeleteAll(_registers);
+    Repeat (7)
+    {
+        List.Add(_registers, 0);
+    }
+    List.DeleteAll(_flags);
+    Repeat (7)
+    {
+        List.Add(_flags, 0);
+    }
+    List.ReplaceItem(_flags, 2, 1);
+    List.DeleteAll(_memory);
+    Repeat (65536)
+    {
+        List.Add(_memory, 0);
+    }
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
+    Repeat (List.Length(_rom))
+    {
+        List.ReplaceItem(_memory, (control_get_counter ?? - probably legacy function from Scratch 2.0 + 1), _rom[(control_get_counter ?? - probably legacy function from Scratch 2.0 + 1)]);
+        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+    }
+    Variable.Show(_PC);
+    List.Show(_registers);
+}
+
+Define LXI(string register) (warp=true)
+{
+    _PC += 1;
+    List.ReplaceItem(_registers, (register + 1), _memory[_PC]);
+    _PC += 1;
+    List.ReplaceItem(_registers, register, _memory[_PC]);
+    8080.cycles += 10;
+}
+
+Define MOV RAM to reg(string register) (warp=true)
+{
+    List.ReplaceItem(_registers, 1, _memory[((_registers[6] * 256) + _registers[7])]);
+    8080.cycles += 7;
+}
+
+Define MOV reg(string register) to RAM (warp=true)
+{
+    List.ReplaceItem(_memory, ((_registers[6] * 256) + _registers[7]), _registers[register]);
+    8080.cycles += 7;
+}
+
+Define MOV reg(string origin) to reg(string destination) (warp=true)
+{
+    List.ReplaceItem(_registers, destination, _registers[origin]);
+    8080.cycles += 5;
+}
+
+Define opcode(string op1) (warp=true)
+{
+    If (op1 < "0x10")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Call LXI(2);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                8080.cycles += 4;
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 11)
+                {
+                    Stop(this script);
+                }
+                8080.cycles += 4;
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+            }
+        }
+        Stop(this script);
+    }
+    If (op1 < "0x20")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Call LXI(4);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                8080.cycles += 4;
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 11)
+                {
+                    Stop(this script);
+                }
+                8080.cycles += 4;
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+            }
+        }
+        Stop(this script);
+    }
+    If (op1 < "0x30")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Call LXI(6);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                8080.cycles += 4;
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 11)
+                {
+                    Stop(this script);
+                }
+                8080.cycles += 4;
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0x40")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                8080.cycles += 4;
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 11)
+                {
+                    Stop(this script);
+                }
+                8080.cycles += 4;
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0x50")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Call MOV reg(3) to reg(2);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Call MOV reg(4) to reg(2);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Call MOV reg(5) to reg(2);
+                    Stop(this script);
+                }
+                Call MOV reg(2) to reg(2);
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Call MOV reg(6) to reg(2);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Call MOV reg(7) to reg(2);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Call MOV RAM to reg(2);
+                    Stop(this script);
+                }
+                Call MOV reg(1) to reg(2);
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Call MOV reg(2) to reg(3);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Call MOV reg(3) to reg(3);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Call MOV reg(4) to reg(3);
+                    Stop(this script);
+                }
+                Call MOV reg(5) to reg(3);
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Call MOV reg(6) to reg(3);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Call MOV reg(7) to reg(3);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Call MOV RAM to reg(3);
+                    Stop(this script);
+                }
+                Call MOV reg(1) to reg(3);
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0x60")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Call MOV reg(3) to reg(4);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Call MOV reg(4) to reg(4);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Call MOV reg(5) to reg(4);
+                    Stop(this script);
+                }
+                Call MOV reg(2) to reg(4);
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Call MOV reg(6) to reg(4);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Call MOV reg(7) to reg(4);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Call MOV RAM to reg(4);
+                    Stop(this script);
+                }
+                Call MOV reg(1) to reg(4);
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Call MOV reg(2) to reg(5);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Call MOV reg(3) to reg(5);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Call MOV reg(4) to reg(5);
+                    Stop(this script);
+                }
+                Call MOV reg(5) to reg(5);
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Call MOV reg(6) to reg(5);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Call MOV reg(7) to reg(5);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Call MOV RAM to reg(5);
+                    Stop(this script);
+                }
+                Call MOV reg(1) to reg(5);
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0x70")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Call MOV reg(3) to reg(6);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Call MOV reg(4) to reg(6);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Call MOV reg(5) to reg(6);
+                    Stop(this script);
+                }
+                Call MOV reg(2) to reg(6);
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Call MOV reg(6) to reg(6);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Call MOV reg(7) to reg(6);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Call MOV RAM to reg(6);
+                    Stop(this script);
+                }
+                Call MOV reg(1) to reg(6);
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Call MOV reg(2) to reg(7);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Call MOV reg(3) to reg(7);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Call MOV reg(4) to reg(7);
+                    Stop(this script);
+                }
+                Call MOV reg(5) to reg(7);
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Call MOV reg(6) to reg(7);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Call MOV reg(7) to reg(7);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Call MOV RAM to reg(7);
+                    Stop(this script);
+                }
+                Call MOV reg(1) to reg(7);
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0x80")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Call MOV reg(3) to RAM;
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Call MOV reg(4) to RAM;
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Call MOV reg(5) to RAM;
+                    Stop(this script);
+                }
+                Call MOV reg(2) to RAM;
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Call MOV reg(6) to RAM;
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Call MOV reg(7) to RAM;
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Sensing.Ask("0x76 halt");
+                    Stop(this script);
+                }
+                Call MOV reg(1) to RAM;
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Call MOV reg(2) to reg(1);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Call MOV reg(3) to reg(1);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Call MOV reg(4) to reg(1);
+                    Stop(this script);
+                }
+                Call MOV reg(5) to reg(1);
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Call MOV reg(6) to reg(1);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Call MOV reg(7) to reg(1);
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Call MOV RAM to reg(1);
+                    Stop(this script);
+                }
+                Call MOV reg(1) to reg(1);
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0x90")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0xA0")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0xB0")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0xC0")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0xD0")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0xE0")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If (op1 < "0xF0")
+    {
+        If ((op1 % 16) < 8)
+        {
+            If ((op1 % 16) < 4)
+            {
+                If ((op1 % 16) == 1)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 2)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 3)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 4)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 5)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 6)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+        Else
+        {
+            If ((op1 % 16) < 12)
+            {
+                If ((op1 % 16) == 8)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 9)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 10)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+            Else
+            {
+                If ((op1 % 16) == 12)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 13)
+                {
+                    Stop(this script);
+                }
+                If ((op1 % 16) == 14)
+                {
+                    Stop(this script);
+                }
+                Stop(this script);
+            }
+        }
+    }
+    If ((op1 % 16) < 8)
+    {
+        If ((op1 % 16) < 4)
+        {
+            If ((op1 % 16) == 1)
+            {
+                Stop(this script);
+            }
+            If ((op1 % 16) == 2)
+            {
+                Stop(this script);
+            }
+            If ((op1 % 16) == 3)
+            {
+                Stop(this script);
+            }
+            Stop(this script);
+        }
+        Else
+        {
+            If ((op1 % 16) == 4)
+            {
+                Stop(this script);
+            }
+            If ((op1 % 16) == 5)
+            {
+                Stop(this script);
+            }
+            If ((op1 % 16) == 6)
+            {
+                Stop(this script);
+            }
+            Stop(this script);
+        }
+    }
+    Else
+    {
+        If ((op1 % 16) < 12)
+        {
+            If ((op1 % 16) == 8)
+            {
+                Stop(this script);
+            }
+            If ((op1 % 16) == 9)
+            {
+                Stop(this script);
+            }
+            If ((op1 % 16) == 10)
+            {
+                Stop(this script);
+            }
+            Stop(this script);
+        }
+        Else
+        {
+            If ((op1 % 16) == 12)
+            {
+                Stop(this script);
+            }
+            If ((op1 % 16) == 13)
+            {
+                Stop(this script);
+            }
+            If ((op1 % 16) == 14)
+            {
+                Stop(this script);
+            }
+            Stop(this script);
+        }
+    }
+}
+
+Define render (warp=true)
+{
+    Motion.SetX(-192);
+    Motion.SetY(150);
+    r.0 = 9216;
+    Repeat (224)
+    {
+        List.DeleteAll(_scanline);
+        Repeat (32)
+        {
+            r.0 += 1;
+            r.2 = bin_table[(_memory[r.0] + 1)];
+            control_clear_counter ?? - probably legacy function from Scratch 2.0;
+            Repeat (8)
+            {
+                control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                List.Add(_scanline, Operator.LetterOf(r.2, control_get_counter ?? - probably legacy function from Scratch 2.0));
+            }
+        }
+        Motion.SetY(150);
+        r.2 = 1;
+        Pen.SetPenColorToColor(_colours[(_scanline[r.2] + 1)]);
+        Pen.Down();
+        Repeat (256)
+        {
+            r.2 += 1;
+            Motion.ChangeYBy(-1);
+            Pen.SetPenColorToColor(_colours[(_scanline[r.2] + 1)]);
+        }
+        Pen.Clear();
+        Motion.ChangeXBy(1);
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+0.wav
+1.wav
+2.wav
+3.wav
+4.wav
+5.wav
+6.wav
+7.wav
+8.wav
+9.wav
+11.wav
+12.wav
+13.wav
+14.wav
+15.wav
+16.wav
+17.wav
+18.wav

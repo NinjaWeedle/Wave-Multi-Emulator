@@ -1,10 +1,26 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
+arm7.pc = 0
+arm7.read_return = 0
+arm9.pc = 0
+arm9.read_return = 0
 bg_mode = 0
 calc.char = 32
 calc.return = 0
 calc.temp = 31
 calc.temp2 = 0
+core.byte_return = 0
+core.condition_test = 0
+core.dummy = 0
+core.dummy2 = 0
+core.dummy_op = 0
+core.instruction_format = 0
+core.little_endian = 0
+core.op.dummy = 0
+core.op.dummy2 = 0
+core.read_return = 0
+core.rotate_return = 0
+core.shift_return = 0
 flags.met = 0
 op.opcode = 0
 op.pos = 0
@@ -18,6 +34,12 @@ storage.byte = 4
 tile_mode = 0
 
 
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
+arm7.registers = { }
+arm9.flags = { }
+arm9.registers = { }
+
 
 //----- Green flag events ---------------------------------------------------------------------------------------------
 
@@ -28,6 +50,11 @@ WhenGreenFlagClicked()
 
 
 //----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(exit emulator)
+{
+    Stop(other scripts in sprite);
+}
 
 WhenBroadcastReceived(Game Boy Advance)
 {

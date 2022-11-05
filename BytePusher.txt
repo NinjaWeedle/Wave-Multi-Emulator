@@ -1,21 +1,95 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
 a = 256
+arm7.pc = 0
+arm7.read_return = 0
+arm9.pc = 0
+arm9.read_return = 0
+bg_mode = 0
 bytepusher = 256
+c8.Load/Save_Quirk = 0
+c8.Shift_quirk = 0
+c8scrnsize = 0
+calc.char = 0
+calc.return = 0
+calc.temp = 0
+calc.temp2 = 0
+chip8.audio toggle = 0
+chip8.audio_buffer = 0
+chip8.delay_timer = 0
+chip8.drawflag = 0
+chip8.drawmode = 0
+chip8.drawplane = 0
+chip8.drawvariety = 0
+chip8.dummy = 0
+chip8.dummy2 = 0
+chip8.dummy3 = 0
+chip8.dummy4 = 0
+chip8.dummy5 = 0
+chip8.fx0aflag = 0
+chip8.HPSFlag = 0
+chip8.I = 0
+chip8.pc = 0
+chip8.pitch = 0
+chip8.rand = 0
+chip8.return = 0
+chip8.screenheight = 0
+chip8.screenwidth = 0
+chip8.sound_timer = 0
+chip8.spritewidth = 0
+chip8m.collisioncolor = 0
+core.byte_return = 0
+core.condition_test = 0
+core.dummy = 0
+core.dummy2 = 0
+core.dummy_op = 0
+core.instruction_format = 0
+core.little_endian = 0
+core.op.dummy = 0
+core.op.dummy2 = 0
+core.read_return = 0
+core.rotate_return = 0
+core.shift_return = 0
+CPF = 0
+flags.met = 0
 i = 33554432
 j = 4
 k = 00000000
 n = 10
+op.opcode = 0
+op.pos = 0
+op.temp = 0
 p = 0
+program.done = 0
+read.return = 0
+read.single.return = 0
+scanX = 0
+scanY = 0
+SF2091! fix = 0
+storage.byte = 0
+tile_mode = 0
+VIP jumps = 0
+_id = 0
+_pitch = 0
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+arm7.registers = { }
+arm9.flags = { }
+arm9.registers = { }
+Boot-128 = { }
 bytepusher = { }
 c = { 
     aewq321x
     vfr4czds
 }
+chip8.keyboard = { }
+chip8.memory = { }
+chip8.registers = { }
+chip8.screen = { }
+chip8.screen2 = { }
+chip8.stack = { }
 p = { 
     51
     102
@@ -274,6 +348,8 @@ p = {
     3342489
     3342540
 }
+schip8.font = { }
+schip8.RPL = { }
 t = { }
 
 
@@ -336,11 +412,6 @@ Define Draw bp (warp=true)
 }
 
 
-//----- Orphaned blocks -----------------------------------------------------------------------------------------------
-
-space
-
-
 //----- Costumes ------------------------------------------------------------------------------------------------------
 
-costume1.svg
+costume2.svg

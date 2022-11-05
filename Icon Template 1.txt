@@ -66,7 +66,7 @@ WhenBroadcastReceived(exit emulator)
 {
     Inemu? = 0;
     Looks.ClearGraphicEffects();
-    Looks.SetEffectTo(COLOR, (Operator.Join(Menu Theme[5], Menu Theme[6]) * 10));
+    Looks.SetEffectTo(COLOR, Operator.Join("0x", Operator.Join(Menu Theme[5], Menu Theme[6])));
     Looks.Hide();
     Control.Wait(1.5);
     Looks.SwitchCostumeTo(0import);
@@ -75,6 +75,11 @@ WhenBroadcastReceived(exit emulator)
         Control.CreateCloneOf(_myself_);
         Looks.NextCostume();
     }
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    Control.DeleteThisClone();
 }
 
 WhenBroadcastReceived(Launch Emulator)
@@ -103,22 +108,16 @@ Control.WhenIStartAsClone()
 
 Control.WhenIStartAsClone()
 {
-    Forever
-    {
-        Motion.GoToXY((MenuScroll + ((Costume.GetNumberName(number) - 2) * 200)), (((Menu Theme[3] * 50) + ((cos(my variable) * 2) * ((Menu Theme[7] == 0) * Sensing.TouchingObject(Sprite3)))) - 230));
-    }
-}
-
-Control.WhenIStartAsClone()
-{
     Looks.SetEffectTo(GHOST, 100);
     Looks.Show();
+    Motion.GoToXY((MenuScroll + ((Costume.GetNumberName(number) - 2) * 200)), (((Menu Theme[3] * 50) + ((cos(my variable) * 2) * ((Menu Theme[7] == 0) * Sensing.TouchingObject(Sprite3)))) - 230));
     Repeat ((11 * (1 + is compiled?)))
     {
         Looks.ChangeEffectBy(GHOST, (-5 * (2 - is compiled?)));
     }
     Forever
     {
+        Motion.GoToXY((MenuScroll + ((Costume.GetNumberName(number) - 2) * 200)), (((Menu Theme[3] * 50) + ((cos(my variable) * 2) * ((Menu Theme[7] == 0) * Sensing.TouchingObject(Sprite3)))) - 230));
         S = Looks.Size();
         Looks.SetSizeTo(50);
         If Sensing.TouchingObject(_edge_)
@@ -154,11 +153,11 @@ Control.WhenIStartAsClone()
 
 //----- Costumes ------------------------------------------------------------------------------------------------------
 
-0GA.svg
-0GA2.svg
+0BP.svg
 0import.svg
-0random.svg
+0remap.svg
 0Rom.svg
+0S8080.svg
 1DS.svg
 1W8.svg
 2DS.svg

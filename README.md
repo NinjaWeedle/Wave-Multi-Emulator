@@ -11,6 +11,14 @@ If you are looking for information on the HyperWaveCHIP-64 extension for CHIP-8,
 
 Changelog:
 
+V0.9.X:
+
+V0.9: 
+- General: Regen bitwise tables only upon initial project start, added control remapping options for GB, NES, and CHIP-8, moved randomized theme function to “Import Theme” (now triggered by typing "random"), added 640x480 support, added increased color options for themes, removed Goddess A.
+- WAVE-8: use lookup tables for bitwise operations, fixed fx0a, fixed sprite transparencies in MegaChip, changed default palette to greyscale instead of CGA0, removed PC display, prevent Megachip mode from being untoggled, fixed audio not playing when buffer is not updated, and fixed VF flag in shifts being set based on VX instead of VY in VIP shift mode.
+- DualGB: Audio quality improvements, RLE counter removed.
+- SI8080: Initial framework built. MOV, LXI, and NOP instructions added.
+
 V0.8.X:
 
 V0.8.7: Fix LY=LYC check in DualGB
