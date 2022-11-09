@@ -1,17 +1,21 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
-8080.cycles = 7924012
+8080.cycles = 2094560
+8080.readreturn = 41731
+ascii =  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+Terminal = { }
 _flags = { 
     0
+    1
     1
     0
     0
     0
-    0
+    1
     0
 }
 
@@ -23,7 +27,7 @@ WhenBroadcastReceived(8080)
     Call initialize;
     Forever
     {
-        Call cycle("");
+        Call Step CPU(8080.mode);
     }
 }
 
@@ -32,35 +36,176 @@ WhenBroadcastReceived(exit emulator)
     Stop(other scripts in sprite);
     Variable.Hide(_PC);
     List.Hide(_registers);
+    Variable.Hide(8080.cycles);
+    List.Hide(_memory);
+    Variable.Hide(_SP);
+    List.Hide(Terminal);
 }
 
 WhenBroadcastReceived(Project not saving fix)
 {
     List.DeleteAll(_memory);
+    List.DeleteAll(Terminal);
 }
 
 
 //----- Custom blocks -------------------------------------------------------------------------------------------------
 
-Define cycle(string cycles) (warp=true)
+Define ADC(string register) (warp=true)
 {
-    Call opcode(_memory[(_PC + 1)]);
-    _PC += 1;
+    If (-1 < register)
+    {
+        If (register == 6)
+        {
+            Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+            8080.cycles += 7;
+        }
+        Else
+        {
+            8080.readreturn = _registers[(register + 1)];
+            8080.cycles += 4;
+        }
+    }
+    Else
+    {
+        _PC += 1;
+        Call Read byte(_PC)("");
+        8080.cycles += 7;
+    }
+    r.1 = (_registers[8] + (8080.readreturn + _flags[1]));
+    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    List.ReplaceItem(_registers, 8, (r.1 % 256));
+}
+
+Define ADD(string register) (warp=true)
+{
+    If (-1 < register)
+    {
+        If (register == 6)
+        {
+            Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+            8080.cycles += 7;
+        }
+        Else
+        {
+            8080.readreturn = _registers[(register + 1)];
+            8080.cycles += 4;
+        }
+    }
+    Else
+    {
+        _PC += 1;
+        Call Read byte(_PC)("");
+        8080.cycles += 7;
+    }
+    r.1 = (_registers[8] + 8080.readreturn);
+    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    List.ReplaceItem(_flags, 5, ((((_registers[8] % 16) + (8080.readreturn % 16)) > 15) + ));
+    List.ReplaceItem(_registers, 8, (r.1 % 256));
+}
+
+Define ANA(string register) (warp=true)
+{
+    If (-1 < register)
+    {
+        If (register == 6)
+        {
+            Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+            8080.cycles += 7;
+        }
+        Else
+        {
+            8080.readreturn = _registers[(register + 1)];
+            8080.cycles += 4;
+        }
+    }
+    Else
+    {
+        _PC += 1;
+        Call Read byte(_PC)("");
+        8080.cycles += 7;
+    }
+    r.1 = and_table[(((_registers[8] * 256) + 8080.readreturn) + 1)];
+    List.ReplaceItem(_flags, 1, 0);
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, ((r.1 == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    List.ReplaceItem(_registers, 8, r.1);
+}
+
+Define CALL(bool condition) (warp=true)
+{
+    If condition
+    {
+        Call Read byte(_PC)(1);
+        _PC = 8080.readreturn;
+        _SP += -2;
+        Call Write byte(_SP)((8080.readreturn % 256));
+        Call Write byte((_SP + 1))(floor((8080.readreturn / 256)));
+    }
+    Else
+    {
+        _PC += 2;
+    }
+    8080.cycles += 11;
+}
+
+Define CMP(string register) (warp=true)
+{
+    If (-1 < register)
+    {
+        If (register == 6)
+        {
+            Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+            8080.cycles += 7;
+        }
+        Else
+        {
+            8080.readreturn = _registers[(register + 1)];
+            8080.cycles += 4;
+        }
+    }
+    Else
+    {
+        _PC += 1;
+        Call Read byte(_PC)("");
+        8080.cycles += 7;
+    }
+    r.1 = ((_registers[8] - 8080.readreturn) % 65536);
+    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+}
+
+Define DAD(string regpair) (warp=true)
+{
+    r.1 = (((_registers[regpair] * 256) + _registers[(regpair + 1)]) + ((_registers[5] * 256) + _registers[6]));
+    List.ReplaceItem(_flags, 1, ((r.1 > 65535) + ));
+    List.ReplaceItem(_registers, 5, floor(((r.1 % 65536) / 256)));
+    List.ReplaceItem(_registers, 6, ((r.1 % 65536) % 256));
+    8080.cycles += 10;
 }
 
 Define initialize (warp=true)
 {
+    Pen.Clear();
+    Pen.Clear();
     _SP = 0;
     Pen.SetPenSizeTo(1);
-    _PC = 0;
-    8080.cycles = 0;
     List.DeleteAll(_registers);
-    Repeat (7)
+    Repeat (8)
     {
         List.Add(_registers, 0);
     }
     List.DeleteAll(_flags);
-    Repeat (7)
+    Repeat (8)
     {
         List.Add(_flags, 0);
     }
@@ -70,41 +215,139 @@ Define initialize (warp=true)
     {
         List.Add(_memory, 0);
     }
+    Sensing.Ask("Where should the ROM be loaded in memory?");
+    8080.cycles = Sensing.Answer();
+    _PC = Sensing.Answer();
+    Sensing.Ask("What mode should be used? (0=Space Invaders, 1=CP/M HLE)");
+    8080.mode = Sensing.Answer();
+    ascii = " !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     control_clear_counter ?? - probably legacy function from Scratch 2.0;
-    Repeat (List.Length(_rom))
+    Repeat ((List.Length(_rom) + ))
     {
-        List.ReplaceItem(_memory, (control_get_counter ?? - probably legacy function from Scratch 2.0 + 1), _rom[(control_get_counter ?? - probably legacy function from Scratch 2.0 + 1)]);
+        List.ReplaceItem(_memory, (8080.cycles + 1), _rom[(control_get_counter ?? - probably legacy function from Scratch 2.0 + 1)]);
+        8080.cycles += 1;
         control_incr_counter ?? - probably legacy function from Scratch 2.0;
     }
+    8080.cycles = 0;
     Variable.Show(_PC);
     List.Show(_registers);
+    List.Show(_memory);
+    List.DeleteAll(Terminal);
+    List.Show(Terminal);
+    Variable.Show(8080.cycles);
+    Variable.Show(_SP);
+}
+
+Define INR/DCR(string register)(string amount) (warp=true)
+{
+    If (register == 6)
+    {
+        Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+        8080.cycles += 10;
+    }
+    Else
+    {
+        8080.readreturn = _registers[(register + 1)];
+        8080.cycles += 5;
+    }
+    r.1 = ((8080.readreturn + amount) % 65536);
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    If (register == 6)
+    {
+        Call Write byte(((_registers[5] * 256) + _registers[6]))((r.1 % 256));
+    }
+    Else
+    {
+        List.ReplaceItem(_registers, (register + 1), (r.1 % 256));
+    }
+}
+
+Define JMP(bool condition) (warp=true)
+{
+    If condition
+    {
+        Call Read byte(_PC)(1);
+        _PC = 8080.readreturn;
+    }
+    Else
+    {
+        _PC += 2;
+    }
+    8080.cycles += 10;
 }
 
 Define LXI(string register) (warp=true)
 {
-    _PC += 1;
-    List.ReplaceItem(_registers, (register + 1), _memory[_PC]);
-    _PC += 1;
-    List.ReplaceItem(_registers, register, _memory[_PC]);
+    _PC += 2;
+    Call Read byte((_PC - 2))("");
+    List.ReplaceItem(_registers, (register + 1), 8080.readreturn);
+    Call Read byte((_PC - 1))("");
+    List.ReplaceItem(_registers, register, 8080.readreturn);
     8080.cycles += 10;
+}
+
+Define LXI SP (warp=true)
+{
+    _PC += 2;
+    Call Read byte((_PC - 1))(1);
+    _SP = (8080.readreturn + 1);
+    8080.cycles += 10;
+}
+
+Define MOV(string op) (warp=true)
+{
+    If ((op % 8) == 6)
+    {
+        Call MOV RAM to reg((op % 8));
+    }
+    Else
+    {
+        If (floor((op / 8)) == 6)
+        {
+            Call MOV reg((op % 8)) to RAM at address in regpair(5);
+        }
+        Else
+        {
+            Call MOV reg((op % 8)) to reg(floor((op / 8)));
+        }
+    }
 }
 
 Define MOV RAM to reg(string register) (warp=true)
 {
-    List.ReplaceItem(_registers, 1, _memory[((_registers[6] * 256) + _registers[7])]);
+    Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+    List.ReplaceItem(_registers, (register + 1), 8080.readreturn);
     8080.cycles += 7;
 }
 
-Define MOV reg(string register) to RAM (warp=true)
+Define MOV reg(string register) to RAM at address in regpair(string pair) (warp=true)
 {
-    List.ReplaceItem(_memory, ((_registers[6] * 256) + _registers[7]), _registers[register]);
+    Call Write byte(((_registers[pair] * 256) + _registers[(pair + 1)]))(_registers[(register + 1)]);
     8080.cycles += 7;
 }
 
 Define MOV reg(string origin) to reg(string destination) (warp=true)
 {
-    List.ReplaceItem(_registers, destination, _registers[origin]);
+    List.ReplaceItem(_registers, (destination + 1), _registers[(origin + 1)]);
     8080.cycles += 5;
+}
+
+Define MVI(string register) (warp=true)
+{
+    Call Read byte(_PC)(0);
+    If (register == 6)
+    {
+        Call Write byte(((_registers[5] * 256) + _registers[6]))(8080.readreturn);
+        8080.cycles += 10;
+    }
+    Else
+    {
+        List.ReplaceItem(_registers, (register + 1), 8080.readreturn);
+        8080.cycles += 7;
+    }
+    _PC += 1;
 }
 
 Define opcode(string op1) (warp=true)
@@ -117,11 +360,12 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 1)
                 {
-                    Call LXI(2);
+                    Call LXI(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 2)
                 {
+                    Call MOV reg(7) to RAM at address in regpair(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 3)
@@ -129,23 +373,27 @@ Define opcode(string op1) (warp=true)
                     Stop(this script);
                 }
                 8080.cycles += 4;
+                Stop(this script);
             }
             Else
             {
                 If ((op1 % 16) == 4)
                 {
+                    Call INR/DCR(0)(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 5)
                 {
+                    Call INR/DCR(0)(-1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 6)
                 {
+                    Call MVI(0);
                     Stop(this script);
                 }
-                Stop(this script);
             }
+            Stop(this script);
         }
         Else
         {
@@ -153,6 +401,7 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 9)
                 {
+                    Call DAD(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 10)
@@ -170,14 +419,17 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 12)
                 {
+                    Call INR/DCR(1)(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 13)
                 {
+                    Call INR/DCR(1)(-1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 14)
                 {
+                    Call MVI(1);
                     Stop(this script);
                 }
             }
@@ -192,11 +444,12 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 1)
                 {
-                    Call LXI(4);
+                    Call LXI(3);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 2)
                 {
+                    Call MOV reg(7) to RAM at address in regpair(3);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 3)
@@ -210,18 +463,21 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 4)
                 {
+                    Call INR/DCR(2)(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 5)
                 {
+                    Call INR/DCR(2)(-1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 6)
                 {
+                    Call MVI(2);
                     Stop(this script);
                 }
-                Stop(this script);
             }
+            Stop(this script);
         }
         Else
         {
@@ -229,6 +485,7 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 9)
                 {
+                    Call DAD(3);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 10)
@@ -246,14 +503,17 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 12)
                 {
+                    Call INR/DCR(3)(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 13)
                 {
+                    Call INR/DCR(3)(-1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 14)
                 {
+                    Call MVI(3);
                     Stop(this script);
                 }
             }
@@ -268,7 +528,7 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 1)
                 {
-                    Call LXI(6);
+                    Call LXI(5);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 2)
@@ -286,18 +546,21 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 4)
                 {
+                    Call INR/DCR(4)(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 5)
                 {
+                    Call INR/DCR(4)(-1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 6)
                 {
+                    Call MVI(4);
                     Stop(this script);
                 }
-                Stop(this script);
             }
+            Stop(this script);
         }
         Else
         {
@@ -305,6 +568,7 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 9)
                 {
+                    Call DAD(5);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 10)
@@ -322,19 +586,24 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 12)
                 {
+                    Call INR/DCR(5)(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 13)
                 {
+                    Call INR/DCR(5)(-1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 14)
                 {
+                    Call MVI(5);
                     Stop(this script);
                 }
-                Stop(this script);
+                List.ReplaceItem(_registers, 8, xor_table[(65281 + _registers[8])]);
+                8080.cycles += 4;
             }
         }
+        Stop(this script);
     }
     If (op1 < "0x40")
     {
@@ -344,6 +613,7 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 1)
                 {
+                    Call LXI SP;
                     Stop(this script);
                 }
                 If ((op1 % 16) == 2)
@@ -357,22 +627,24 @@ Define opcode(string op1) (warp=true)
                 8080.cycles += 4;
                 Stop(this script);
             }
-            Else
+            If ((op1 % 16) == 4)
             {
-                If ((op1 % 16) == 4)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Stop(this script);
-                }
+                Call INR/DCR(6)(1);
                 Stop(this script);
             }
+            If ((op1 % 16) == 5)
+            {
+                Call INR/DCR(6)(-1);
+                Stop(this script);
+            }
+            If ((op1 % 16) == 6)
+            {
+                Call MVI(6);
+                Stop(this script);
+            }
+            List.ReplaceItem(_flags, 1, 1);
+            cycles += 4;
+            Stop(this script);
         }
         Else
         {
@@ -397,667 +669,87 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 12)
                 {
+                    Call INR/DCR(7)(1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 13)
                 {
+                    Call INR/DCR(7)(-1);
                     Stop(this script);
                 }
                 If ((op1 % 16) == 14)
                 {
+                    Call MVI(7);
                     Stop(this script);
                 }
-                Stop(this script);
             }
         }
-    }
-    If (op1 < "0x50")
-    {
-        If ((op1 % 16) < 8)
-        {
-            If ((op1 % 16) < 4)
-            {
-                If ((op1 % 16) == 1)
-                {
-                    Call MOV reg(3) to reg(2);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 2)
-                {
-                    Call MOV reg(4) to reg(2);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 3)
-                {
-                    Call MOV reg(5) to reg(2);
-                    Stop(this script);
-                }
-                Call MOV reg(2) to reg(2);
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 4)
-                {
-                    Call MOV reg(6) to reg(2);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Call MOV reg(7) to reg(2);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Call MOV RAM to reg(2);
-                    Stop(this script);
-                }
-                Call MOV reg(1) to reg(2);
-                Stop(this script);
-            }
-        }
-        Else
-        {
-            If ((op1 % 16) < 12)
-            {
-                If ((op1 % 16) == 8)
-                {
-                    Call MOV reg(2) to reg(3);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 9)
-                {
-                    Call MOV reg(3) to reg(3);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 10)
-                {
-                    Call MOV reg(4) to reg(3);
-                    Stop(this script);
-                }
-                Call MOV reg(5) to reg(3);
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 12)
-                {
-                    Call MOV reg(6) to reg(3);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 13)
-                {
-                    Call MOV reg(7) to reg(3);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 14)
-                {
-                    Call MOV RAM to reg(3);
-                    Stop(this script);
-                }
-                Call MOV reg(1) to reg(3);
-                Stop(this script);
-            }
-        }
-    }
-    If (op1 < "0x60")
-    {
-        If ((op1 % 16) < 8)
-        {
-            If ((op1 % 16) < 4)
-            {
-                If ((op1 % 16) == 1)
-                {
-                    Call MOV reg(3) to reg(4);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 2)
-                {
-                    Call MOV reg(4) to reg(4);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 3)
-                {
-                    Call MOV reg(5) to reg(4);
-                    Stop(this script);
-                }
-                Call MOV reg(2) to reg(4);
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 4)
-                {
-                    Call MOV reg(6) to reg(4);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Call MOV reg(7) to reg(4);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Call MOV RAM to reg(4);
-                    Stop(this script);
-                }
-                Call MOV reg(1) to reg(4);
-                Stop(this script);
-            }
-        }
-        Else
-        {
-            If ((op1 % 16) < 12)
-            {
-                If ((op1 % 16) == 8)
-                {
-                    Call MOV reg(2) to reg(5);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 9)
-                {
-                    Call MOV reg(3) to reg(5);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 10)
-                {
-                    Call MOV reg(4) to reg(5);
-                    Stop(this script);
-                }
-                Call MOV reg(5) to reg(5);
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 12)
-                {
-                    Call MOV reg(6) to reg(5);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 13)
-                {
-                    Call MOV reg(7) to reg(5);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 14)
-                {
-                    Call MOV RAM to reg(5);
-                    Stop(this script);
-                }
-                Call MOV reg(1) to reg(5);
-                Stop(this script);
-            }
-        }
-    }
-    If (op1 < "0x70")
-    {
-        If ((op1 % 16) < 8)
-        {
-            If ((op1 % 16) < 4)
-            {
-                If ((op1 % 16) == 1)
-                {
-                    Call MOV reg(3) to reg(6);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 2)
-                {
-                    Call MOV reg(4) to reg(6);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 3)
-                {
-                    Call MOV reg(5) to reg(6);
-                    Stop(this script);
-                }
-                Call MOV reg(2) to reg(6);
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 4)
-                {
-                    Call MOV reg(6) to reg(6);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Call MOV reg(7) to reg(6);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Call MOV RAM to reg(6);
-                    Stop(this script);
-                }
-                Call MOV reg(1) to reg(6);
-                Stop(this script);
-            }
-        }
-        Else
-        {
-            If ((op1 % 16) < 12)
-            {
-                If ((op1 % 16) == 8)
-                {
-                    Call MOV reg(2) to reg(7);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 9)
-                {
-                    Call MOV reg(3) to reg(7);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 10)
-                {
-                    Call MOV reg(4) to reg(7);
-                    Stop(this script);
-                }
-                Call MOV reg(5) to reg(7);
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 12)
-                {
-                    Call MOV reg(6) to reg(7);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 13)
-                {
-                    Call MOV reg(7) to reg(7);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 14)
-                {
-                    Call MOV RAM to reg(7);
-                    Stop(this script);
-                }
-                Call MOV reg(1) to reg(7);
-                Stop(this script);
-            }
-        }
+        List.ReplaceItem(_flags, 1, ((_flags[1] == 0) + ));
+        cycles += 4;
+        Stop(this script);
     }
     If (op1 < "0x80")
     {
-        If ((op1 % 16) < 8)
+        If (op1 == "0x76")
         {
-            If ((op1 % 16) < 4)
-            {
-                If ((op1 % 16) == 1)
-                {
-                    Call MOV reg(3) to RAM;
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 2)
-                {
-                    Call MOV reg(4) to RAM;
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 3)
-                {
-                    Call MOV reg(5) to RAM;
-                    Stop(this script);
-                }
-                Call MOV reg(2) to RAM;
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 4)
-                {
-                    Call MOV reg(6) to RAM;
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Call MOV reg(7) to RAM;
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Sensing.Ask("0x76 halt");
-                    Stop(this script);
-                }
-                Call MOV reg(1) to RAM;
-                Stop(this script);
-            }
+            8080.cycles += 7;
+            Stop(other scripts in sprite);
+            Sensing.Ask("HALT 0x76");
+            Event.Broadcast("exit emulator");
         }
         Else
         {
-            If ((op1 % 16) < 12)
-            {
-                If ((op1 % 16) == 8)
-                {
-                    Call MOV reg(2) to reg(1);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 9)
-                {
-                    Call MOV reg(3) to reg(1);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 10)
-                {
-                    Call MOV reg(4) to reg(1);
-                    Stop(this script);
-                }
-                Call MOV reg(5) to reg(1);
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 12)
-                {
-                    Call MOV reg(6) to reg(1);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 13)
-                {
-                    Call MOV reg(7) to reg(1);
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 14)
-                {
-                    Call MOV RAM to reg(1);
-                    Stop(this script);
-                }
-                Call MOV reg(1) to reg(1);
-                Stop(this script);
-            }
+            Call MOV((op1 - 64));
         }
+        Stop(this script);
     }
     If (op1 < "0x90")
     {
         If ((op1 % 16) < 8)
         {
-            If ((op1 % 16) < 4)
-            {
-                If ((op1 % 16) == 1)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 2)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 3)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 4)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
+            Call ADD((op1 % 8));
         }
         Else
         {
-            If ((op1 % 16) < 12)
-            {
-                If ((op1 % 16) == 8)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 9)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 10)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 12)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 13)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 14)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
+            Call ADC((op1 % 8));
         }
+        Stop(this script);
     }
     If (op1 < "0xA0")
     {
         If ((op1 % 16) < 8)
         {
-            If ((op1 % 16) < 4)
-            {
-                If ((op1 % 16) == 1)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 2)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 3)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 4)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
+            Call SUB((op1 % 8));
         }
         Else
         {
-            If ((op1 % 16) < 12)
-            {
-                If ((op1 % 16) == 8)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 9)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 10)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 12)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 13)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 14)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
+            Call SBB((op1 % 8));
         }
+        Stop(this script);
     }
     If (op1 < "0xB0")
     {
         If ((op1 % 16) < 8)
         {
-            If ((op1 % 16) < 4)
-            {
-                If ((op1 % 16) == 1)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 2)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 3)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 4)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
+            Call ANA((op1 % 8));
         }
         Else
         {
-            If ((op1 % 16) < 12)
-            {
-                If ((op1 % 16) == 8)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 9)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 10)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 12)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 13)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 14)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
+            Call XRA((op1 % 8));
         }
+        Stop(this script);
     }
     If (op1 < "0xC0")
     {
         If ((op1 % 16) < 8)
         {
-            If ((op1 % 16) < 4)
-            {
-                If ((op1 % 16) == 1)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 2)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 3)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 4)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 5)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 6)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
+            Call ORA((op1 % 8));
         }
         Else
         {
-            If ((op1 % 16) < 12)
-            {
-                If ((op1 % 16) == 8)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 9)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 10)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
-            Else
-            {
-                If ((op1 % 16) == 12)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 13)
-                {
-                    Stop(this script);
-                }
-                If ((op1 % 16) == 14)
-                {
-                    Stop(this script);
-                }
-                Stop(this script);
-            }
+            Call CMP((op1 % 8));
         }
+        Stop(this script);
     }
     If (op1 < "0xD0")
     {
@@ -1071,18 +763,22 @@ Define opcode(string op1) (warp=true)
                 }
                 If ((op1 % 16) == 2)
                 {
+                    Call JMP((_flags[7] == 0));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 3)
                 {
+                    Call JMP((Not ()));
                     Stop(this script);
                 }
+                Call RET((_flags[7] == 0));
                 Stop(this script);
             }
             Else
             {
                 If ((op1 % 16) == 4)
                 {
+                    Call CALL((_flags[7] == 0));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 5)
@@ -1091,8 +787,10 @@ Define opcode(string op1) (warp=true)
                 }
                 If ((op1 % 16) == 6)
                 {
+                    Call ADD(-1);
                     Stop(this script);
                 }
+                Call RST(0);
                 Stop(this script);
             }
         }
@@ -1102,32 +800,41 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 8)
                 {
+                    Call RET((_flags[7] == 1));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 9)
                 {
+                    Call RET((Not ()));
+                    8080.cycles += -1;
                     Stop(this script);
                 }
                 If ((op1 % 16) == 10)
                 {
+                    Call JMP((_flags[7] == 1));
                     Stop(this script);
                 }
+                Call JMP((Not ()));
                 Stop(this script);
             }
             Else
             {
                 If ((op1 % 16) == 12)
                 {
+                    Call CALL((_flags[7] == 1));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 13)
                 {
+                    Call CALL((Not ()));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 14)
                 {
+                    Call ADC(-1);
                     Stop(this script);
                 }
+                Call RST(1);
                 Stop(this script);
             }
         }
@@ -1144,18 +851,21 @@ Define opcode(string op1) (warp=true)
                 }
                 If ((op1 % 16) == 2)
                 {
+                    Call JMP((_flags[1] == 0));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 3)
                 {
                     Stop(this script);
                 }
+                Call RET((_flags[1] == 0));
                 Stop(this script);
             }
             Else
             {
                 If ((op1 % 16) == 4)
                 {
+                    Call CALL((_flags[1] == 0));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 5)
@@ -1164,8 +874,10 @@ Define opcode(string op1) (warp=true)
                 }
                 If ((op1 % 16) == 6)
                 {
+                    Call SUB(-1);
                     Stop(this script);
                 }
+                Call RST(2);
                 Stop(this script);
             }
         }
@@ -1175,14 +887,18 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 8)
                 {
+                    Call RET((_flags[1] == 1));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 9)
                 {
+                    Call RET((Not ()));
+                    8080.cycles += -1;
                     Stop(this script);
                 }
                 If ((op1 % 16) == 10)
                 {
+                    Call JMP((_flags[1] == 1));
                     Stop(this script);
                 }
                 Stop(this script);
@@ -1191,16 +907,20 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 12)
                 {
+                    Call CALL((_flags[1] == 1));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 13)
                 {
+                    Call CALL((Not ()));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 14)
                 {
+                    Call SBB(-1);
                     Stop(this script);
                 }
+                Call RST(3);
                 Stop(this script);
             }
         }
@@ -1217,18 +937,21 @@ Define opcode(string op1) (warp=true)
                 }
                 If ((op1 % 16) == 2)
                 {
+                    Call JMP((_flags[3] == 0));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 3)
                 {
                     Stop(this script);
                 }
+                Call RET((_flags[3] == 0));
                 Stop(this script);
             }
             Else
             {
                 If ((op1 % 16) == 4)
                 {
+                    Call CALL((_flags[3] == 0));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 5)
@@ -1237,8 +960,10 @@ Define opcode(string op1) (warp=true)
                 }
                 If ((op1 % 16) == 6)
                 {
+                    Call ANA(-1);
                     Stop(this script);
                 }
+                Call RST(4);
                 Stop(this script);
             }
         }
@@ -1248,32 +973,40 @@ Define opcode(string op1) (warp=true)
             {
                 If ((op1 % 16) == 8)
                 {
+                    Call RET((_flags[3] == 1));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 9)
                 {
+                    Call PCHL;
                     Stop(this script);
                 }
                 If ((op1 % 16) == 10)
                 {
+                    Call JMP((_flags[3] == 1));
                     Stop(this script);
                 }
+                Call XCHG;
                 Stop(this script);
             }
             Else
             {
                 If ((op1 % 16) == 12)
                 {
+                    Call CALL((_flags[3] == 1));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 13)
                 {
+                    Call CALL((Not ()));
                     Stop(this script);
                 }
                 If ((op1 % 16) == 14)
                 {
+                    Call XRA(-1);
                     Stop(this script);
                 }
+                Call RST(5);
                 Stop(this script);
             }
         }
@@ -1288,12 +1021,14 @@ Define opcode(string op1) (warp=true)
             }
             If ((op1 % 16) == 2)
             {
+                Call JMP((_flags[8] == 0));
                 Stop(this script);
             }
             If ((op1 % 16) == 3)
             {
                 Stop(this script);
             }
+            Call RET((_flags[8] == 0));
             Stop(this script);
         }
         Else
@@ -1308,8 +1043,10 @@ Define opcode(string op1) (warp=true)
             }
             If ((op1 % 16) == 6)
             {
+                Call ORA(-1);
                 Stop(this script);
             }
+            Call RST(6);
             Stop(this script);
         }
     }
@@ -1319,14 +1056,17 @@ Define opcode(string op1) (warp=true)
         {
             If ((op1 % 16) == 8)
             {
+                Call RET((_flags[8] == 1));
                 Stop(this script);
             }
             If ((op1 % 16) == 9)
             {
+                Call SPHL;
                 Stop(this script);
             }
             If ((op1 % 16) == 10)
             {
+                Call JMP((_flags[8] == 1));
                 Stop(this script);
             }
             Stop(this script);
@@ -1335,25 +1075,76 @@ Define opcode(string op1) (warp=true)
         {
             If ((op1 % 16) == 12)
             {
+                Call CALL((_flags[8] == 1));
                 Stop(this script);
             }
             If ((op1 % 16) == 13)
             {
+                Call CALL((Not ()));
                 Stop(this script);
             }
             If ((op1 % 16) == 14)
             {
+                Call CMP(-1);
                 Stop(this script);
             }
-            Stop(this script);
+            Call RST(7);
         }
     }
 }
 
-Define render (warp=true)
+Define ORA(string register) (warp=true)
 {
-    Motion.SetX(-192);
-    Motion.SetY(150);
+    If (-1 < register)
+    {
+        If (register == 6)
+        {
+            Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+            8080.cycles += 7;
+        }
+        Else
+        {
+            8080.readreturn = _registers[(register + 1)];
+            8080.cycles += 4;
+        }
+    }
+    Else
+    {
+        _PC += 1;
+        Call Read byte(_PC)("");
+        8080.cycles += 7;
+    }
+    r.1 = or_table[(((_registers[8] * 256) + 8080.readreturn) + 1)];
+    List.ReplaceItem(_flags, 1, 0);
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, ((r.1 == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    List.ReplaceItem(_registers, 8, r.1);
+}
+
+Define PCHL (warp=true)
+{
+    _PC = (((_registers[5] * 256) + _registers[6]) + 1);
+    8080.cycles += 5;
+}
+
+Define Print(string ascii char) in terminal (warp=true)
+{
+    List.Add(Terminal, Operator.LetterOf(ascii, (ascii char + 1)));
+}
+
+Define Read byte(string address)(string extrabytes) (warp=true)
+{
+    8080.readreturn = _memory[(address + 1)];
+    If (1 == extrabytes)
+    {
+        8080.readreturn += (_memory[(address + 2)] * 256);
+    }
+}
+
+Define render.sideways (warp=true)
+{
+    Motion.SetX(-130);
     r.0 = 9216;
     Repeat (224)
     {
@@ -1369,19 +1160,178 @@ Define render (warp=true)
                 List.Add(_scanline, Operator.LetterOf(r.2, control_get_counter ?? - probably legacy function from Scratch 2.0));
             }
         }
-        Motion.SetY(150);
+        Motion.SetY(-150);
         r.2 = 1;
         Pen.SetPenColorToColor(_colours[(_scanline[r.2] + 1)]);
         Pen.Down();
         Repeat (256)
         {
             r.2 += 1;
-            Motion.ChangeYBy(-1);
+            Motion.ChangeYBy(1);
             Pen.SetPenColorToColor(_colours[(_scanline[r.2] + 1)]);
         }
         Pen.Clear();
         Motion.ChangeXBy(1);
     }
+}
+
+Define RET(bool condition) (warp=true)
+{
+    If condition
+    {
+        Call Read byte(_SP)(1);
+        _PC = 8080.readreturn;
+        _SP += 2;
+        8080.cycles += 6;
+    }
+    8080.cycles += 5;
+}
+
+Define RST(string address) (warp=true)
+{
+    _PC = (address * 8);
+    _SP += -2;
+    Call Write byte(_SP)((_PC % 256));
+    Call Write byte((_SP + 1))(floor((_PC / 256)));
+    8080.cycles += 11;
+}
+
+Define SBB(string register) (warp=true)
+{
+    If (-1 < register)
+    {
+        If (register == 6)
+        {
+            Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+            8080.cycles += 7;
+        }
+        Else
+        {
+            8080.readreturn = _registers[(register + 1)];
+            8080.cycles += 4;
+        }
+    }
+    Else
+    {
+        _PC += 1;
+        Call Read byte(_PC)("");
+        8080.cycles += 7;
+    }
+    r.1 = ((_registers[8] - (8080.readreturn + _flags[1])) % 65536);
+    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    List.ReplaceItem(_registers, 8, (r.1 % 256));
+}
+
+Define SPHL (warp=true)
+{
+    _SP = (((_registers[5] * 256) + _registers[6]) + 1);
+    8080.cycles += 5;
+}
+
+Define Step CPU(string mode) (warp=true)
+{
+    _PC += 1;
+    Call opcode(_memory[_PC]);
+    If (mode == 1)
+    {
+        If (_PC == 5)
+        {
+            If (_registers[2] == 2)
+            {
+                Call Print(_registers[4]) in terminal;
+            }
+        }
+    }
+}
+
+Define SUB(string register) (warp=true)
+{
+    If (-1 < register)
+    {
+        If (register == 6)
+        {
+            Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+            8080.cycles += 7;
+        }
+        Else
+        {
+            8080.readreturn = _registers[(register + 1)];
+            8080.cycles += 4;
+        }
+    }
+    Else
+    {
+        _PC += 1;
+        Call Read byte(_PC)("");
+        8080.cycles += 7;
+    }
+    r.1 = ((_registers[8] - 8080.readreturn) % 65536);
+    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    List.ReplaceItem(_registers, 8, (r.1 % 256));
+}
+
+Define Write byte(string address)(string byte) (warp=true)
+{
+    List.ReplaceItem(_memory, (address + 1), byte);
+}
+
+Define XCHG (warp=true)
+{
+    r.0 = _registers[5];
+    r.1 = _registers[6];
+    List.ReplaceItem(_colours, 5, _registers[3]);
+    List.ReplaceItem(_colours, 6, _registers[4]);
+    List.ReplaceItem(_colours, 3, r.0);
+    List.ReplaceItem(_colours, 4, r.1);
+    8080.cycles += 5;
+}
+
+Define XRA(string register) (warp=true)
+{
+    If (-1 < register)
+    {
+        If (register == 6)
+        {
+            Call Read byte(((_registers[5] * 256) + _registers[6]))("");
+            8080.cycles += 7;
+        }
+        Else
+        {
+            8080.readreturn = _registers[(register + 1)];
+            8080.cycles += 4;
+        }
+    }
+    Else
+    {
+        _PC += 1;
+        Call Read byte(_PC)("");
+        8080.cycles += 7;
+    }
+    r.1 = xor_table[(((_registers[8] * 256) + 8080.readreturn) + 1)];
+    List.ReplaceItem(_flags, 1, 0);
+    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    List.ReplaceItem(_flags, 7, ((r.1 == 0) + ));
+    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    List.ReplaceItem(_registers, 8, r.1);
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+cycles
+
+List.ReplaceItem(_flags, 5, ((((_registers[8] % 16) + (8080.readreturn % 16)) > 15) + ))
+
+size
+
+If 
+{
 }
 
 

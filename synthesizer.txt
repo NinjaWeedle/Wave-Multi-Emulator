@@ -1,7 +1,7 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
 _id = 1
-_pitch = -333.76316562296
+_pitch = 0
 
 
 
@@ -35,31 +35,6 @@ WhenBroadcastReceived(sound.updatech8buffer)
 
 WhenBroadcastReceived(wave)
 {
-    Sound.SetVolumeTo(0);
-    Forever
-    {
-        If (Sound.Volume() == 0)
-        {
-            Wait Until (Sound.Volume() > 0);
-        }
-        Sound.PlayUntilDone(_id);
-    }
-}
-
-WhenBroadcastReceived(wave)
-{
-    Forever
-    {
-        If ((Not ((pitch == -400))) And (Not ((_pitch == pitch))))
-        {
-            _pitch = pitch;
-            Sound.SetEffectTo(PITCH, pitch);
-        }
-    }
-}
-
-WhenBroadcastReceived(wave)
-{
     Forever
     {
         If (pitch == -400)
@@ -84,6 +59,31 @@ WhenBroadcastReceived(wave)
             {
                 Sound.SetVolumeTo(vol[_id]);
             }
+        }
+    }
+}
+
+WhenBroadcastReceived(wave)
+{
+    Sound.SetVolumeTo(0);
+    Forever
+    {
+        If (Sound.Volume() == 0)
+        {
+            Wait Until (Sound.Volume() > 0);
+        }
+        Sound.PlayUntilDone(_id);
+    }
+}
+
+WhenBroadcastReceived(wave)
+{
+    Forever
+    {
+        If ((Not ((pitch == -400))) And (Not ((_pitch == pitch))))
+        {
+            _pitch = pitch;
+            Sound.SetEffectTo(PITCH, pitch);
         }
     }
 }

@@ -38,12 +38,12 @@ chip8m.collisioncolor = 0
 flags.met = 0
 import.ascii =  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~▒∠ā∇√∫Σ▶π	∂≤≥≠α→←↓↑γδεηθλρστωΔΠΩ■∞ ¡¢£¤¥¦§¨©ª«¬
 import.binary = 000000
-import.char = 1302
+import.char = 68
 import.dummy = 1
 import.percent = 0
-import.read_return = 0
+import.read_return = 163
 import.rom_length = 0
-import.status = (2/2) Importing rom... (16%)
+import.status = 5
 load = 
 op.opcode = 0
 op.pos = 0
@@ -285,6 +285,12 @@ WhenBroadcastReceived(get_rom)
                 {
                     Call import_rom(Sensing.Answer())(1);
                     Sound.Play(423930__mudkip2016__correct2);
+                    If (List.Length(_rom) == 200000)
+                    {
+                        Looks.SwitchCostumeTo(h);
+                        Wait Until (Not ((Sensing.KeyPressed(space) Or Sensing.MouseDown())));
+                        Wait Until (Sensing.KeyPressed(space) Or Sensing.MouseDown());
+                    }
                 }
             }
             If ((Romimportflag == -400) Or (Romimportflag == -1400))
@@ -295,49 +301,68 @@ WhenBroadcastReceived(get_rom)
                 {
                     Call import_rom(Sensing.Answer())(0);
                     Sound.Play(423930__mudkip2016__correct2);
+                    If (List.Length(_rom) == 200000)
+                    {
+                        Looks.SwitchCostumeTo(h);
+                        Wait Until (Not ((Sensing.KeyPressed(space) Or Sensing.MouseDown())));
+                        Wait Until (Sensing.KeyPressed(space) Or Sensing.MouseDown());
+                    }
                 }
             }
             If (Romimportflag == -1800)
             {
-                Looks.SwitchCostumeTo(V);
-                List.DeleteAll(_rom);
-                import.status = 1;
-                Repeat (4)
+                Looks.SwitchCostumeTo(g);
+                Sensing.Ask("");
+                If (Sensing.Answer() == "split")
                 {
-                    Sensing.Ask("");
-                    Call import_rom(Sensing.Answer())(2);
-                    If (import.status == 1)
+                    List.DeleteAll(_rom);
+                    import.status = 1;
+                    Looks.SwitchCostumeTo(V);
+                    Repeat (4)
                     {
-                        Repeat Until ("0x7FF" < List.Length(_rom))
+                        Sensing.Ask("");
+                        Call import_rom(Sensing.Answer())(2);
+                        If (import.status == 1)
                         {
-                            List.Add(_rom, 0);
+                            Repeat Until ("0x7FF" < List.Length(_rom))
+                            {
+                                List.Add(_rom, 0);
+                            }
                         }
-                    }
-                    If (import.status == 2)
-                    {
-                        Repeat Until ("0xFFF" < List.Length(_rom))
+                        If (import.status == 2)
                         {
-                            List.Add(_rom, 0);
+                            Repeat Until ("0xFFF" < List.Length(_rom))
+                            {
+                                List.Add(_rom, 0);
+                            }
                         }
-                    }
-                    If (import.status == 3)
-                    {
-                        Repeat Until ("0x17FF" < List.Length(_rom))
+                        If (import.status == 3)
                         {
-                            List.Add(_rom, 0);
+                            Repeat Until ("0x17FF" < List.Length(_rom))
+                            {
+                                List.Add(_rom, 0);
+                            }
                         }
-                    }
-                    If (import.status == 4)
-                    {
-                        Repeat Until ("0x1FFF" < List.Length(_rom))
+                        If (import.status == 4)
                         {
-                            List.Add(_rom, 0);
+                            Repeat Until ("0x1FFF" < List.Length(_rom))
+                            {
+                                List.Add(_rom, 0);
+                            }
                         }
+                        Sound.Play(423930correct4);
+                        Looks.NextCostume();
+                        import.status += 1;
                     }
-                    import.status += 1;
-                    Sound.Play(423930__mudkip2016__correct2);
-                    Looks.NextCostume();
                 }
+                Else
+                {
+                    If (Variable.Length(Sensing.Answer()) > 0)
+                    {
+                        Call import_rom(Sensing.Answer())(0);
+                    }
+                }
+                Sound.Play(423930__mudkip2016__correct2);
             }
         }
     }
@@ -490,6 +515,37 @@ Define import_rom(string rom)(string flag) (warp=true)
                 Call read byte(import.char);
                 rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (import.read_return - 31)));
                 import.char += 1;
+            }
+        }
+    }
+    If (flag == 2)
+    {
+        If (import.status == 1)
+        {
+            Repeat Until ("0x7FF" < List.Length(_rom))
+            {
+                List.Add(_rom, 0);
+            }
+        }
+        If (import.status == 2)
+        {
+            Repeat Until ("0xFFF" < List.Length(_rom))
+            {
+                List.Add(_rom, 0);
+            }
+        }
+        If (import.status == 3)
+        {
+            Repeat Until ("0x17FF" < List.Length(_rom))
+            {
+                List.Add(_rom, 0);
+            }
+        }
+        If (import.status == 4)
+        {
+            Repeat Until ("0x1FFF" < List.Length(_rom))
+            {
+                List.Add(_rom, 0);
             }
         }
     }

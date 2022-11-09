@@ -20,7 +20,6 @@ WhenBroadcastReceived(exit emulator)
     Looks.SetEffectTo(GHOST, 100);
     Looks.SetSizeTo(100);
     Looks.SwitchCostumeTo(costume1);
-    Looks.Show();
     Control.DeleteThisClone();
 }
 

@@ -97,6 +97,29 @@ WhenGreenFlagClicked()
 
 WhenBroadcastReceived(exit emulator)
 {
+    Event.Broadcast("pause");
+    If (Menu Theme[4] == 0)
+    {
+        Looks.Hide();
+    }
+    Else
+    {
+        Looks.Show();
+    }
+    my variable = 0;
+    Control.Wait(1.5);
+    If (Menu Theme[7] == 0)
+    {
+        Forever
+        {
+            my variable = ((my variable + 5) % 725);
+            Motion.ChangeYBy(sin(my variable));
+        }
+    }
+}
+
+WhenBroadcastReceived(exit emulator)
+{
     Looks.ClearGraphicEffects();
     Looks.SetEffectTo(GHOST, 100);
     Motion.GoToXY(0, 30);
@@ -119,29 +142,6 @@ WhenBroadcastReceived(exit emulator)
         Looks.NextCostume();
         Control.Wait(((1 + is compiled?) / 100));
         GUItemp += -10;
-    }
-}
-
-WhenBroadcastReceived(exit emulator)
-{
-    Event.Broadcast("pause");
-    If (Menu Theme[4] == 0)
-    {
-        Looks.Hide();
-    }
-    Else
-    {
-        Looks.Show();
-    }
-    my variable = 0;
-    Control.Wait(1.5);
-    If (Menu Theme[7] == 0)
-    {
-        Forever
-        {
-            my variable = ((my variable + 5) % 725);
-            Motion.ChangeYBy(sin(my variable));
-        }
     }
 }
 
@@ -233,7 +233,7 @@ WhenBroadcastReceived(GUI_Emulator_Select)
             Event.Broadcast("Launch Emulator");
             Sound.Play((2 + (2 * Menu Theme[7])));
             Event.BroadcastAndWait("Launch EmulatorWaitd");
-            Looks.SwitchBackdropTo(VMU_Bezel);
+            Looks.SwitchBackdropTo(SI8080);
             Event.Broadcast("8080");
         }
     }

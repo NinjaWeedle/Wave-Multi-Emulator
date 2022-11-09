@@ -6,22 +6,22 @@ c8scrnsize = 6
 chip8.audio toggle = 0
 chip8.audio_buffer = 1
 chip8.blendmode = 0
-chip8.delay_timer = 1
+chip8.delay_timer = 0
 chip8.drawflag = 0
 chip8.drawmode = Fast/Sharp
 chip8.drawplane = 1
 chip8.drawvariety = 0
 chip8.dummy = 8193
-chip8.dummy2 = 61
+chip8.dummy2 = 56
 chip8.dummy3 = 3
 chip8.dummy4 = 1
 chip8.dummy5 = 1
 chip8.fx0aflag = 0
 chip8.HPSFlag = 0
-chip8.I = 780
-chip8.pc = 714
+chip8.I = 809
+chip8.pc = 730
 chip8.pitch = 64
-chip8.rand = 71
+chip8.rand = 53
 chip8.return = 0
 chip8.screenheight = 64
 chip8.screenwidth = 128
@@ -170,20 +170,20 @@ Boot-128 = {
 chip8.keyboard = { }
 chip8.memory = { }
 chip8.registers = { 
-    60
+    25
     0
     0
     0
     8
-    148
-    8
-    198
-    60
+    54
+    92
+    16
+    25
     0
-    3
+    2
     0
     0
-    0x00
+    0
     6
     1
 }
@@ -1913,7 +1913,7 @@ Define chip8.reset (warp=true)
     chip8.dummy = 1;
     Repeat (List.Length(schip8.font))
     {
-        List.Add(chip8.memory, schip8.font[chip8.dummy]);
+        List.Add(chip8.memory, (schip8.font[chip8.dummy] + ));
         chip8.dummy += 1;
     }
     Repeat ((65536 - List.Length(chip8.memory)))
@@ -1933,7 +1933,7 @@ Define chip8.reset (warp=true)
     {
         control_incr_counter ?? - probably legacy function from Scratch 2.0;
         chip8.dummy2 += 1;
-        List.ReplaceItem(chip8.memory, chip8.dummy2, Boot-128[control_get_counter ?? - probably legacy function from Scratch 2.0]);
+        List.ReplaceItem(chip8.memory, chip8.dummy2, (Boot-128[control_get_counter ?? - probably legacy function from Scratch 2.0] + ));
     }
     chip8.dummy2 = chip8.starting address;
     control_clear_counter ?? - probably legacy function from Scratch 2.0;
@@ -1941,7 +1941,7 @@ Define chip8.reset (warp=true)
     {
         control_incr_counter ?? - probably legacy function from Scratch 2.0;
         chip8.dummy2 += 1;
-        List.ReplaceItem(chip8.memory, chip8.dummy2, _rom[control_get_counter ?? - probably legacy function from Scratch 2.0]);
+        List.ReplaceItem(chip8.memory, chip8.dummy2, (_rom[control_get_counter ?? - probably legacy function from Scratch 2.0] + ));
     }
     List.DeleteAll(chip8.registers);
     Repeat (16)
