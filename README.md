@@ -13,6 +13,11 @@ Changelog:
 
 **V0.9.X:**
 
+V0.9.3: Fixed DualGB not displaying game titles correctly, added @-Rex-'s SFE++ for CP/M Terminal
+- WAVE-8: Rotate ops fixed 
+- DualGB: Updated table generation to include binary table
+- SI8080: Added CP/M call support, added every remaining op except IN, OUT, and DAA
+
 V0.9.2: Added DAD ops, updated size warning
 
 V0.9.1: Added a size limit warning to the ROM importer
