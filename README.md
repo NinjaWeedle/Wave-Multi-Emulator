@@ -13,9 +13,11 @@ Changelog:
 
 **V0.9.X:**
 
-V0.9.13: Moved bitwise table generator from DualGB to UHWEI, changed table generation message screen, added compatibility notice to GBA emulator backdrop.
+V0.9.13: 
+Moved bitwise table generator from DualGB to UHWEI, changed table generation message screen, added compatibility notice to GBA emulator backdrop.
 
-V0.9.12: WAVE-8: fixed SF2091! fix to actually fix SF2091!.  SI8080: fixed MOV RAM to reg, added more info to debug logs, which now appear upon CP/M jump errors. AC flag and DAA support have now been added.
+V0.9.12: 
+- WAVE-8: fixed SF2091! fix to actually fix SF2091!.  SI8080: fixed MOV RAM to reg, added more info to debug logs, which now appear upon CP/M jump errors. AC flag and DAA support have now been added.
 
 V0.9.11: 
 - DualGB: added support for hex input with commas and 0x. 
