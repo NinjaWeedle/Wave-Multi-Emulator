@@ -44,7 +44,7 @@ import.percent = 0
 import.read_return = 0
 import.rom_length = 0
 import.status = 0
-Input = exit
+Input = 0
 load = 0
 op.opcode = 0
 op.pos = 0
@@ -315,6 +315,128 @@ WhenBroadcastReceived(HelloInter)
 WhenBroadcastReceived(Load_Prebuilt_game)
 {
     List.Add(MainHello, "ROM Loaded!");
+}
+
+WhenBroadcastReceived(make_tables)
+{
+    Call _bitwise init;
+    Call generate table(256);
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define $incA (warp=false)
+{
+    Repeat Until ((temp.0[last] == 0) Or (temp.0[last] == ""))
+    {
+        List.DeleteItem(temp.0, last);
+    }
+    List.ReplaceItem(temp.0, last, 1);
+    Repeat ((8 - List.Length(temp.0)))
+    {
+        List.Add(temp.0, 0);
+    }
+}
+
+Define $incB (warp=false)
+{
+    Repeat Until ((temp.1[last] == 0) Or (temp.1[last] == ""))
+    {
+        List.DeleteItem(temp.1, last);
+    }
+    List.ReplaceItem(temp.1, last, 1);
+    Repeat ((8 - List.Length(temp.1)))
+    {
+        List.Add(temp.1, 0);
+    }
+}
+
+Define generate table(string n) (warp=true)
+{
+    r.2 = n;
+    List.DeleteAll(bin_table);
+    Repeat (n)
+    {
+        List.Add(bin_table, "");
+    }
+    Repeat (Operator.Round((ln(n) / ln(2))))
+    {
+        r.0 = 0;
+        r.1 = 0;
+        r.2 = floor((r.2 / 2));
+        Repeat (n)
+        {
+            List.ReplaceItem(bin_table, (r.0 + 1), Operator.Join(bin_table[(r.0 + 1)], r.1));
+            r.0 += 1;
+            If ((r.0 % r.2) == 0)
+            {
+                r.1 = (1 - r.1);
+            }
+        }
+    }
+}
+
+Define _bitwise init (warp=true)
+{
+    List.DeleteAll(temp.0);
+    List.DeleteAll(temp.1);
+    Repeat (8)
+    {
+        List.Add(temp.0, 0);
+        List.Add(temp.1, 0);
+    }
+    List.DeleteAll(and_table);
+    Repeat (256)
+    {
+        Repeat (256)
+        {
+            r.1 = "0b";
+            r.0 = 0;
+            Repeat (8)
+            {
+                r.0 += 1;
+                r.1 = Operator.Join(r.1, ( + (temp.0[r.0] And temp.1[r.0])));
+            }
+            Call $incA;
+            List.Add(and_table, (r.1 + 0));
+        }
+        Call $incB;
+    }
+    List.DeleteAll(or_table);
+    Repeat (256)
+    {
+        Repeat (256)
+        {
+            r.1 = "0b";
+            r.0 = 0;
+            Repeat (8)
+            {
+                r.0 += 1;
+                r.1 = Operator.Join(r.1, ( + (temp.0[r.0] Or temp.1[r.0])));
+            }
+            Call $incA;
+            List.Add(or_table, (r.1 + 0));
+        }
+        Call $incB;
+    }
+    List.DeleteAll(xor_table);
+    Repeat (256)
+    {
+        Repeat (256)
+        {
+            r.1 = "0b";
+            r.0 = 0;
+            Repeat (8)
+            {
+                r.0 += 1;
+                r.1 = Operator.Join(r.1, ( + (Not ((temp.0[r.0] == temp.1[r.0])))));
+            }
+            Call $incA;
+            List.Add(xor_table, (r.1 + 0));
+        }
+        Call $incB;
+    }
 }
 
 

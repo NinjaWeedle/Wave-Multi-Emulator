@@ -42,7 +42,7 @@ import.char = 68
 import.dummy = 1
 import.percent = 0
 import.read_return = 163
-import.rom_length = 0
+import.rom_length = 10537
 import.status = 5
 load = 
 op.opcode = 0
@@ -109,6 +109,7 @@ WhenBroadcastReceived(exit emulator)
     List.Hide(controls.chip8);
     List.Hide(controls.GB);
     List.Hide(controls.NES);
+    List.Hide(controls.SI8080);
     Romimportflag = 0;
 }
 
@@ -218,10 +219,29 @@ WhenBroadcastReceived(get_controls)
             If (Romimportflag == -1800)
             {
                 Looks.SwitchCostumeTo(e);
+                List.Show(controls.SI8080);
                 Sound.Play(423930__mudkip2016__correct2);
-                Stop(other scripts in sprite);
-                Event.Broadcast("exit emulator");
-                Stop(this script);
+                Forever
+                {
+                    Wait Until (Not ((Sensing.MouseDown() Or Sensing.KeyPressed(space))));
+                    Wait Until ((Sensing.MouseDown() And Sensing.TouchingObject(_mouse_)) Or Sensing.KeyPressed(space));
+                    Sensing.Ask("Which list entry do you want to edit? Leave blank to exit.");
+                    If (Sensing.Answer() == "")
+                    {
+                        Stop(other scripts in sprite);
+                        Event.Broadcast("exit emulator");
+                        Stop(this script);
+                    }
+                    Else
+                    {
+                        r.0 = (Sensing.Answer() + );
+                        Sensing.Ask(Operator.Join("Type the name of the key you want to use in item ", Operator.Join(r.0, " of the SI8080 controls list.")));
+                        If (Not ((Sensing.Answer() == "")))
+                        {
+                            List.ReplaceItem(controls.SI8080, r.0, Sensing.Answer());
+                        }
+                    }
+                }
             }
         }
     }
@@ -317,39 +337,12 @@ WhenBroadcastReceived(get_rom)
                 {
                     List.DeleteAll(_rom);
                     import.status = 1;
+                    import.rom_length = 0;
                     Looks.SwitchCostumeTo(V);
                     Repeat (4)
                     {
                         Sensing.Ask("");
                         Call import_rom(Sensing.Answer())(2);
-                        If (import.status == 1)
-                        {
-                            Repeat Until ("0x7FF" < List.Length(_rom))
-                            {
-                                List.Add(_rom, 0);
-                            }
-                        }
-                        If (import.status == 2)
-                        {
-                            Repeat Until ("0xFFF" < List.Length(_rom))
-                            {
-                                List.Add(_rom, 0);
-                            }
-                        }
-                        If (import.status == 3)
-                        {
-                            Repeat Until ("0x17FF" < List.Length(_rom))
-                            {
-                                List.Add(_rom, 0);
-                            }
-                        }
-                        If (import.status == 4)
-                        {
-                            Repeat Until ("0x1FFF" < List.Length(_rom))
-                            {
-                                List.Add(_rom, 0);
-                            }
-                        }
                         Sound.Play(423930correct4);
                         Looks.NextCostume();
                         import.status += 1;
@@ -466,7 +459,7 @@ Define import_rom(string rom)(string flag) (warp=true)
         Repeat (68)
         {
             Call read byte(import.char);
-            rom.designation = Operator.Join(rom.designation, Operator.LetterOf(import.ascii, (import.read_return - 31)));
+            List.Add(_gametitle, import.read_return);
             import.char += 1;
         }
     }
@@ -482,6 +475,7 @@ Define import_rom(string rom)(string flag) (warp=true)
         {
             If (Operator.LetterOf(rom, 5) == ",")
             {
+                import.rom_length += (Variable.Length(rom) / 6);
                 Repeat ((Variable.Length(rom) / 6))
                 {
                     List.Add(_rom, Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, (import.char + 2)), Operator.LetterOf(rom, (import.char + 3)))));
@@ -490,6 +484,7 @@ Define import_rom(string rom)(string flag) (warp=true)
             }
             Else
             {
+                import.rom_length += (Variable.Length(rom) / 5);
                 Repeat ((Variable.Length(rom) / 5))
                 {
                     List.Add(_rom, Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, (import.char + 2)), Operator.LetterOf(rom, (import.char + 3)))));
@@ -499,6 +494,7 @@ Define import_rom(string rom)(string flag) (warp=true)
         }
         Else
         {
+            import.rom_length += (Variable.Length(rom) / 2);
             Repeat ((Variable.Length(rom) / 2))
             {
                 List.Add(_rom, Operator.Join("0x", Operator.Join(Operator.LetterOf(rom, import.char), Operator.LetterOf(rom, (import.char + 1)))));
@@ -525,6 +521,7 @@ Define import_rom(string rom)(string flag) (warp=true)
             Repeat Until ("0x7FF" < List.Length(_rom))
             {
                 List.Add(_rom, 0);
+                import.rom_length += 1;
             }
         }
         If (import.status == 2)
@@ -532,6 +529,7 @@ Define import_rom(string rom)(string flag) (warp=true)
             Repeat Until ("0xFFF" < List.Length(_rom))
             {
                 List.Add(_rom, 0);
+                import.rom_length += 1;
             }
         }
         If (import.status == 3)
@@ -539,6 +537,7 @@ Define import_rom(string rom)(string flag) (warp=true)
             Repeat Until ("0x17FF" < List.Length(_rom))
             {
                 List.Add(_rom, 0);
+                import.rom_length += 1;
             }
         }
         If (import.status == 4)
@@ -546,6 +545,7 @@ Define import_rom(string rom)(string flag) (warp=true)
             Repeat Until ("0x1FFF" < List.Length(_rom))
             {
                 List.Add(_rom, 0);
+                import.rom_length += 1;
             }
         }
     }
@@ -722,7 +722,7 @@ Define load rom (warp=true)
     Repeat (12)
     {
         Call read byte(import.char);
-        rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (BG: Plane 0 - 31)));
+        rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (import.read_return - 31)));
         import.char += 1;
     }
     Variable.Hide(import.status);

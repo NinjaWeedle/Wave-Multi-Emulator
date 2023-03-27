@@ -29,8 +29,33 @@ WhenBroadcastReceived(sound.updatech8buffer)
 {
     Call convert buffer to bits;
     Call put Input;
-    Call FFT();
+    Call FFT;
     Call apply to vol;
+}
+
+WhenBroadcastReceived(wave)
+{
+    Sound.SetVolumeTo(0);
+    Forever
+    {
+        If (Sound.Volume() == 0)
+        {
+            Wait Until (Sound.Volume() > 0);
+        }
+        Sound.PlayUntilDone(_id);
+    }
+}
+
+WhenBroadcastReceived(wave)
+{
+    Forever
+    {
+        If ((Not ((pitch == -400))) And (Not ((_pitch == pitch))))
+        {
+            _pitch = pitch;
+            Sound.SetEffectTo(PITCH, pitch);
+        }
+    }
 }
 
 WhenBroadcastReceived(wave)
@@ -59,31 +84,6 @@ WhenBroadcastReceived(wave)
             {
                 Sound.SetVolumeTo(vol[_id]);
             }
-        }
-    }
-}
-
-WhenBroadcastReceived(wave)
-{
-    Sound.SetVolumeTo(0);
-    Forever
-    {
-        If (Sound.Volume() == 0)
-        {
-            Wait Until (Sound.Volume() > 0);
-        }
-        Sound.PlayUntilDone(_id);
-    }
-}
-
-WhenBroadcastReceived(wave)
-{
-    Forever
-    {
-        If ((Not ((pitch == -400))) And (Not ((_pitch == pitch))))
-        {
-            _pitch = pitch;
-            Sound.SetEffectTo(PITCH, pitch);
         }
     }
 }
@@ -126,10 +126,10 @@ Define convert buffer to bits (warp=true)
     }
 }
 
-Define FFT(bool I) (warp=true)
+Define FFT (warp=true)
 {
-    List.DeleteItem(temp.0, all);
-    List.DeleteItem(temp.1, all);
+    List.DeleteAll(temp.0);
+    List.DeleteAll(temp.1);
     If (List.Length(FT.re) < List.Length(FT.im))
     {
         r.0 = List.Length(FT.im);
@@ -168,14 +168,7 @@ Define FFT(bool I) (warp=true)
         Repeat (r.2)
         {
             r.8 = 0;
-            If I
-            {
-                r.9 = (180 / r.1);
-            }
-            Else
-            {
-                r.9 = (-180 / r.1);
-            }
+            r.9 = (-180 / r.1);
             Repeat (r.1)
             {
                 r.0 += r.1;
@@ -200,8 +193,8 @@ Define FFT(bool I) (warp=true)
         }
         r.1 += r.1;
     }
-    List.DeleteItem(FT.re, all);
-    List.DeleteItem(FT.im, all);
+    List.DeleteAll(FT.re);
+    List.DeleteAll(FT.im);
     r.1 = sqrt(List.Length(temp.0));
     control_clear_counter ?? - probably legacy function from Scratch 2.0;
     Repeat (List.Length(temp.0))
@@ -248,7 +241,20 @@ Define tick(string sample) (warp=true)
     }
     Call convert buffer to bits;
     Call put Input;
-    Call FFT();
+    Call FFT;
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+I
+
+If 
+{
+    r.9 = (180 / r.1);
+}
+Else
+{
 }
 
 

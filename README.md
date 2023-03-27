@@ -13,6 +13,33 @@ Changelog:
 
 **V0.9.X:**
 
+V0.9.13: Moved bitwise table generator from DualGB to UHWEI, changed table generation message screen, added compatibility notice to GBA emulator backdrop.
+
+V0.9.12: WAVE-8: fixed SF2091! fix to actually fix SF2091!.  SI8080: fixed MOV RAM to reg, added more info to debug logs, which now appear upon CP/M jump errors. AC flag and DAA support have now been added.
+
+V0.9.11: 
+- DualGB: added support for hex input with commas and 0x. 
+- SI8080: made fixes to terminal output.
+
+V0.9.10: 
+- SI8080: Added debug log function, fixed PUSH/POP PSW, added jump to 0 check.
+
+V0.9.9: 
+- SI8080: Remappable controls support added, made MOV instruction fixes, added Space Invaders shift register.
+
+V0.9.8: SI8080: Added interrupt and Input support to SI8080, Space Invaders now boots.
+
+V0.9.7: Some SI8080 framework updates.
+
+V0.9.6: 
+- WAVE-8: Added clipping support and a new VIP compatibility mode that adds the VF Reset and VBlank quirks.
+- SI8080: Started work on DAA and interrupts.
+
+V0.9.5: Removed SFE++.  Made SI8080 now use the font renderer from DualGB instead, added some debug info, and fixed some issues.
+
+V0.9.4: 
+- WAVE-8: Added partial screen refreshes, Replaced the Legacy renderer with a faster single-pass version of the scanline renderer called "Classic".
+
 V0.9.3: Fixed DualGB not displaying game titles correctly, added @-Rex-'s SFE++ for CP/M Terminal
 - WAVE-8: Rotate ops fixed 
 - DualGB: Updated table generation to include binary table

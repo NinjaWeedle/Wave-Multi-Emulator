@@ -835,6 +835,47 @@ WhenKeyPressed(6)
 
 WhenBroadcastReceived(init)
 {
+    !A = 0;
+    !X = 0;
+    !Y = 0;
+    !PC = ((prg_rom[(prg_size - 2)] * 256) + prg_rom[(prg_size - 3)]);
+    !SP = 253;
+    !P = 36;
+    !C = 0;
+    !Z = 0;
+    !I = 1;
+    !D = 0;
+    !V = 0;
+    !N = 0;
+    nes: NMI = 0;
+    !NMI_occured = 0;
+    nes: IRQ = 0;
+    !break = 0;
+    cpu_cycle = 8;
+    !port1_count = 0;
+    !port2_count = 0;
+    !ctrl_strobe = 0;
+    !ppu_cycle = 27;
+    !apu_cycle = 7457;
+    !idle_skip = 0;
+    List.DeleteAll(!ram);
+    Repeat (2048)
+    {
+        List.Add(!ram, 0);
+    }
+    If (battery == 1)
+    {
+        List.DeleteAll(!wram);
+        Repeat (wram_size)
+        {
+            List.Add(!wram, 0);
+        }
+        battery = 0;
+    }
+}
+
+WhenBroadcastReceived(init)
+{
     frame = 1;
     @sprite_hit = 0;
     @sprite_overflow = 0;
@@ -976,47 +1017,6 @@ WhenBroadcastReceived(init)
     If (mapper == 206)
     {
         $prg_banks = (prg_size / 8192);
-    }
-}
-
-WhenBroadcastReceived(init)
-{
-    !A = 0;
-    !X = 0;
-    !Y = 0;
-    !PC = ((prg_rom[(prg_size - 2)] * 256) + prg_rom[(prg_size - 3)]);
-    !SP = 253;
-    !P = 36;
-    !C = 0;
-    !Z = 0;
-    !I = 1;
-    !D = 0;
-    !V = 0;
-    !N = 0;
-    nes: NMI = 0;
-    !NMI_occured = 0;
-    nes: IRQ = 0;
-    !break = 0;
-    cpu_cycle = 8;
-    !port1_count = 0;
-    !port2_count = 0;
-    !ctrl_strobe = 0;
-    !ppu_cycle = 27;
-    !apu_cycle = 7457;
-    !idle_skip = 0;
-    List.DeleteAll(!ram);
-    Repeat (2048)
-    {
-        List.Add(!ram, 0);
-    }
-    If (battery == 1)
-    {
-        List.DeleteAll(!wram);
-        Repeat (wram_size)
-        {
-            List.Add(!wram, 0);
-        }
-        battery = 0;
     }
 }
 
