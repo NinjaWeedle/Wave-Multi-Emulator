@@ -1,7 +1,7 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
-!A = 15
-!apu_cycle = 554901
+!A = 115
+!apu_cycle = 3537699
 !break = 0
 !C = 1
 !ctrl_strobe = 0
@@ -17,12 +17,12 @@
 !penalty = 0
 !port1_count = 8
 !port2_count = 0
-!ppu_cycle = 328
+!ppu_cycle = 108
 !SP = 253
 !sprite_dma = 768
 !V = 0
 !X = 0
-!Y = 242
+!Y = 243
 !Z = 1
 #dmc_address = 59776
 #dmc_enabled = 0
@@ -42,40 +42,40 @@
 #noise_start = 0
 #noise_volume = 0
 #sequence = 1
-#sq0_constant = 1
+#sq0_constant = 0
 #sq0_counter_halt = 0
 #sq0_decay = 0
-#sq0_divider = 0
-#sq0_duty = 1
-#sq0_enabled = 0
+#sq0_divider = 3
+#sq0_duty = 2
+#sq0_enabled = 1
 #sq0_lengthcounter = 0
-#sq0_period = 253
+#sq0_period = 6
 #sq0_start = 0
-#sq0_swcounter = 3
-#sq0_swenable = 0
-#sq0_swnegate = 0
-#sq0_swperiod = 7
+#sq0_swcounter = 0
+#sq0_swenable = 1
+#sq0_swnegate = 1
+#sq0_swperiod = 0
 #sq0_swreload = 0
-#sq0_swshift = 7
-#sq0_swtarget = 254
-#sq0_volume = 0
+#sq0_swshift = 1
+#sq0_swtarget = 2
+#sq0_volume = 7
 #sq1_constant = 1
-#sq1_counter_halt = 0
+#sq1_counter_halt = 1
 #sq1_decay = 0
-#sq1_divider = 0
-#sq1_duty = 1
-#sq1_enabled = 0
+#sq1_divider = 6
+#sq1_duty = 0
+#sq1_enabled = 1
 #sq1_lengthcounter = 0
-#sq1_period = 189
+#sq1_period = 7
 #sq1_start = 0
-#sq1_swcounter = 3
+#sq1_swcounter = 1
 #sq1_swenable = 0
 #sq1_swnegate = 0
-#sq1_swperiod = 7
+#sq1_swperiod = 1
 #sq1_swreload = 0
-#sq1_swshift = 7
-#sq1_swtarget = 190
-#sq1_volume = 0
+#sq1_swshift = 2
+#sq1_swtarget = 8
+#sq1_volume = 15
 #tri_control = 1
 #tri_enabled = 0
 #tri_lengthcounter = 0
@@ -115,7 +115,7 @@ $reg1 = 0
 @fine_x = 0
 @frameskip = 0
 @hflip = 1
-@lastframe = 8339.6056596296
+@lastframe = 8541.1551731597
 @mask_bg = 1
 @mask_sprite = 1
 @nametable_index = 2
@@ -124,12 +124,12 @@ $reg1 = 0
 @nt_data = 0
 @oam_addr = 1
 @palette = 1
-@pattern_addr = 259
+@pattern_addr = 260
 @read_buffer = 0
 @render_bg = 1
 @render_sprite = 0
 @result = 00000000
-@scanline = 100
+@scanline = 85
 @sprite0_bit = 0
 @sprite_attribute = 66
 @sprite_hit = 0
@@ -141,12 +141,12 @@ $reg1 = 0
 @sprite_y = 128
 @temp_addr = 0
 @tile_index = 32
-@vram_addr = 16768
+@vram_addr = 20800
 @vram_incr = 0
 @write_toggle = 0
-cpu_cycle = 549573
+cpu_cycle = 3537228
 nes: address = 210
-nes: data = 15
+nes: data = 115
 nes: IRQ = 0
 nes: NMI = 0
 temp = 2
@@ -835,6 +835,26 @@ WhenKeyPressed(6)
 
 WhenBroadcastReceived(init)
 {
+    frame = 1;
+    @sprite_hit = 0;
+    @sprite_overflow = 0;
+    @vram_incr = 0;
+    @sprite_pattern = 0;
+    @bg_pattern = 0;
+    @sprite_size = 1;
+    @nmi_enabled = 0;
+    @nmi_flag = 0;
+    @mask_bg = 0;
+    @mask_sprite = 0;
+    @render_bg = 0;
+    @render_sprite = 0;
+    render_enabled = 0;
+    @vram_addr = 8192;
+    @data_latch = 00000000;
+    @write_toggle = 0;
+    @read_buffer = 0;
+    @frameskip = 0;
+    @scanline = 0;
     !A = 0;
     !X = 0;
     !Y = 0;
@@ -858,44 +878,6 @@ WhenBroadcastReceived(init)
     !ppu_cycle = 27;
     !apu_cycle = 7457;
     !idle_skip = 0;
-    List.DeleteAll(!ram);
-    Repeat (2048)
-    {
-        List.Add(!ram, 0);
-    }
-    If (battery == 1)
-    {
-        List.DeleteAll(!wram);
-        Repeat (wram_size)
-        {
-            List.Add(!wram, 0);
-        }
-        battery = 0;
-    }
-}
-
-WhenBroadcastReceived(init)
-{
-    frame = 1;
-    @sprite_hit = 0;
-    @sprite_overflow = 0;
-    @vram_incr = 0;
-    @sprite_pattern = 0;
-    @bg_pattern = 0;
-    @sprite_size = 1;
-    @nmi_enabled = 0;
-    @nmi_flag = 0;
-    @mask_bg = 0;
-    @mask_sprite = 0;
-    @render_bg = 0;
-    @render_sprite = 0;
-    render_enabled = 0;
-    @vram_addr = 8192;
-    @data_latch = 00000000;
-    @write_toggle = 0;
-    @read_buffer = 0;
-    @frameskip = 0;
-    @scanline = 0;
     @lastframe = Sensing.DaysSince2000();
     Call @init;
 }
@@ -919,14 +901,6 @@ WhenBroadcastReceived(init)
     #sq0_swnegate = 0;
     #sq1_swenable = 0;
     #sq1_swnegate = 0;
-    Repeat (10)
-    {
-        List.Add(apu, 0);
-    }
-    List.ReplaceItem(apu, 2, 0);
-    List.ReplaceItem(apu, 5, 0);
-    List.ReplaceItem(apu, 8, 0);
-    List.ReplaceItem(apu, 10, 0);
 }
 
 WhenBroadcastReceived(init)
@@ -1089,14 +1063,7 @@ Define !address (warp=true)
         nes: address = ((nes: address + !X) % 256);
         Call !read;
         temp = nes: data;
-        If ((nes: address % 256) == 255)
-        {
-            nes: address += -255;
-        }
-        Else
-        {
-            nes: address += 1;
-        }
+        nes: address = ((nes: address + 1) % 256);
         Call !read;
         nes: address = ((nes: data * 256) + temp);
         Stop(this script);
@@ -3459,8 +3426,8 @@ Define @init (warp=true)
     List.DeleteAll(@spr_palette);
     Repeat (16)
     {
-        List.Add(@bg_palette, @palette[Operator.Random(1 / 64)]);
-        List.Add(@spr_palette, @palette[Operator.Random(1 / 64)]);
+        List.Add(@bg_palette, @palette[Operator.Random(1 , 64)]);
+        List.Add(@spr_palette, @palette[Operator.Random(1 , 64)]);
     }
     bg_color = @bg_palette[1];
     List.DeleteAll(@ciram0);
@@ -3491,6 +3458,25 @@ Define @init (warp=true)
         List.Add(@oam_mem, 0);
     }
     List.DeleteAll(@temp_oam);
+    List.DeleteAll(!ram);
+    Repeat (2048)
+    {
+        List.Add(!ram, 0);
+    }
+    If (battery == 1)
+    {
+        List.DeleteAll(!wram);
+        Repeat (wram_size)
+        {
+            List.Add(!wram, 0);
+        }
+        battery = 0;
+    }
+    List.DeleteAll(apu);
+    Repeat (11)
+    {
+        List.Add(apu, 0);
+    }
 }
 
 Define @ppu (warp=true)
@@ -3501,8 +3487,8 @@ Define @ppu (warp=true)
         @frameskip += 1;
         If (@frameskip > Frameskip)
         {
-            @frameskip = 0;
             Event.Broadcast("draw");
+            @frameskip = 0;
         }
     }
 }

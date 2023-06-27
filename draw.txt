@@ -11,33 +11,6 @@ stretch_y = 1
 
 
 
-//----- Key pressed events --------------------------------------------------------------------------------------------
-
-WhenKeyPressed(8)
-{
-    If (gui[1] == 1)
-    {
-        Variable.Hide(scaling);
-        Variable.Hide(size_mod);
-        Variable.Hide(o_up);
-        Variable.Hide(o_down);
-        Variable.Hide(stretch_x);
-        Variable.Hide(stretch_y);
-        List.ReplaceItem(gui, 1, 0);
-    }
-    Else
-    {
-        Variable.Show(scaling);
-        Variable.Show(size_mod);
-        Variable.Show(o_up);
-        Variable.Show(o_down);
-        Variable.Show(stretch_x);
-        Variable.Show(stretch_y);
-        List.ReplaceItem(gui, 1, 1);
-    }
-}
-
-
 //----- Broadcast received events -------------------------------------------------------------------------------------
 
 WhenBroadcastReceived(display_size)
@@ -134,6 +107,30 @@ Define fade (warp=false)
     Pen.SetPenTo(transparency, 50);
     Pen.Down();
     Pen.Clear();
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+If (gui[1] == 1)
+{
+    Variable.Hide(scaling);
+    Variable.Hide(size_mod);
+    Variable.Hide(o_up);
+    Variable.Hide(o_down);
+    Variable.Hide(stretch_x);
+    Variable.Hide(stretch_y);
+    List.ReplaceItem(gui, 1, 0);
+}
+Else
+{
+    Variable.Show(scaling);
+    Variable.Show(size_mod);
+    Variable.Show(o_up);
+    Variable.Show(o_down);
+    Variable.Show(stretch_x);
+    Variable.Show(stretch_y);
+    List.ReplaceItem(gui, 1, 1);
 }
 
 

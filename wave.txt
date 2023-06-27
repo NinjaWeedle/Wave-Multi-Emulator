@@ -1,0 +1,386 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
++is clone? = 0
+.t = 256
+delta = 0
+lastFFTbuf = 0 0 0 1 1 2 3 3 4 4 5 5 6 6 6 7 7 8 8 9 9 10 10 11 11 12 13 13 14 15 0 0 0 0 0 1 1 2 3 3 4 4 5 5 6 6 6 7 7 8 8 9 9 10 10 11 11 12 13 13 14 15 0 0 0 0 0 1 1 2 3 3 4 4 5 5 6 6 6 7 7 8 8 9 9 10 10 11 11 12 13 13 14 15 0 0 0 0 0 1 1 2 3 3 4 4 5 5 6 6 6 7 7 8 8 9 9 10 10 11 11 12 13 13 14 15 0 0 0 0 0 1 1 2 3 3 4 4 5 5 6 6 6 7 7 8 8 9 9 10 10 11 11 12 13 13 14 15 0 0 0 0 0 1 1 2 3 3 4 4 5 5 6 6 6 7 7 8 8 9 9 10 10 11 11 12 13 13 14 15 0 0 0 0 0 1 1 2 3 3 4 4 5 5 6 6 6 7 7 8 8 9 9 10 10 11 11 12 13 13 14 15 0 0 0 0 0 1 1 2 3 3 4 4 5 5 6 6 6 7 7 8 8 9 9 10 10 11 11 12 13 13 14 15 0 0
+menu0exit = 0
+return = 42.993334630007
+sound = 128
+
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(+audioEngineUpdateAll)
+{
+    Sound.SetVolumeTo(((m[(sound + 1)] * (+sound volume[3] * 0.01)) * +globalVol.R));
+}
+
+WhenBroadcastReceived(+audioEngineUpdateAll)
+{
+    If (+is clone? == 0)
+    {
+        Call convert pitch to MIDI note((131072 / (2048 - +sound pitch[3])));
+        pitch = ((return - 69) * 10);
+        If (Not ((Operator.Join("#", _waveBuffer2) == Operator.Join("#", lastFFTbuf))))
+        {
+            Call tick ,;
+            lastFFTbuf = _waveBuffer2;
+        }
+    }
+}
+
+WhenBroadcastReceived(+turnoffaudio)
+{
+    Sound.SetVolumeTo(0);
+}
+
+WhenBroadcastReceived(create sound)
+{
+    lastFFTbuf = 0;
+    Call fast;
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    +is clone? = 0;
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(reset emulator)
+{
+    +is clone? = 0;
+    Control.DeleteThisClone();
+}
+
+
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Sound.SetVolumeTo(0);
+}
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        Sound.SetEffectTo(PITCH, (pitch + -20));
+    }
+}
+
+Control.WhenIStartAsClone()
+{
+    Sound.SetVolumeTo(0);
+    Forever
+    {
+        Call playsine(sound);
+    }
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define convert pitch to MIDI note(string p) (warp=true)
+{
+    return = ((12 * (ln((p / 440)) / ln(2))) + 69);
+}
+
+Define draw (warp=true)
+{
+    Pen.Clear();
+    i2 = 0;
+    Pen.SetPenColorToColor(#ff0000);
+    Pen.SetPenSizeTo(3);
+    Repeat (quality)
+    {
+        Pen.SetPenColorToColor(#00f7c5);
+        r.0 = (log((1 + sqrt((0 + m[(i2 + 1)])))) * 120);
+        Pen.ChangePenBy(color, (r.0 / -2));
+        If 
+        {
+            Motion.PointInDirection(((360 / quality) * i2));
+            Motion.GoToXY((sin(Motion.Direction()) * 100), (cos(Motion.Direction()) * 100));
+            Pen.Down();
+            Motion.Move(r.0);
+            Pen.Clear();
+        }
+        Else
+        {
+            Motion.GoToXY((((i2 / quality) - .5) * 400), r.0);
+            Pen.Down();
+            Motion.SetY(( - r.0));
+            Pen.Clear();
+        }
+        i2 += 1;
+    }
+}
+
+Define fast (warp=true)
+{
+    amp = 10;
+    quality = 128;
+    Call instant;
+    delta = 0;
+    List.DeleteAll(m);
+    Repeat (256)
+    {
+        List.Add(m, 0);
+    }
+}
+
+Define FFT(bool I) (warp=true)
+{
+    List.DeleteItem(temp.0, all);
+    List.DeleteItem(temp.1, all);
+    If (List.Length(FT.re) < List.Length(FT.im))
+    {
+        r.0 = List.Length(FT.im);
+    }
+    Else
+    {
+        r.0 = List.Length(FT.re);
+    }
+    r.0 += -1;
+    r.2 = 1;
+    r.3 = 0;
+    Repeat Until (r.2 > r.0)
+    {
+        r.2 += r.2;
+        r.3 += 1;
+    }
+    Repeat (r.2)
+    {
+        r.0 = List.Length(temp.0);
+        r.1 = 0;
+        Repeat (r.3)
+        {
+            r.1 = (r.1 * 2);
+            r.1 += (r.0 % 2);
+            r.0 = floor((r.0 / 2));
+        }
+        r.1 += 1;
+        List.Add(temp.0, (FT.re[r.1] + 0));
+        List.Add(temp.1, (FT.im[r.1] + 0));
+    }
+    r.1 = 1;
+    Repeat (r.3)
+    {
+        r.0 = 1;
+        r.2 = (r.2 / 2);
+        Repeat (r.2)
+        {
+            r.8 = 0;
+            If I
+            {
+                r.9 = (180 / r.1);
+            }
+            Else
+            {
+                r.9 = (-180 / r.1);
+            }
+            Repeat (r.1)
+            {
+                r.0 += r.1;
+                r.4 = cos(r.8);
+                r.5 = sin(r.8);
+                r.3 = temp.0[r.0];
+                r.7 = temp.1[r.0];
+                r.6 = ((r.3 * r.4) - (r.7 * r.5));
+                r.7 = ((r.3 * r.5) + (r.7 * r.4));
+                r.0 += (0 - r.1);
+                r.4 = temp.0[r.0];
+                r.5 = temp.1[r.0];
+                List.ReplaceItem(temp.0, r.0, (r.4 + r.6));
+                List.ReplaceItem(temp.1, r.0, (r.5 + r.7));
+                r.0 += r.1;
+                List.ReplaceItem(temp.0, r.0, (r.4 - r.6));
+                List.ReplaceItem(temp.1, r.0, (r.5 - r.7));
+                r.0 += (1 - r.1);
+                r.8 += r.9;
+            }
+            r.0 += r.1;
+        }
+        r.1 += r.1;
+    }
+    r.0 = 0;
+    List.DeleteItem(FT.re, all);
+    List.DeleteItem(FT.im, all);
+    r.1 = sqrt(List.Length(temp.0));
+    Repeat (List.Length(temp.0))
+    {
+        r.0 += 1;
+        List.Add(FT.re, (temp.0[r.0] / r.1));
+        List.Add(FT.im, (temp.1[r.0] / r.1));
+    }
+}
+
+Define instant (warp=true)
+{
+    +is clone? = 1;
+    sound = 0;
+    Repeat (quality)
+    {
+        Control.CreateCloneOf(_myself_);
+        sound += 1;
+    }
+    +is clone? = 0;
+}
+
+Define playsine(string number) (warp=true)
+{
+    If (Sound.Volume() > 0)
+    {
+        Sound.PlayUntilDone(Operator.Join("sine", number));
+        Sound.PlayUntilDone(Operator.Join("sine", number));
+        Sound.PlayUntilDone(Operator.Join("sine", number));
+    }
+}
+
+Define tick , (warp=true)
+{
+    List.DeleteAll(FT.re);
+    List.DeleteAll(FT.im);
+    r.1 = (quality * 2);
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+    Call FFT();
+    __ += 1;
+    r.2 = 0;
+    r.1 = 1;
+    Repeat (quality)
+    {
+        r.2 += 1;
+        List.ReplaceItem(m, r.2, (12 * sqrt(((FT.re[r.1] * FT.re[r.1]) + (FT.im[r.1] * FT.im[r.1])))));
+        r.1 += 1;
+    }
+}
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg
+
+
+//----- Sounds --------------------------------------------------------------------------------------------------------
+
+sine1.wav
+sine2.wav
+sine3.wav
+sine4.wav
+sine5.wav
+sine6.wav
+sine7.wav
+sine8.wav
+sine9.wav
+sine10.wav
+sine11.wav
+sine12.wav
+sine13.wav
+sine14.wav
+sine15.wav
+sine16.wav
+sine17.wav
+sine18.wav
+sine19.wav
+sine20.wav
+sine21.wav
+sine22.wav
+sine23.wav
+sine24.wav
+sine25.wav
+sine26.wav
+sine27.wav
+sine28.wav
+sine29.wav
+sine30.wav
+sine31.wav
+sine32.wav
+sine33.wav
+sine34.wav
+sine35.wav
+sine36.wav
+sine37.wav
+sine38.wav
+sine39.wav
+sine40.wav
+sine41.wav
+sine42.wav
+sine43.wav
+sine44.wav
+sine45.wav
+sine46.wav
+sine47.wav
+sine48.wav
+sine49.wav
+sine50.wav
+sine51.wav
+sine52.wav
+sine53.wav
+sine54.wav
+sine55.wav
+sine56.wav
+sine57.wav
+sine58.wav
+sine59.wav
+sine60.wav
+sine61.wav
+sine62.wav
+sine63.wav
+sine64.wav
+sine65.wav
+sine66.wav
+sine67.wav
+sine68.wav
+sine69.wav
+sine70.wav
+sine71.wav
+sine72.wav
+sine73.wav
+sine74.wav
+sine75.wav
+sine76.wav
+sine77.wav
+sine78.wav
+sine79.wav
+sine80.wav
+sine81.wav
+sine82.wav
+sine83.wav
+sine84.wav
+sine85.wav
+sine86.wav
+sine87.wav
+sine88.wav
+sine89.wav
+sine90.wav
+sine91.wav
+sine92.wav
+sine93.wav
+sine94.wav
+sine95.wav
+sine96.wav
+sine97.wav
+sine98.wav
+sine99.wav
+sine100.wav
+sine101.wav
+sine102.wav
+sine103.wav
+sine104.wav
+sine105.wav
+sine106.wav
+sine107.wav
+sine108.wav
+sine109.wav
+sine110.wav
+sine111.wav
+sine112.wav
+sine113.wav
+sine114.wav
+sine115.wav
+sine116.wav
+sine117.wav
+sine118.wav
+sine119.wav
+sine120.wav

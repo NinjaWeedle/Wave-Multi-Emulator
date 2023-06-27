@@ -108,6 +108,49 @@ $prg_banks = 0
 $prg_bank_mode = 0
 $reg0 = 0
 $reg1 = 0
+*OAMDMA# = 0
+*OAMDMAS = 0
+,c = 0
+,joypad = 0
+-keyRandom = 0
+-LCDC = 0
+-LCDS = 0
+-LY = 0
+-LYC = 0
+-LYmask = 0
+-scx = 0
+-SCXMOD8 = 0
+-STATUS = 0
+-windowWasDrawn? = 0
+-WLY = 0
+-wx = 0
+.DIV2 = 0
+.DIVCYCLES = 0
+.DMAenable = 0
+.DMAend = 0
+.DMAlength = 0
+.DMAstart = 0
+.DMAtype = 0
+.GBC? = 0
+.HDMAenable = 0
+.IME = 0
+.instr = 0
+.instrID = 0
+.Mpri = 0
+.soundEnable = 0
+.SPEED = 0
+.Spri = 0
+.spriteattributes = 0
+.spriteCpal = 0
+.spritesize = 0
+.t = 0
+.TAC1 = 0
+.TAC2 = 0
+.TACFLAG = 0
+.tileB = 0
+.timenable = 0
+.vbank = 0
+.windowflag = 0
 @bg_pattern = 0
 @bit = 0
 @counter = 0
@@ -123,8 +166,10 @@ $reg1 = 0
 @nmi_flag = 0
 @nt_data = 0
 @oam_addr = 0
+@PAL = 0
 @palette = 0
 @pattern_addr = 0
+@PIX = 0
 @read_buffer = 0
 @render_bg = 0
 @render_sprite = 0
@@ -145,21 +190,70 @@ $reg1 = 0
 @vram_incr = 0
 @write_toggle = 0
 cpu_cycle = 0
+delta = 0
+FPS = 0
+g = 0
+h = 0
 i = 0
 i = 0
 j = 0
 k = 1
-l = 1
+l = 68
+lines = 0
+lock = 0
+loop = 0
 m = 16
 nes: address = 0
 nes: data = 0
 nes: IRQ = 0
 nes: NMI = 0
+render = 0
+s = 0
+sound = 0
+T1 = 0
+T2 = 0
+T3 = 0
+T4 = 0
+T4.1 = 0
+T4.2 = 0
+T5 = 0
+T6 = 0
+T7 = 0
+T8 = 0
+T9 = 0
+T10 = 0
+T11 = 0
 temp = 0
-v = 11.115006658737
+time1 = 0
+time2 = 0
+v = 0.01562874795644
 x = -166
 y = 120
 z = 0.01
+_A = 0
+_B = 0
+_current bank = 0
+_frames = 0
+_frameskip = 0
+_IEindex = 0
+_IFindex = 0
+_INTRdest = 0
+_lineCyc = 0
+_MBCnumber = 0
+_PIXEL# = 0
+_R = 0
+_RE = 0
+_rom size = 0
+_S = 0
+_SIZE = 0
+_STATcond1 = 0
+_STATcond2 = 0
+_STATindex = 0
+_T = 0
+_X = 0
+_XSHIFT = 0
+_YSHIFT = 0
+_Z = 0
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
@@ -172,6 +266,19 @@ z = 0.01
 !wram = { }
 #length_table = { }
 #noise_period = { }
+$A = { }
+$B = { }
+$C = { }
+*OAMidx = { }
+*OAMx = { }
+*OAMy = { }
+*palette = { }
+.addr2ptr = { }
+.pointerStart = { }
+.ptr = { }
+.ptr index = { }
+.vals = { }
+2^x = { }
 @attribute0 = { }
 @attribute1 = { }
 @attribute2 = { }
@@ -187,6 +294,7 @@ z = 0.01
 @palette = { }
 @spr_palette = { }
 @temp_oam = { }
+byteStack = { }
 dat = { 
     0000000000000000
     0000183C3C180000
@@ -413,22 +521,43 @@ dat = {
     0F0F0F0F0F0F0F0F
     FFFFFFFF00000000
 }
+Flag bits = { }
+testroms = { }
+_cartridge stuff = { }
+_DMGPALETTE = { }
+_GBCPALETTELOOKUP = { }
+_instrIDs = { }
+_instrParam = { }
+_PALETTE RAM = { }
+_pix = { }
+_RAM = { }
+_REGISTERS = { }
+_ROM = { }
+_soundregs = { }
 
 
 //----- Broadcast received events -------------------------------------------------------------------------------------
 
 WhenBroadcastReceived(CP/M Call)
 {
-    Pen.SetPenColorToColor(#468ed2);
     If (_registers[2] == 2)
     {
-        List.DeleteAll(8080.Terminal);
-        List.Add(8080.Terminal, _registers[4]);
-        Call Renterminal;
+        If (_registers[4] == 10)
+        {
+            List.DeleteAll(8080.Terminal);
+            y += -10;
+        }
+        Else
+        {
+            Call Clear line;
+            List.Add(8080.Terminal, _registers[4]);
+            Call Renterminal;
+        }
         Stop(this script);
     }
     If (_registers[2] == 9)
     {
+        Pen.SetPenColorToColor(#468ed2);
         List.DeleteAll(8080.Terminal);
         r.0 = ((_registers[3] * 256) + _registers[4]);
         Repeat Until (_memory[(r.0 + 1)] == 36)
@@ -439,14 +568,27 @@ WhenBroadcastReceived(CP/M Call)
         Call Renterminal;
         Stop(this script);
     }
-}
-
-WhenBroadcastReceived(emulate!!)
-{
-    Control.Wait(1);
-    Forever
+    If (_registers[2] == 12)
     {
-        Call c;
+        List.ReplaceItem(_registers, 6, "0x22");
+        Stop(this script);
+    }
+    If (_registers[2] == 7)
+    {
+        List.ReplaceItem(_registers, 8, _memory[4]);
+        Stop(this script);
+    }
+    If (_registers[2] == 8)
+    {
+        List.ReplaceItem(_memory, 4, _registers[4]);
+        Stop(this script);
+    }
+    If (_registers[2] == 0)
+    {
+        Stop(other scripts in sprite);
+        List.Add(logzz, "CP/M function 0: System Reset");
+        List.Show(logzz);
+        Stop(all);
     }
 }
 
@@ -456,7 +598,7 @@ WhenBroadcastReceived(exit emulator)
     y = 120;
 }
 
-WhenBroadcastReceived(text)
+WhenBroadcastReceived(reset emulator)
 {
     Pen.SetPenColorToColor(#65ffce);
     Call rentitle;
@@ -478,12 +620,24 @@ Define c (warp=true)
     x = -226;
     Pen.SetPenColorToColor(#61f8c9);
     z = 100;
-    v = Sensing.Of(FPS, Game Boy);
+    v = Sensing.Of(fps1, GB);
     Call fc(v);
     Call d(3);
     Call renchar x((x - 5)) y(-156) s(2) d(46);
     x += 4;
     Call d(1);
+}
+
+Define Clear line (warp=true)
+{
+    Pen.SetPenColorToColor(#000000);
+    Pen.SetPenSizeTo(9);
+    y += 10;
+    Motion.GoToXY(-240, (y - 1));
+    Pen.Down();
+    Motion.GoToXY(240, (y - 1));
+    Pen.Clear();
+    Pen.SetPenColorToColor(#468ed2);
 }
 
 Define d(string n) (warp=true)
@@ -551,12 +705,17 @@ Define Renterminal (warp=true)
     {
         Call renchar x(((l - (List.Length(8080.Terminal) / 2)) * 6)) y(y) s(1) d(8080.Terminal[(l + 1)]);
         l += 1;
+        If (100 < List.Length(8080.Terminal))
+        {
+            List.DeleteItem(8080.Terminal, 2);
+            y += -5;
+        }
     }
     y += -10;
     If (y < -150)
     {
         Pen.Clear();
-        y = 120;
+        y = 130;
     }
 }
 
@@ -573,9 +732,7 @@ Define rentitle (warp=true)
 
 //----- Orphaned blocks -----------------------------------------------------------------------------------------------
 
-lines
-
-(r.0 + 1)
+(8080.Terminal[l] == "0x0a")
 
 
 //----- Costumes ------------------------------------------------------------------------------------------------------

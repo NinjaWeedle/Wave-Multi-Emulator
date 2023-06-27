@@ -1,6 +1,10 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
 Ahello = 1
+arm7.pc = 0
+arm7.read_return = 0
+arm9.pc = 0
+arm9.read_return = 0
 bg_mode = 0
 c8scrnsize = 0
 calc.char = 0
@@ -9,6 +13,7 @@ calc.temp = 0
 calc.temp2 = 0
 chip8.audio toggle = 0
 chip8.audio_buffer = 0
+chip8.blendmode = 0
 chip8.delay_timer = 0
 chip8.drawflag = 0
 chip8.drawmode = 0
@@ -35,6 +40,18 @@ chip8.Shift_quirk = 0
 chip8.sound_timer = 0
 chip8.spritewidth = 0
 chip8m.collisioncolor = 0
+core.byte_return = 0
+core.condition_test = 0
+core.dummy = 0
+core.dummy2 = 0
+core.dummy_op = 0
+core.instruction_format = 0
+core.little_endian = 0
+core.op.dummy = 0
+core.op.dummy2 = 0
+core.read_return = 0
+core.rotate_return = 0
+core.shift_return = 0
 flags.met = 0
 import.ascii = 0
 import.binary = 0
@@ -53,6 +70,7 @@ program.done = 0
 read.return = 0
 read.single.return = 0
 rom.name = 0
+S = 0
 scanX = 0
 scanY = 0
 SF2091! fix = 0
@@ -60,6 +78,7 @@ speed (CPF) = 0
 storage.byte = 0
 temp = 0
 tile_mode = 0
+Velocity = 0
 VIP jumps = 0
 _id = 0
 _pitch = 0
@@ -67,6 +86,9 @@ _pitch = 0
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+arm7.registers = { }
+arm9.flags = { }
+arm9.registers = { }
 Boot-128 = { }
 chip8.audio = { }
 chip8.keyboard = { }
@@ -96,6 +118,7 @@ WhenGreenFlagClicked()
 
 WhenBroadcastReceived(HelloInter)
 {
+    Event.Broadcast("un-needed broadcast");
     List.Show(MainHello);
     List.Add(MainHello, "Ultimate "Hello,World" Esolang Interpreter Wave edition by oxiti8");
     List.Add(MainHello, ">>>");
@@ -137,61 +160,62 @@ WhenBroadcastReceived(HelloInter)
                         }
                         Else
                         {
-                            If (Input == "exitop")
+                            If (Input == "wh")
                             {
-                                List.Add(MainHello, "Chip-8 exit opcode is 0xFD");
+                                List.Add(MainHello, "World, Hello!");
                             }
                             Else
                             {
-                                If (Input == "wh")
+                                If (Input == "clear")
                                 {
-                                    List.Add(MainHello, "World, Hello!");
+                                    List.DeleteAll(MainHello);
+                                    List.Show(MainHello);
+                                    List.Add(MainHello, "Ultimate "Hello,World" Esolang Interpreter Wave edition by oxiti8");
+                                    List.Add(MainHello, ">>>");
+                                    Input = 0;
                                 }
                                 Else
                                 {
-                                    If (Input == "clear")
+                                    If (Operator.Join(Operator.LetterOf(Input, 1), Operator.Join(Operator.LetterOf(Input, 2), Operator.Join(Operator.LetterOf(Input, 3), Operator.LetterOf(Input, 4)))) == "load")
                                     {
-                                        List.DeleteAll(MainHello);
-                                        List.Show(MainHello);
-                                        List.Add(MainHello, "Ultimate "Hello,World" Esolang Interpreter Wave edition by oxiti8");
-                                        List.Add(MainHello, ">>>");
-                                        Input = 0;
-                                    }
-                                    Else
-                                    {
-                                        If (Operator.Join(Operator.LetterOf(Input, 1), Operator.Join(Operator.LetterOf(Input, 2), Operator.Join(Operator.LetterOf(Input, 3), Operator.LetterOf(Input, 4)))) == "Load")
+                                        If Operator.Contains(Input, "Rocket Launcher")
                                         {
-                                            If Operator.Contains(Input, "Rocket Launcher")
+                                            _ROM = "00E0A260600761386219D027D127A25E60006118D011700830401214681E69112258600FE09E12246008F018225879FF22586002F015F007300012366001F0183900122C00E0640CC520C640D65174FF34001248691A122EA268D89700EEFF0080808080808080002070707070F85000";
+                                            Event.Broadcast("Load_Prebuilt_game");
+                                        }
+                                        Else
+                                        {
+                                            If Operator.Contains(Input, "1P Pong")
                                             {
-                                                _ROM = "00E0A260600761386219D027D127A25E60006118D011700830401214681E69112258600FE09E12246008F018225879FF22586002F015F007300012366001F0183900122C00E0640CC520C640D65174FF34001248691A122EA268D89700EEFF0080808080808080002070707070F85000";
+                                                _ROM = "6A026B0C6C3F6D0CA2EADAB6DCD66E0022D4660368026060F015F0073000121AC717770869FFA2F0D671A2EADAB6DCD66001E0A17BFE6004E0A17B02601F8B02DAB68D70C00A7DFE40007D026000601F8D02DCD6A2F0D67186848794603F8602611F871246021278463F1282471F69FF47006901D671122A68026301807080B5128A68FE630A807080D53F0112A2610280153F0112BA80153F0112C880153F0112C26020F01822D48E3422D4663E3301660368FE33016802121679FF49FE69FF12C87901490269016004F0187601464076FE126CA2F2FE33F265F12964146500D4557415F229D45500EE808080808080800000000000";
                                                 Event.Broadcast("Load_Prebuilt_game");
                                             }
                                             Else
                                             {
-                                                If Operator.Contains(Input, "1P Pong")
+                                                If Operator.Contains(Input, "Breakout")
                                                 {
-                                                    _ROM = "6A026B0C6C3F6D0CA2EADAB6DCD66E0022D4660368026060F015F0073000121AC717770869FFA2F0D671A2EADAB6DCD66001E0A17BFE6004E0A17B02601F8B02DAB68D70C00A7DFE40007D026000601F8D02DCD6A2F0D67186848794603F8602611F871246021278463F1282471F69FF47006901D671122A68026301807080B5128A68FE630A807080D53F0112A2610280153F0112BA80153F0112C880153F0112C26020F01822D48E3422D4663E3301660368FE33016802121679FF49FE69FF12C87901490269016004F0187601464076FE126CA2F2FE33F265F12964146500D4557415F229D45500EE808080808080800000000000";
+                                                    _ROM = "A2CC6A0661036B086000D01170087BFF3B00120A71027AFF3A00120666006714A2CD6020611ED011631D623F820277FF470012AAFF0AA2CBD23165FFC401340164FFA2CD6C006E04EEA16CFE6E06EEA16C02D01180C4D0114F01129842006401423F64FF430012CE431F12A4A2CBD23182448354D2313F011242431E12986A02FA187601A2CA1288D231C401340164FFC5013501650112426A03FA18A2CBD23173FF1236A2CBD2311228A2CDD011A2F0F633F2656318641BF029D3457305F129D3457305F229D34512C8F080FFFFA2DE63156210D325A2E3631DD32512AAEE8ACE8C8AEE88CC88EE";
                                                     Event.Broadcast("Load_Prebuilt_game");
                                                 }
                                                 Else
                                                 {
-                                                    If Operator.Contains(Input, "Breakout")
+                                                    If Operator.Contains(Input, "Pong 2")
                                                     {
-                                                        _ROM = "A2CC6A0661036B086000D01170087BFF3B00120A71027AFF3A00120666006714A2CD6020611ED011631D623F820277FF470012AAFF0AA2CBD23165FFC401340164FFA2CD6C006E04EEA16CFE6E06EEA16C02D01180C4D0114F01129842006401423F64FF430012CE431F12A4A2CBD23182448354D2313F011242431E12986A02FA187601A2CA1288D231C401340164FFC5013501650112426A03FA18A2CBD23173FF1236A2CBD2311228A2CDD011A2F0F633F2656318641BF029D3457305F129D3457305F229D34512C8F080FFFFA2DE63156210D325A2E3631DD32512AAEE8ACE8C8AEE88CC88EE";
+                                                        _ROM = "22FC6B0C6C3F6D0CA2EADAB6DCD66E0022D4660368026060F015F0073000121AC717770869FFA2F0D671A2EADAB6DCD66001E0A17BFE6004E0A17B02601F8B02DAB6600CE0A17DFE600DE0A17D02601F8D02DCD6A2F0D67186848794603F8602611F871246001278463F1282471F69FF47006901D671122A68026301807080B5128A68FE630A807080D53F0112A2610280153F0112BA80153F0112C880153F0112C26020F01822D48E3422D4663E3301660368FE33016802121679FF49FE69FF12C87901490269016004F0187601464076FE126CA2F2FE33F265F12964146502D4557415F229D45500EE808080808080800000000000C0C0C000FF006B206C00A2F6DBC47C043C2013026A006B006C1FA2FADAB1DAC17A083A401312A2F66A006B20DBA100EE";
                                                         Event.Broadcast("Load_Prebuilt_game");
                                                     }
                                                     Else
                                                     {
-                                                        If Operator.Contains(Input, "Pong 2")
+                                                        If Operator.Contains(Input, "Keypad test")
                                                         {
-                                                            _ROM = "22FC6B0C6C3F6D0CA2EADAB6DCD66E0022D4660368026060F015F0073000121AC717770869FFA2F0D671A2EADAB6DCD66001E0A17BFE6004E0A17B02601F8B02DAB6600CE0A17DFE600DE0A17D02601F8D02DCD6A2F0D67186848794603F8602611F871246001278463F1282471F69FF47006901D671122A68026301807080B5128A68FE630A807080D53F0112A2610280153F0112BA80153F0112C880153F0112C26020F01822D48E3422D4663E3301660368FE33016802121679FF49FE69FF12C87901490269016004F0187601464076FE126CA2F2FE33F265F12964146502D4557415F229D45500EE808080808080800000000000C0C0C000FF006B206C00A2F6DBC47C043C2013026A006B006C1FA2FADAB1DAC17A083A401312A2F66A006B20DBA100EE";
+                                                            _ROM = "6014610AF20A00E0F229D0151204";
                                                             Event.Broadcast("Load_Prebuilt_game");
                                                         }
                                                         Else
                                                         {
-                                                            If Operator.Contains(Input, "Keypad test")
+                                                            If Operator.Contains(Input, "16 color test")
                                                             {
-                                                                _ROM = "6014610AF20A00E0F229D0151204";
+                                                                _ROM = "F301A21860046104D0127102F701D0127102FF01D012121633330F0F5555FFFF00";
                                                                 Event.Broadcast("Load_Prebuilt_game");
                                                             }
                                                             Else
@@ -204,7 +228,9 @@ WhenBroadcastReceived(HelloInter)
                                                                 }
                                                                 Else
                                                                 {
-                                                                    Event.Broadcast("get_rom");
+                                                                    Sensing.Ask("Paste CHIP-8 rom in base64 now.");
+                                                                    _ROM = Sensing.Answer();
+                                                                    Event.Broadcast("Load_base64");
                                                                 }
                                                             }
                                                         }
@@ -212,89 +238,91 @@ WhenBroadcastReceived(HelloInter)
                                                 }
                                             }
                                         }
+                                    }
+                                    Else
+                                    {
+                                        If (Input == "+")
+                                        {
+                                            control_incr_counter ?? - probably legacy function from Scratch 2.0;
+                                            List.Add(MainHello, control_get_counter ?? - probably legacy function from Scratch 2.0);
+                                        }
                                         Else
                                         {
-                                            If (Input == "+")
+                                            If (Input == "credits")
                                             {
-                                                control_incr_counter ?? - probably legacy function from Scratch 2.0;
-                                                List.Add(MainHello, control_get_counter ?? - probably legacy function from Scratch 2.0);
+                                                List.Add(MainHello, "Wave Multi-Emulator credits");
+                                                List.Add(MainHello, "Concept: @Geotale/@EmulatorsOnScratch");
+                                                List.Add(MainHello, "Menu: @Geotale @Executec @oxiti8");
+                                                List.Add(MainHello, "WAVE-8: @Geotale @oxiti8 @Kouzeru @52525rr");
+                                                List.Add(MainHello, "rrGBC: @52525rr");
+                                                List.Add(MainHello, "Nintendo DS Emulator: @Geotale/@EmulatorsOnScratch");
+                                                List.Add(MainHello, "Cool NES Emulator: @GenericHeroGuy");
+                                                List.Add(MainHello, "Bytepusher: @52525rr");
+                                                List.Add(MainHello, "UHWEI Wave Edition: @oxiti8");
+                                                List.Add(MainHello, "SI8080: @oxiti8, @Kouzeru for renderer");
+                                                List.Add(MainHello, "Music: Purple Planet Music - Chilled - Global Tech, Nintendo 3DS HOME menu BGM, Mario Paint - Special Stamps");
+                                                List.Add(MainHello, "Special Thanks: StinkerB06 and Tobiasvl for helping with DXYN ");
+                                                List.Add(MainHello, "@AArt1256, @52525rr, and @Kouzeru for help with XO-CHIP");
+                                                List.Add(MainHello, "Gulrak for the help with documenting Megachip");
+                                                List.Add(MainHello, "CHIP8 Wave logo ROM by @AArt1256");
+                                                List.Add(MainHello, "Thanks to everyone who has contributed to the project over the past 3 years!");
                                             }
                                             Else
                                             {
-                                                If (Input == "credits")
+                                                If (Input == "Exit")
                                                 {
-                                                    List.Add(MainHello, "Concept: @Geotale/@EmulatorsOnScratch");
-                                                    List.Add(MainHello, "Menu: @Geotale @Executec @oxiti8");
-                                                    List.Add(MainHello, "WAVE-8: @Geotale @oxiti8 @Kouzeru @52525rr");
-                                                    List.Add(MainHello, "DualGB: @52525rr");
-                                                    List.Add(MainHello, "Game Boy Advance Emulator: @Geotale/@EmulatorsOnScratch");
-                                                    List.Add(MainHello, "Nintendo DS Emulator: @Geotale/@EmulatorsOnScratch");
-                                                    List.Add(MainHello, "Cool NES Emulator: @GenericHeroGuy");
-                                                    List.Add(MainHello, "Bytepusher: @52525rr");
-                                                    List.Add(MainHello, "UHWEI Wave Edition: @oxiti8");
-                                                    List.Add(MainHello, "SI8080: @oxiti8");
-                                                    List.Add(MainHello, "Music: Purple Planet Music - Chilled - Global Tech, Nintendo 3DS HOME menu BGM, Mario Paint - Special Stamps");
-                                                    List.Add(MainHello, "Special Thanks: StinkerB06 and Tobiasvl for helping with DXYN ");
-                                                    List.Add(MainHello, "@AArt1256, @52525rr, and @Kouzeru for help with XO-CHIP");
-                                                    List.Add(MainHello, "CHIP8 Wave logo ROM by @AArt1256");
+                                                    List.Add(MainHello, "Exiting...");
+                                                    Event.Broadcast("Launch Emulator");
+                                                    List.Hide(MainHello);
+                                                    List.DeleteAll(MainHello);
+                                                    Event.BroadcastAndWait("Launch EmulatorWaitd");
+                                                    Event.Broadcast("exit emulator");
+                                                    Stop(this script);
                                                 }
                                                 Else
                                                 {
-                                                    If (Input == "Exit")
+                                                    If (Input == "Set start address")
                                                     {
-                                                        List.Add(MainHello, "Exiting...");
-                                                        Event.Broadcast("Launch Emulator");
-                                                        List.Hide(MainHello);
-                                                        List.DeleteAll(MainHello);
-                                                        Event.BroadcastAndWait("Launch EmulatorWaitd");
-                                                        Event.Broadcast("exit emulator");
-                                                        Stop(this script);
+                                                        Sensing.Ask("What address will Chip8 programs start at?");
+                                                        chip8.starting address = (Sensing.Answer() % 65536);
+                                                        List.Add(MainHello, Operator.Join("Chip8 starting address set to ", chip8.starting address));
                                                     }
                                                     Else
                                                     {
-                                                        If (Input == "Set start address")
+                                                        If (Input == 9)
                                                         {
-                                                            Sensing.Ask("What address will Chip8 programs start at?");
-                                                            chip8.starting address = (Sensing.Answer() % 65536);
-                                                            List.Add(MainHello, Operator.Join("Chip8 starting address set to ", chip8.starting address));
-                                                        }
-                                                        Else
-                                                        {
-                                                            If (Input == 9)
+                                                            Ahello = 99;
+                                                            Repeat Until (Not ((Ahello > 0)))
                                                             {
-                                                                Ahello = 99;
-                                                                Repeat Until (Not ((Ahello > 0)))
+                                                                If (Ahello == 1)
+                                                                {
+                                                                    List.Add(MainHello, Operator.Join(Ahello, Operator.Join(" bottle of pop on the wall, ", Operator.Join(Ahello, " bottle of pop."))));
+                                                                }
+                                                                Else
+                                                                {
+                                                                    List.Add(MainHello, Operator.Join(Ahello, Operator.Join(" bottles of pop on the wall, ", Operator.Join(Ahello, " bottles of pop."))));
+                                                                }
+                                                                Ahello += -1;
+                                                                If (Ahello > 1)
+                                                                {
+                                                                    List.Add(MainHello, Operator.Join("Take one down, pass it around, ", Operator.Join(Ahello, " bottles of pop on the wall.")));
+                                                                }
+                                                                Else
                                                                 {
                                                                     If (Ahello == 1)
                                                                     {
-                                                                        List.Add(MainHello, Operator.Join(Ahello, Operator.Join(" bottle of pop on the wall, ", Operator.Join(Ahello, " bottle of pop."))));
+                                                                        List.Add(MainHello, Operator.Join("Take one down, pass it around, ", Operator.Join(Ahello, " bottle of pop on the wall.")));
                                                                     }
                                                                     Else
                                                                     {
-                                                                        List.Add(MainHello, Operator.Join(Ahello, Operator.Join(" bottles of pop on the wall, ", Operator.Join(Ahello, " bottles of pop."))));
-                                                                    }
-                                                                    Ahello += -1;
-                                                                    If (Ahello > 1)
-                                                                    {
-                                                                        List.Add(MainHello, Operator.Join("Take one down, pass it around, ", Operator.Join(Ahello, " bottles of pop on the wall.")));
-                                                                    }
-                                                                    Else
-                                                                    {
-                                                                        If (Ahello == 1)
-                                                                        {
-                                                                            List.Add(MainHello, Operator.Join("Take one down, pass it around, ", Operator.Join(Ahello, " bottle of pop on the wall.")));
-                                                                        }
-                                                                        Else
-                                                                        {
-                                                                            List.Add(MainHello, "Take one down, pass it around, no more bottles of pop on the wall.");
-                                                                        }
+                                                                        List.Add(MainHello, "Take one down, pass it around, no more bottles of pop on the wall.");
                                                                     }
                                                                 }
                                                             }
-                                                            Else
-                                                            {
-                                                                List.Add(MainHello, " ");
-                                                            }
+                                                        }
+                                                        Else
+                                                        {
+                                                            List.Add(MainHello, " ");
                                                         }
                                                     }
                                                 }
@@ -396,10 +424,10 @@ Define _bitwise init (warp=true)
             Repeat (8)
             {
                 r.0 += 1;
-                r.1 = Operator.Join(r.1, ( + (temp.0[r.0] And temp.1[r.0])));
+                r.1 = Operator.Join(r.1, Operator.Round((temp.0[r.0] And temp.1[r.0])));
             }
             Call $incA;
-            List.Add(and_table, (r.1 + 0));
+            List.Add(and_table, Operator.Round(r.1));
         }
         Call $incB;
     }
@@ -413,10 +441,10 @@ Define _bitwise init (warp=true)
             Repeat (8)
             {
                 r.0 += 1;
-                r.1 = Operator.Join(r.1, ( + (temp.0[r.0] Or temp.1[r.0])));
+                r.1 = Operator.Join(r.1, Operator.Round((temp.0[r.0] Or temp.1[r.0])));
             }
             Call $incA;
-            List.Add(or_table, (r.1 + 0));
+            List.Add(or_table, Operator.Round(r.1));
         }
         Call $incB;
     }
@@ -430,10 +458,10 @@ Define _bitwise init (warp=true)
             Repeat (8)
             {
                 r.0 += 1;
-                r.1 = Operator.Join(r.1, ( + (Not ((temp.0[r.0] == temp.1[r.0])))));
+                r.1 = Operator.Join(r.1, Operator.Round((Not ((temp.0[r.0] == temp.1[r.0])))));
             }
             Call $incA;
-            List.Add(xor_table, (r.1 + 0));
+            List.Add(xor_table, Operator.Round(r.1));
         }
         Call $incB;
     }

@@ -1,0 +1,2863 @@
+//----- Variables -----------------------------------------------------------------------------------------------------
+
++sound sweep clock cycle = 0
++sound sweep control = 0
++sound sweep dir = 0
+.MBC = 5
+APU.clock = 8209
+cacheNext = 0
+cart.GBCMode = 1
+cpu.condition = 0
+cpu.HALT = 0
+cpu.interruptSwitch = 1
+cpu.speed = 2
+cycles.frame = 12
+fps1 = 0.016450125959344
+frameEvent = 1
+frameSkipFraction = 0
+frameSkipRender = 1
+frametime = 0.015999900642782
+i = 172
+JIT.blocksizemax = 256
+JIT.cache = 5791
+JIT.cacheEnd = 5858
+LCDY *160 = 22880
+mbc.rambanks = 4
+mbc.rombanks = 64
+mmu.addr = 57071
+mmu.addrTemp = 49340
+mmu.return = 242
+mmu.rombank = 39
+mmu.srambank = 0
+mmu.vrambank = 0
+mmu.wrambank = 1
+ppu.cachedcycles = 114
+ppu.CGBDMAcount = 0
+ppu.CGBDMAdest = 0
+ppu.CGBDMAsource = 0
+ppu.CGBDMAType = 0
+ppu.cyclesincr = 2
+ppu.DMAflag = 0
+ppu.LCDstate = 1
+ppu.linecycles = 84
+ppu.LineY = 151
+ppu.newByteFlag = 1
+ppu.OAMdma# = 160
+ppu.OAMdmastart = 57088
+ppu.pixelX = 0
+ppu.statcond1 = 0
+ppu.statcond2 = 0
+ppu.temp = 1
+ppu.transferAmount = 0
+ppu.windowcounter = 0
+ppu.windowincr = 0
+regs.PC = 5858
+regs.SP = 57065
+remainingPixels = 0
+screenColor = 0
+tim.DIV = 5880
+w1 = 0
+w2 = 0
+x1 = 1
+x2 = 1
+xf = 0
+XX = 71303.5
+y0 = 248
+y1 = 152
+y2 = 143
+y3 = 8
+y4 = 128
+y5 = 1024
+z.HLreg = 57074
+z0 = 0
+z1 = 14
+z2 = 2
+z3 = 57066
+z4 = 40
+z5 = 84
+z6 = 0
+z7 = 0
+z8 = 0
+z9 = 248
+z10 = 0
+z11 = 4
+z12 = 5133629
+z13 = 0
+z14 = 4110
+z15 = 6707
+z16 = 0
+z17 = 32
+z18 = 16
+z_ = 8567.1858869097
+
+
+//----- Lists ---------------------------------------------------------------------------------------------------------
+
++sound envelope clock = { 
+    0
+    0
+    0
+    0
+}
++sound volume init = { 
+    0
+    0
+    0
+    0
+}
+.HRAM = { }
+.I/O = { }
+.OAM = { }
+.ROM = { }
+.SRAM = { }
+.VRAM = { }
+.WRAM = { }
+BRT = { }
+code parameters = { }
+cpu.op1 = { }
+cpu.op2 = { }
+cpu.opblocks = { }
+cpu.opbytes = { }
+cpu.powersof2 = { }
+cpu.regF = { }
+cpu.regs = { }
+JIT.endblock = { }
+ppu.DMGpalette = { 
+    0xc6d2a4
+    9279599
+    5133629
+    2105120
+}
+ppu.GBCpalettesLUT = { }
+ppu.LCDbuffer = { }
+ppu.objGBCpalette = { 
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+    0
+}
+ppu.paletteconvertor = { 
+    16293912
+    16316640
+    14170144
+    526352
+    16306240
+    5810312
+    1591400
+    526352
+    16308392
+    14723192
+    7886984
+    8240
+    12112080
+    14188760
+    8388768
+    3670024
+    16316600
+    9488584
+    4745336
+    532552
+    16308400
+    7913592
+    6850624
+    5781536
+    15268064
+    11595912
+    5281912
+    2107472
+    16316600
+    9488584
+    4745336
+    532552
+    15268064
+    15268064
+    11595912
+    2107472
+    16314592
+    16314592
+    14188664
+    8
+    16314592
+    16314592
+    14188664
+    8
+    16314592
+    16314592
+    14188664
+    8
+    16314592
+    16314592
+    14188664
+    8
+    16314592
+    16314592
+    14188664
+    8
+    16314592
+    16314592
+    14188664
+    8
+    16314592
+    16314592
+    14188664
+    8
+}
+ppu.PaletteRAM = { 
+    159
+    14
+    255
+    115
+    251
+    16
+    33
+    8
+    95
+    35
+    171
+    70
+    35
+    53
+    33
+    8
+    127
+    87
+    188
+    62
+    111
+    69
+    128
+    24
+    87
+    107
+    27
+    110
+    16
+    80
+    7
+    4
+    255
+    95
+    50
+    103
+    169
+    61
+    129
+    36
+    127
+    91
+    15
+    63
+    45
+    34
+    235
+    16
+    253
+    115
+    214
+    71
+    106
+    62
+    164
+    40
+    255
+    95
+    50
+    103
+    169
+    61
+    129
+    36
+    253
+    115
+    253
+    115
+    214
+    71
+    164
+    40
+    223
+    115
+    223
+    115
+    27
+    62
+    0
+    4
+    223
+    115
+    223
+    115
+    27
+    62
+    0
+    4
+    223
+    115
+    223
+    115
+    27
+    62
+    0
+    4
+    223
+    115
+    223
+    115
+    27
+    62
+    0
+    4
+    223
+    115
+    223
+    115
+    27
+    62
+    0
+    4
+    223
+    115
+    223
+    115
+    27
+    62
+    0
+    4
+    223
+    115
+    223
+    115
+    27
+    62
+    0
+    4
+}
+ppu.spritebuffer = { }
+ppu.spriteoverlay = { }
+s = { }
+z.bin = { 
+    00000000
+    00000001
+    00000010
+    00000011
+    00000100
+    00000101
+    00000110
+    00000111
+    00001000
+    00001001
+    00001010
+    00001011
+    00001100
+    00001101
+    00001110
+    00001111
+    00010000
+    00010001
+    00010010
+    00010011
+    00010100
+    00010101
+    00010110
+    00010111
+    00011000
+    00011001
+    00011010
+    00011011
+    00011100
+    00011101
+    00011110
+    00011111
+    00100000
+    00100001
+    00100010
+    00100011
+    00100100
+    00100101
+    00100110
+    00100111
+    00101000
+    00101001
+    00101010
+    00101011
+    00101100
+    00101101
+    00101110
+    00101111
+    00110000
+    00110001
+    00110010
+    00110011
+    00110100
+    00110101
+    00110110
+    00110111
+    00111000
+    00111001
+    00111010
+    00111011
+    00111100
+    00111101
+    00111110
+    00111111
+    01000000
+    01000001
+    01000010
+    01000011
+    01000100
+    01000101
+    01000110
+    01000111
+    01001000
+    01001001
+    01001010
+    01001011
+    01001100
+    01001101
+    01001110
+    01001111
+    01010000
+    01010001
+    01010010
+    01010011
+    01010100
+    01010101
+    01010110
+    01010111
+    01011000
+    01011001
+    01011010
+    01011011
+    01011100
+    01011101
+    01011110
+    01011111
+    01100000
+    01100001
+    01100010
+    01100011
+    01100100
+    01100101
+    01100110
+    01100111
+    01101000
+    01101001
+    01101010
+    01101011
+    01101100
+    01101101
+    01101110
+    01101111
+    01110000
+    01110001
+    01110010
+    01110011
+    01110100
+    01110101
+    01110110
+    01110111
+    01111000
+    01111001
+    01111010
+    01111011
+    01111100
+    01111101
+    01111110
+    01111111
+    10000000
+    10000001
+    10000010
+    10000011
+    10000100
+    10000101
+    10000110
+    10000111
+    10001000
+    10001001
+    10001010
+    10001011
+    10001100
+    10001101
+    10001110
+    10001111
+    10010000
+    10010001
+    10010010
+    10010011
+    10010100
+    10010101
+    10010110
+    10010111
+    10011000
+    10011001
+    10011010
+    10011011
+    10011100
+    10011101
+    10011110
+    10011111
+    10100000
+    10100001
+    10100010
+    10100011
+    10100100
+    10100101
+    10100110
+    10100111
+    10101000
+    10101001
+    10101010
+    10101011
+    10101100
+    10101101
+    10101110
+    10101111
+    10110000
+    10110001
+    10110010
+    10110011
+    10110100
+    10110101
+    10110110
+    10110111
+    10111000
+    10111001
+    10111010
+    10111011
+    10111100
+    10111101
+    10111110
+    10111111
+    11000000
+    11000001
+    11000010
+    11000011
+    11000100
+    11000101
+    11000110
+    11000111
+    11001000
+    11001001
+    11001010
+    11001011
+    11001100
+    11001101
+    11001110
+    11001111
+    11010000
+    11010001
+    11010010
+    11010011
+    11010100
+    11010101
+    11010110
+    11010111
+    11011000
+    11011001
+    11011010
+    11011011
+    11011100
+    11011101
+    11011110
+    11011111
+    11100000
+    11100001
+    11100010
+    11100011
+    11100100
+    11100101
+    11100110
+    11100111
+    11101000
+    11101001
+    11101010
+    11101011
+    11101100
+    11101101
+    11101110
+    11101111
+    11110000
+    11110001
+    11110010
+    11110011
+    11110100
+    11110101
+    11110110
+    11110111
+    11111000
+    11111001
+    11111010
+    11111011
+    11111100
+    11111101
+    11111110
+    11111111
+}
+
+
+//----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(emulate!!)
+{
+    Pen.Clear();
+    Event.BroadcastAndWait("reset emulator");
+    Event.BroadcastAndWait("un-needed broadcast");
+    Forever
+    {
+        Call mainLoop;
+        Control.Wait(0);
+    }
+}
+
+WhenBroadcastReceived(Project not saving fix)
+{
+    List.DeleteAll(.HRAM);
+    List.DeleteAll(.I/O);
+    List.DeleteAll(.OAM);
+    List.DeleteAll(.SRAM);
+    List.DeleteAll(.VRAM);
+    List.DeleteAll(.WRAM);
+    List.DeleteAll(cpu.AND);
+    List.DeleteAll(cpu.op1);
+    List.DeleteAll(cpu.op2);
+    List.DeleteAll(cpu.opblocks);
+    List.DeleteAll(cpu.opbytes);
+    List.DeleteAll(cpu.OR);
+    List.DeleteAll(cpu.powersof2);
+    List.DeleteAll(cpu.regF);
+    List.DeleteAll(cpu.regs);
+    List.DeleteAll(cpu.XOR);
+    List.DeleteAll(debug.logfile);
+    List.DeleteAll(code parameters);
+    List.DeleteAll(JIT.endblock);
+    List.DeleteAll(ppu.LCDbuffer);
+    List.DeleteAll(ppu.spriteoverlay);
+    List.DeleteAll(BRT);
+    List.DeleteAll(ppu.GBCpalettesLUT);
+    List.DeleteAll(.ROM);
+}
+
+WhenBroadcastReceived(reset emulator)
+{
+    Call setup.reset;
+    JIT BLOCKS CREATED = 0;
+    INSTRS EXECUTED = 0;
+    DEBUG.TOTALCYCLES = 0;
+    framecount = 0;
+    logline = 0;
+    Sensing.ResetTimer();
+    x0 = (Sensing.DaysSince2000() * 86400);
+    deltaTime = 0;
+    fps1 = 0.01;
+    Event.Broadcast("create sound");
+}
+
+
+//----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define .APU write handler(string addr)(string byte) (warp=true)
+{
+    If (addr == "0xFF10")
+    {
+        +sound sweep control = (byte % 8);
+        +sound sweep dir = ((1 - (floor(((byte / 8) % 2)) * 2)) * (floor((byte / 16)) % 8));
+        Stop(this script);
+    }
+    If (addr == "0xFF11")
+    {
+        List.ReplaceItem(+sound duty cycle, 1, floor((byte / 64)));
+        List.ReplaceItem(+sound length timer, 1, (byte % 64));
+        Stop(this script);
+    }
+    If (addr == "0xFF12")
+    {
+        List.ReplaceItem(+sound volume, 1, floor((byte / 16)));
+        List.ReplaceItem(+sound volume init, 1, floor((byte / 16)));
+        List.ReplaceItem(+sound envelope timer, 1, (((2 * (floor((byte / 8)) % 2)) - 1) * (byte % 8)));
+        List.ReplaceItem(+sound envelope clock, 1, 0);
+        Stop(this script);
+    }
+    If ((addr == "0xFF13") Or (addr == "0xFF14"))
+    {
+        Call .updateCachedPitch(1)((((.I/O[21] % 8) * 256) + .I/O[20]));
+        If (addr == "0xFF14")
+        {
+            If (byte > 127)
+            {
+                List.ReplaceItem(+sound channels active, 1, 1);
+                List.ReplaceItem(+sound volume, 1, +sound volume init[1]);
+            }
+            Else
+            {
+                List.ReplaceItem(+sound channels active, 1, 0);
+            }
+        }
+        Stop(this script);
+    }
+    If (addr == "0xFF16")
+    {
+        List.ReplaceItem(+sound duty cycle, 2, floor((byte / 64)));
+        List.ReplaceItem(+sound length timer, 2, (byte % 64));
+        Stop(this script);
+    }
+    If (addr == "0xFF17")
+    {
+        List.ReplaceItem(+sound volume, 2, floor((byte / 16)));
+        List.ReplaceItem(+sound volume init, 2, floor((byte / 16)));
+        List.ReplaceItem(+sound envelope timer, 2, (((2 * (floor((byte / 8)) % 2)) - 1) * (byte % 8)));
+        List.ReplaceItem(+sound envelope clock, 2, 0);
+        Stop(this script);
+    }
+    If ((addr == "0xFF18") Or (addr == "0xFF19"))
+    {
+        Call .updateCachedPitch(2)((((.I/O[26] % 8) * 256) + .I/O[25]));
+        If (addr == "0xFF19")
+        {
+            If (byte > 127)
+            {
+                List.ReplaceItem(+sound channels active, 2, 1);
+                List.ReplaceItem(+sound volume, 2, +sound volume init[2]);
+            }
+            Else
+            {
+                List.ReplaceItem(+sound channels active, 2, 0);
+            }
+        }
+        Stop(this script);
+    }
+    If (addr == "0xFF1B")
+    {
+        List.ReplaceItem(+sound length timer, 3, byte);
+        Stop(this script);
+    }
+    If (addr == "0xFF1C")
+    {
+        If ((floor((byte / 32)) % 4) == 0)
+        {
+            List.ReplaceItem(+sound volume, 3, 0);
+            List.ReplaceItem(+sound volume init, 3, 0);
+        }
+        Else
+        {
+            List.ReplaceItem(+sound volume, 3, (15 - ((floor((byte / 32)) % 4) * 5)));
+            List.ReplaceItem(+sound volume init, 3, (15 - ((floor((byte / 32)) % 4) * 5)));
+        }
+        Stop(this script);
+    }
+    If ((addr == "0xFF1D") Or (addr == "0xFF1E"))
+    {
+        Call .updateCachedPitch(3)((((.I/O[31] % 8) * 256) + .I/O[30]));
+        If (addr == "0xFF1E")
+        {
+            If (byte > 127)
+            {
+                List.ReplaceItem(+sound channels active, 3, 1);
+                List.ReplaceItem(+sound volume, 3, +sound volume init[3]);
+            }
+            Else
+            {
+                List.ReplaceItem(+sound channels active, 3, 0);
+            }
+        }
+        Stop(this script);
+    }
+    If (addr == "0xFF20")
+    {
+        List.ReplaceItem(+sound length timer, 4, byte);
+        Stop(this script);
+    }
+    If (addr == "0xFF21")
+    {
+        List.ReplaceItem(+sound volume, 4, floor((byte / 16)));
+        List.ReplaceItem(+sound volume init, 4, floor((byte / 16)));
+        List.ReplaceItem(+sound envelope timer, 4, (((2 * (floor((byte / 8)) % 2)) - 1) * (byte % 8)));
+        List.ReplaceItem(+sound envelope clock, 4, 0);
+        Stop(this script);
+    }
+    If (addr == "0xFF22")
+    {
+        List.ReplaceItem(+sound duty cycle, 4, (floor((byte / 8)) % 2));
+        Call .updateCachedPitch(4)(((((byte % 8) + (((byte % 8) == 0) * 0.5)) * 16) * Operator.Round(e ^((ln(2) * floor((byte / 16)))))));
+        Stop(this script);
+    }
+    If (addr == "0xFF23")
+    {
+        If (byte > 127)
+        {
+            List.ReplaceItem(+sound channels active, 4, 1);
+            List.ReplaceItem(+sound volume, 4, +sound volume init[4]);
+        }
+        Else
+        {
+            List.ReplaceItem(+sound channels active, 4, 0);
+        }
+        Stop(this script);
+    }
+    If (addr == "0xFF24")
+    {
+        +globalVol.L = ((floor((byte / 16)) % 8) / 8);
+        +globalVol.R = ((floor((byte / 1)) % 8) / 8);
+    }
+}
+
+Define .MBC HANDLER(string addr)(string byte) (warp=true)
+{
+    If (.MBC == 5)
+    {
+        If ((Not ((addr < "0x2000"))) And (addr < "0x3000"))
+        {
+            mmu.rombank = (byte % mbc.rombanks);
+        }
+        If ((Not ((addr < "0x3000"))) And (addr < "0x4000"))
+        {
+            mmu.rombank = (((byte % 2) * 256) + (mmu.rombank % 256));
+        }
+        If ((Not ((addr < "0x4000"))) And (addr < "0x5000"))
+        {
+            mmu.srambank = (byte % 16);
+        }
+    }
+    Else
+    {
+        If ((.MBC == 1) Or (.MBC == 3))
+        {
+            If ((Not ((addr < "0x2000"))) And (addr < "0x4000"))
+            {
+                mmu.rombank = byte;
+            }
+            If ((Not ((addr < "0x4000"))) And (addr < "0x5000"))
+            {
+                mmu.srambank = (byte % mbc.rambanks);
+            }
+        }
+    }
+    If ((Not ((regs.PC < "0x4000"))) And (regs.PC < "0x8000"))
+    {
+        i = (1 / );
+    }
+}
+
+Define .readbyte(string addr) (warp=true)
+{
+    If (addr < "0x8000")
+    {
+        If (addr < "0x4000")
+        {
+            mmu.return = .ROM[(1 + addr)];
+        }
+        Else
+        {
+            mmu.return = .ROM[(1 + ((addr - 0x4000) + (mmu.rombank * 16384)))];
+        }
+    }
+    Else
+    {
+        If (addr < "0xC000")
+        {
+            If (addr < "0xA000")
+            {
+                mmu.return = .VRAM[(1 + ((addr % 0x2000) + (mmu.vrambank * 8192)))];
+            }
+            Else
+            {
+                mmu.return = .SRAM[(1 + ((addr % 0x2000) + (mmu.srambank * 8192)))];
+            }
+        }
+        Else
+        {
+            If (addr < "0xFE00")
+            {
+                If ((addr % 0x2000) < "0x1000")
+                {
+                    mmu.return = .WRAM[(1 + (addr % 0x1000))];
+                }
+                Else
+                {
+                    mmu.return = .WRAM[(1 + ((addr % 0x1000) + (mmu.wrambank * 4096)))];
+                }
+            }
+            Else
+            {
+                If (addr < "0xFF00")
+                {
+                    mmu.return = .OAM[(1 + (addr % 0x100))];
+                }
+                Else
+                {
+                    If (addr < "0xFF80")
+                    {
+                        Call .runAllCachedCycles;
+                        mmu.return = .I/O[(1 + (addr % 0x80))];
+                    }
+                    Else
+                    {
+                        mmu.return = .HRAM[(1 + (addr % 0x80))];
+                    }
+                }
+            }
+        }
+    }
+}
+
+Define .runAllCachedCycles (warp=true)
+{
+    mmu.addrTemp = mmu.addr;
+    control_while ?? - probably legacy function from Scratch 2.0;
+    mmu.addr = mmu.addrTemp;
+}
+
+Define .updateCachedPitch(string ID)(string freq) (warp=true)
+{
+    List.ReplaceItem(+sound pitch, ID, freq);
+}
+
+Define //(string comment) (warp=false)
+{
+}
+
+Define =generateBytecode (warp=true)
+{
+    If (Not ((regs.PC == JIT.cache)))
+    {
+        i = regs.PC;
+        JIT BLOCKS CREATED += 1;
+        JIT.cache = regs.PC;
+        List.DeleteAll(code parameters);
+        Repeat (JIT.blocksizemax)
+        {
+            Call .readbyte(i);
+            i += 1;
+            z4 = mmu.return;
+            List.Add(code parameters, z4);
+            List.Add(code parameters, cpu.op1[(z4 + 1)]);
+            List.Add(code parameters, cpu.op2[(z4 + 1)]);
+            z1 = cpu.opbytes[(z4 + 1)];
+            If (z1 > 1)
+            {
+                Call .readbyte(i);
+                z2 = mmu.return;
+                i += 1;
+                If (z1 > 2)
+                {
+                    Call .readbyte(i);
+                    z3 = mmu.return;
+                    i += 1;
+                }
+                Else
+                {
+                    z3 = 0;
+                }
+            }
+            Else
+            {
+                z2 = 0;
+                z3 = 0;
+            }
+            List.Add(code parameters, ((z3 * 256) + z2));
+            JIT.cacheEnd = i;
+            If (JIT.endblock[(z4 + 1)] == 1)
+            {
+                Stop(this script);
+            }
+        }
+    }
+}
+
+Define apu.update (warp=true)
+{
+    If ((APU.clock % 8) == 0)
+    {
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+        Event.Broadcast("+audioEngineUpdateAll");
+    }
+    If ((APU.clock % 4) == 0)
+    {
+        If ((+sound sweep control > 0) And (abs(+sound sweep dir) > 0))
+        {
+            +sound sweep clock cycle += 1;
+            If (+sound sweep clock cycle > (abs(+sound sweep dir) - 1))
+            {
+                +sound sweep clock cycle = 0;
+                If (+sound sweep dir < 0)
+                {
+                    List.ReplaceItem(+sound pitch, 1, floor((+sound pitch[1] - (+sound pitch[1] / cpu.powersof2[(abs(+sound sweep control) + 1)]))));
+                }
+                Else
+                {
+                    List.ReplaceItem(+sound pitch, 1, floor((+sound pitch[1] + (+sound pitch[1] / cpu.powersof2[(abs(+sound sweep control) + 1)]))));
+                }
+                If (+sound pitch[1] > 2047)
+                {
+                    List.ReplaceItem(+sound pitch, 1, 0);
+                }
+            }
+        }
+        Else
+        {
+            +sound sweep clock cycle = 0;
+        }
+    }
+    If ((APU.clock % 2) == 0)
+    {
+        z17 = (floor(((APU.clock / 2) % 8)) * 32);
+        z18 = 0;
+        Repeat (16)
+        {
+            z18 += 1;
+            z17 += 1;
+            List.ReplaceItem(_waveBuffer2, z17, floor((.I/O[(z18 + 0x30)] / 16)));
+            z17 += 1;
+            List.ReplaceItem(_waveBuffer2, z17, floor((.I/O[(z18 + 0x30)] % 16)));
+        }
+    }
+    APU.clock += 1;
+}
+
+Define break.point (warp=true)
+{
+}
+
+Define BRT(string N) (warp=true)
+{
+    List.DeleteAll(BRT);
+    List.Add(BRT, 0);
+    Repeat (N)
+    {
+        z1 = List.Length(BRT);
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+    }
+}
+
+Define checkStat (warp=true)
+{
+    If (ppu.linecycles < 4)
+    {
+        z9 = 4;
+    }
+    Else
+    {
+        If (ppu.linecycles < 80)
+        {
+            z9 = 80;
+        }
+        Else
+        {
+            If (ppu.linecycles < 248)
+            {
+                z9 = 248;
+            }
+            Else
+            {
+                z9 = 456;
+            }
+        }
+    }
+    If (Not (((ppu.linecycles + ppu.cachedcycles) < z9)))
+    {
+        Call .runAllCachedCycles;
+    }
+}
+
+Define color correct(string R)(string G)(string B) (warp=true)
+{
+    y0 = (R * 8);
+    y1 = (G * 8);
+    y2 = (B * 8);
+    If (y0 > 255)
+    {
+        y0 = 255;
+    }
+    If (y1 > 255)
+    {
+        y1 = 255;
+    }
+    If (y2 > 255)
+    {
+        y2 = 255;
+    }
+}
+
+Define cpu.evalcondition (warp=true)
+{
+    cpu.condition = (0 + (cpu.regF[(1 + (floor((code parameters[(i + 3)] / 2)) * 3))] == (code parameters[(i + 3)] % 2)));
+}
+
+Define cpu.HALTskip (warp=true)
+{
+    z1 = 0;
+    control_while ?? - probably legacy function from Scratch 2.0;
+}
+
+Define cpu.readValue (warp=true)
+{
+    If (code parameters[(i + 3)] == 8)
+    {
+        mmu.return = code parameters[(i + 4)];
+    }
+    Else
+    {
+        If (code parameters[(i + 3)] == 6)
+        {
+            Call mmu.readbyte(z.HLreg);
+        }
+        Else
+        {
+            mmu.return = cpu.regs[(code parameters[(i + 3)] + 1)];
+        }
+    }
+}
+
+Define debug (warp=true)
+{
+    INSTRS EXECUTED += 1;
+    Call debug.logline;
+    If (Not ((debug.logfile[INSTRS EXECUTED] == z1)))
+    {
+        Call ​​log​​(INSTRS EXECUTED);
+        Call ​​log​​(Operator.Join("", debug.logfile[INSTRS EXECUTED]));
+        Call ​​log​​(Operator.Join("", z1));
+        Call ​​log​​(Operator.Join("", debug.logfile[(INSTRS EXECUTED - 1)]));
+        Call ​​breakpoint​​;
+    }
+}
+
+Define debug.logline (warp=true)
+{
+    z1 = Operator.Join("A: ", debug.hex[(cpu.regs[8] + 1)]);
+    z1 = Operator.Join(z1, Operator.Join(" F: ", debug.hex[((((cpu.regF[1] * 8) + ((cpu.regF[2] * 4) + ((cpu.regF[3] * 2) + cpu.regF[4]))) * 16) + 1)]));
+    z1 = Operator.Join(z1, Operator.Join(" B: ", debug.hex[(cpu.regs[1] + 1)]));
+    z1 = Operator.Join(z1, Operator.Join(" C: ", debug.hex[(cpu.regs[2] + 1)]));
+    z1 = Operator.Join(z1, Operator.Join(" D: ", debug.hex[(cpu.regs[3] + 1)]));
+    z1 = Operator.Join(z1, Operator.Join(" E: ", debug.hex[(cpu.regs[4] + 1)]));
+    z1 = Operator.Join(z1, Operator.Join(" H: ", debug.hex[(cpu.regs[5] + 1)]));
+    z1 = Operator.Join(z1, Operator.Join(" L: ", debug.hex[(cpu.regs[6] + 1)]));
+    z1 = Operator.Join(z1, Operator.Join(" SP: ", Operator.Join(debug.hex[((regs.SP / 256) + 1)], debug.hex[((regs.SP % 256) + 1)])));
+    z1 = Operator.Join(z1, Operator.Join(" PC: ", Operator.Join("00:", Operator.Join(debug.hex[((regs.PC / 256) + 1)], debug.hex[((regs.PC % 256) + 1)]))));
+    z1 = Operator.Join(z1, " (");
+    Call mmu.readbyte(regs.PC);
+    z1 = Operator.Join(z1, Operator.Join(debug.hex[(mmu.return + 1)], " "));
+    Call mmu.readbyte((regs.PC + 1));
+    z1 = Operator.Join(z1, Operator.Join(debug.hex[(mmu.return + 1)], " "));
+    Call mmu.readbyte((regs.PC + 2));
+    z1 = Operator.Join(z1, Operator.Join(debug.hex[(mmu.return + 1)], " "));
+    Call mmu.readbyte((regs.PC + 3));
+    z1 = Operator.Join(z1, Operator.Join(debug.hex[(mmu.return + 1)], ")"));
+}
+
+Define emulator.joyPadLogic (warp=true)
+{
+    z1 = 15;
+    z2 = (0 + ((.I/O[1] % 32) < 16));
+    z3 = (0 + ((.I/O[1] % 64) < 32));
+    z1 += (-8 * (((z2 * keys[1]) > 0) Or ((z3 * keys[5]) > 0)));
+    z1 += (-4 * (((z2 * keys[2]) > 0) Or ((z3 * keys[6]) > 0)));
+    z1 += (-2 * (((z2 * keys[3]) > 0) Or ((z3 * keys[7]) > 0)));
+    z1 += (-1 * (((z2 * keys[4]) > 0) Or ((z3 * keys[8]) > 0)));
+    List.ReplaceItem(.I/O, 1, ((.I/O[1] - (.I/O[1] % 16)) + z1));
+}
+
+Define emulator.updateJoypadKeys (warp=true)
+{
+    List.DeleteAll(keys);
+    List.Add(keys, Operator.Round(Sensing.KeyPressed(controls.GB[1])));
+    List.Add(keys, Operator.Round(Sensing.KeyPressed(controls.GB[2])));
+    List.Add(keys, Operator.Round(Sensing.KeyPressed(controls.GB[3])));
+    List.Add(keys, Operator.Round(Sensing.KeyPressed(controls.GB[4])));
+    List.Add(keys, Operator.Round(Sensing.KeyPressed(controls.GB[5])));
+    List.Add(keys, Operator.Round(Sensing.KeyPressed(controls.GB[6])));
+    List.Add(keys, Operator.Round(Sensing.KeyPressed(controls.GB[7])));
+    List.Add(keys, Operator.Round(Sensing.KeyPressed(controls.GB[8])));
+}
+
+Define execBlock (warp=true)
+{
+    If (cpu.HALT == 1)
+    {
+        Call cpu.HALTskip;
+        Stop(this script);
+    }
+    Call =generateBytecode;
+    i = 0;
+    control_while ?? - probably legacy function from Scratch 2.0;
+    Call frameEvent;
+}
+
+Define frameEvent (warp=true)
+{
+    If (frameEvent == 0)
+    {
+        Call emulator.updateJoypadKeys;
+        Call emulator.joyPadLogic;
+        frameEvent = 1;
+        debugCallsToRender = 0;
+        If (frameSkipRender == 1)
+        {
+            Call render.screen;
+        }
+        frameSkipFraction += (1 / (_frameskip2 + 1));
+        If (Not ((frameSkipFraction < 1)))
+        {
+            frameSkipRender = 1;
+            frameSkipFraction += -1;
+        }
+        Else
+        {
+            frameSkipRender = 0;
+        }
+        frametime = ((Sensing.DaysSince2000() - z_) * 86400);
+        z_ = Sensing.DaysSince2000();
+        fps1 += ((frametime - fps1) / 8);
+        displayFPS = (1 / fps1);
+        Event.Broadcast("drawFPScounter");
+    }
+}
+
+Define generate table(string n) (warp=false)
+{
+    List.DeleteAll(z.bin);
+    List.DeleteAll(s);
+    List.DeleteAll(cpu.AND);
+    List.DeleteAll(cpu.OR);
+    List.DeleteAll(cpu.XOR);
+    Call r(n)("");
+    z8 = 0;
+    Repeat (List.Length(z.bin))
+    {
+        z7 = 0;
+        Repeat (List.Length(z.bin))
+        {
+            z4 = 0;
+            z1 = 0;
+            z2 = 0;
+            z3 = 0;
+            z7 += 1;
+            z8 += 1;
+            Repeat (Variable.Length(z.bin[1]))
+            {
+                z4 += 1;
+                z1 = ((z1 * 2) + ((Operator.LetterOf(z.bin[z7], z4) == 1) And (Operator.LetterOf(z.bin[z8], z4) == 1)));
+                z2 = ((z2 * 2) + ((Operator.LetterOf(z.bin[z7], z4) == 1) Or (Operator.LetterOf(z.bin[z8], z4) == 1)));
+                z3 = ((z3 * 2) + (Not ((Operator.LetterOf(z.bin[z7], z4) == Operator.LetterOf(z.bin[z8], z4)))));
+            }
+            List.Add(cpu.AND, z1);
+            List.Add(cpu.OR, z2);
+            List.Add(cpu.XOR, z3);
+            z7 += -1;
+            z8 += -1;
+            z7 += 1;
+        }
+        z8 += 1;
+    }
+}
+
+Define mainLoop (warp=false)
+{
+    If (.I/O[65] < 128)
+    {
+        frameEvent = 0;
+    }
+    Call run((4194304 * deltaTime)) cycles;
+    deltaTime = ((Sensing.DaysSince2000() * 86400) - x0);
+    x0 = (Sensing.DaysSince2000() * 86400);
+}
+
+Define mmu.readbyte(string addr) (warp=true)
+{
+    ppu.cachedcycles += ppu.cyclesincr;
+    If (addr < "0x8000")
+    {
+        If (addr < "0x4000")
+        {
+            mmu.return = .ROM[(1 + addr)];
+        }
+        Else
+        {
+            mmu.return = .ROM[(1 + ((addr - 0x4000) + (mmu.rombank * 16384)))];
+        }
+    }
+    Else
+    {
+        If (addr < "0xC000")
+        {
+            If (addr < "0xA000")
+            {
+                mmu.return = .VRAM[(1 + ((addr % 0x2000) + (mmu.vrambank * 8192)))];
+            }
+            Else
+            {
+                mmu.return = .SRAM[(1 + ((addr % 0x2000) + (mmu.srambank * 8192)))];
+            }
+        }
+        Else
+        {
+            If (addr < "0xFE00")
+            {
+                If ((addr % 0x2000) < "0x1000")
+                {
+                    mmu.return = .WRAM[(1 + (addr % 0x1000))];
+                }
+                Else
+                {
+                    mmu.return = .WRAM[(1 + ((addr % 0x1000) + (mmu.wrambank * 4096)))];
+                }
+            }
+            Else
+            {
+                If (addr < "0xFF00")
+                {
+                    mmu.return = .OAM[(1 + (addr % 0x100))];
+                }
+                Else
+                {
+                    If (addr < "0xFF80")
+                    {
+                        Call .runAllCachedCycles;
+                        mmu.return = .I/O[(1 + (addr % 0x80))];
+                    }
+                    Else
+                    {
+                        mmu.return = .HRAM[(1 + (addr % 0x80))];
+                    }
+                }
+            }
+        }
+    }
+}
+
+Define mmu.writebyte(string addr)(string byte) (warp=true)
+{
+    ppu.cachedcycles += ppu.cyclesincr;
+    If (addr < "0x8000")
+    {
+        Call .MBC HANDLER(addr)(byte);
+    }
+    Else
+    {
+        If (addr < "0xC000")
+        {
+            If (addr < "0xA000")
+            {
+                List.ReplaceItem(.VRAM, (1 + ((addr % 0x2000) + (mmu.vrambank * 8192))), byte);
+            }
+            Else
+            {
+                List.ReplaceItem(.SRAM, (1 + ((addr % 0x2000) + (mmu.srambank * 8192))), byte);
+            }
+        }
+        Else
+        {
+            If (addr < "0xFE00")
+            {
+                If ((addr % 0x2000) < "0x1000")
+                {
+                    List.ReplaceItem(.WRAM, (1 + (addr % 0x1000)), byte);
+                }
+                Else
+                {
+                    List.ReplaceItem(.WRAM, (1 + ((addr % 0x1000) + (mmu.wrambank * 4096))), byte);
+                }
+            }
+            Else
+            {
+                If (addr < "0xFF00")
+                {
+                    List.ReplaceItem(.OAM, (1 + (addr % 0x100)), byte);
+                }
+                Else
+                {
+                    If (addr < "0xFF80")
+                    {
+                        Call .runAllCachedCycles;
+                        List.ReplaceItem(.I/O, (1 + (addr % 0x100)), byte);
+                        If (addr == "0xFF46")
+                        {
+                            ppu.OAMdmastart = (byte * 256);
+                            ppu.OAMdma# = 0;
+                        }
+                        Else
+                        {
+                            If ((addr > "0xFF46") And (addr < "0xFF4A"))
+                            {
+                                If (Not ((cart.GBCMode == 1)))
+                                {
+                                    Call ppu.convertDMGpalette((addr - 0xFF47))(byte);
+                                }
+                            }
+                            Else
+                            {
+                                If (addr == "0xFF00")
+                                {
+                                    Call emulator.joyPadLogic;
+                                }
+                            }
+                        }
+                        If ((Not ((addr < "0xFF10"))) And (addr < "0xFF30"))
+                        {
+                            Call .APU write handler(addr)(byte);
+                            List.ReplaceItem(.I/O, 39, ((.I/O[39] - (.I/O[39] % 128)) + ((+sound channels active[4] * 8) + ((+sound channels active[3] * 4) + ((+sound channels active[2] * 2) + +sound channels active[1])))));
+                        }
+                        If (cart.GBCMode == 1)
+                        {
+                            If (addr == "0xFF4F")
+                            {
+                                mmu.vrambank = (byte % 2);
+                                Stop(this script);
+                            }
+                            If (addr == "0xFF70")
+                            {
+                                mmu.wrambank = (byte % 8);
+                                If (mmu.wrambank == 0)
+                                {
+                                    mmu.wrambank = 1;
+                                }
+                                Stop(this script);
+                            }
+                            If ((addr == "0xFF69") Or (addr == "0xFF6B"))
+                            {
+                                y4 = .I/O[((addr - 0xFF01) + 1)];
+                                Call ppu.convertCGBpalette(((y4 % 64) + ((addr == "0xFF6B") * 64))) ,(byte);
+                                y4 = (((y4 + floor((y4 / 128))) % 64) + (y4 - (y4 % 128)));
+                                List.ReplaceItem(.I/O, ((addr - 0xFF01) + 1), (y4 % 256));
+                                Stop(this script);
+                            }
+                            If (addr == "0xFF55")
+                            {
+                                Call ppu.CGBDMAinit(byte);
+                                Stop(this script);
+                            }
+                        }
+                    }
+                    Else
+                    {
+                        List.ReplaceItem(.HRAM, (1 + (addr % 0x80)), byte);
+                    }
+                }
+            }
+        }
+    }
+}
+
+Define obtain frequency values (warp=true)
+{
+}
+
+Define ppu.CGBDMAinit(string byte) (warp=true)
+{
+    ppu.CGBDMAsource = ((.I/O[82] * 256) + (.I/O[83] - (.I/O[83] % 16)));
+    ppu.CGBDMAdest = ((((.I/O[84] * 256) + (.I/O[85] - (.I/O[85] % 16))) % 8192) + (mmu.vrambank * 8192));
+    ppu.CGBDMAcount = (((byte % 128) + 1) * 16);
+    ppu.CGBDMAType = floor((byte / 128));
+    If (ppu.CGBDMAType == 1)
+    {
+        ppu.transferAmount = 16;
+    }
+    Else
+    {
+        ppu.transferAmount = ppu.CGBDMAcount;
+    }
+}
+
+Define ppu.convertCGBpalette(string val) ,(string byte) (warp=true)
+{
+    List.ReplaceItem(ppu.PaletteRAM, (val + 1), byte);
+    y5 = ((ppu.PaletteRAM[((floor((val / 2)) * 2) + 2)] * 256) + ppu.PaletteRAM[((floor((val / 2)) * 2) + 1)]);
+    List.ReplaceItem(ppu.paletteconvertor, (floor((val / 2)) + 1), ppu.GBCpalettesLUT[((y5 % 32768) + 1)]);
+}
+
+Define ppu.convertDMGpalette(string n)(string b) (warp=true)
+{
+    List.ReplaceItem(ppu.paletteconvertor, ((n * 4) + 1), ppu.DMGpalette[(((b / 1) % 4) + 1)]);
+    List.ReplaceItem(ppu.paletteconvertor, ((n * 4) + 2), ppu.DMGpalette[(((b / 4) % 4) + 1)]);
+    List.ReplaceItem(ppu.paletteconvertor, ((n * 4) + 3), ppu.DMGpalette[(((b / 16) % 4) + 1)]);
+    List.ReplaceItem(ppu.paletteconvertor, ((n * 4) + 4), ppu.DMGpalette[(((b / 64) % 4) + 1)]);
+}
+
+Define ppu.pushpixelstoscreen (warp=true)
+{
+    LCDY *160 = (ppu.LineY * 160);
+    If (((.I/O[65] % 2) > 0) Or (cart.GBCMode == 1))
+    {
+        z8 = (((.I/O[65] % 32) > 15) + 0);
+        y3 = z11;
+        control_while ?? - probably legacy function from Scratch 2.0;
+    }
+    Else
+    {
+        Repeat (z11)
+        {
+            ppu.pixelX += 1;
+            List.ReplaceItem(ppu.LCDbuffer, (ppu.pixelX + LCDY *160), ppu.paletteconvertor[1]);
+            If (ppu.pixelX > 159)
+            {
+                Stop(this script);
+            }
+        }
+    }
+}
+
+Define ppu.spriteline(string 1)(string 2)(string 3)(string 4) (warp=true)
+{
+    List.DeleteAll(ppu.spriteoverlay);
+    List.DeleteAll(ppu.objGBCpalette);
+    If ((.I/O[65] % 4) > 1)
+    {
+        Repeat (160)
+        {
+            List.Add(ppu.spriteoverlay, 0);
+            List.Add(ppu.objGBCpalette, 0);
+        }
+        List.DeleteAll(ppu.spritebuffer);
+        z1 = 0;
+        Repeat (40)
+        {
+            If (List.Length(ppu.spritebuffer) < 10)
+            {
+                z2 = (.OAM[((z1 * 4) + 1)] - 16);
+                If ((Not ((ppu.LineY < z2))) And (ppu.LineY < (z2 + (8 + (((.I/O[65] % 8) > 3) * 8)))))
+                {
+                    List.Add(ppu.spritebuffer, z1);
+                }
+            }
+            z1 += 1;
+        }
+        If (Not ((cart.GBCMode == 1)))
+        {
+            z1 = 0;
+            Repeat (List.Length(ppu.spritebuffer))
+            {
+                z1 += 1;
+                z3 = ppu.spritebuffer[z1];
+                z2 = (z1 - 1);
+                control_while ?? - probably legacy function from Scratch 2.0;
+                List.ReplaceItem(ppu.spritebuffer, (z2 + 1), z3);
+            }
+        }
+        z1 = 0;
+        Repeat (List.Length(ppu.spritebuffer))
+        {
+            z1 += 1;
+            z3 = (ppu.spritebuffer[z1] * 4);
+            z2 = (.OAM[(z3 + 2)] - 8);
+            z10 = (floor((.OAM[(z3 + 4)] / 32)) % 4);
+            z4 = (ppu.LineY - (.OAM[(z3 + 1)] - 16));
+            If (z10 > 1)
+            {
+                If ((.I/O[65] % 8) > 3)
+                {
+                    z4 = (15 - z4);
+                }
+                Else
+                {
+                    z4 = (7 - z4);
+                }
+            }
+            z8 = .OAM[(z3 + 3)];
+            If (cart.GBCMode == 1)
+            {
+                z16 = .OAM[(z3 + 4)];
+            }
+            Else
+            {
+                z16 = 0;
+            }
+            If ((.I/O[65] % 8) > 3)
+            {
+                z8 = (z8 - (z8 % 2));
+                If (Not ((z4 < 8)))
+                {
+                    z8 += 1;
+                }
+            }
+            z4 = ((z8 * 16) + ((z4 % 8) * 2));
+            If ((z16 % 16) > 7)
+            {
+                z4 += 8192;
+            }
+            If ((z10 % 2) == 0)
+            {
+                y1 = (.VRAM[(z4 + 1)] / 128);
+                y2 = (.VRAM[(z4 + 2)] / 128);
+            }
+            Else
+            {
+                y1 = (BRT[(.VRAM[(z4 + 1)] + 1)] / 128);
+                y2 = (BRT[(.VRAM[(z4 + 2)] + 1)] / 128);
+            }
+            Repeat (8)
+            {
+                z8 = ((floor((y2 % 2)) * 2) + floor((y1 % 2)));
+                z2 += 1;
+                If ((z8 > 0) And ((ppu.spriteoverlay[z2] == 0) Or (Not ((cart.GBCMode == 1)))))
+                {
+                    List.ReplaceItem(ppu.spriteoverlay, z2, (z8 + ((((.OAM[(z3 + 4)] % 32) > 15) * 4) + (((.OAM[(z3 + 4)] % 256) > 127) * 8))));
+                    If (cart.GBCMode == 1)
+                    {
+                        List.ReplaceItem(ppu.objGBCpalette, z2, (z16 % 8));
+                    }
+                }
+                y1 += y1;
+                y2 += y2;
+            }
+        }
+    }
+    z1 = 1;
+    z2 = 2;
+    z3 = 3;
+    z4 = 4;
+}
+
+Define ppu.turnofftheLCD (warp=true)
+{
+    ppu.LineY = 0;
+    ppu.linecycles = 0;
+    ppu.LCDstate = 0;
+    ppu.windowincr = 0;
+    ppu.newByteFlag = 1;
+}
+
+Define r(string n)(string b) (warp=false)
+{
+    If (b > "")
+    {
+        List.Add(s, b);
+    }
+    If (n > 0)
+    {
+        Call r((n - 1))(0);
+        Call r((n - 1))(1);
+    }
+    Else
+    {
+        List.Add(z.bin, s);
+    }
+    List.DeleteItem(s, last);
+}
+
+Define render.goto(string x)(string y) (warp=true)
+{
+    Motion.GoToXY((((x + 0.5) * 2) - 160), (144 - ((y + 0.5) * 2)));
+}
+
+Define render.screen (warp=true)
+{
+    Pen.Clear();
+    Pen.SetPenSizeTo(2);
+    Call render.goto(0)(0);
+    Pen.Down();
+    z1 = 0;
+    z2 = 0;
+    z3 = 1;
+    i = 1;
+    Repeat (23041)
+    {
+        i += 1;
+        If (ppu.LCDbuffer[i] == ppu.LCDbuffer[(i - 1)])
+        {
+            z3 += 1;
+        }
+        Else
+        {
+            z1 += z3;
+            Pen.SetPenColorToColor(ppu.LCDbuffer[(i - 1)]);
+            Pen.ChangePenBy(saturation, -12);
+            control_while ?? - probably legacy function from Scratch 2.0;
+            Call render.goto(z1)(z2);
+            z3 = 1;
+        }
+    }
+    Pen.Clear();
+}
+
+Define run(string X) cycles (warp=true)
+{
+    If (X > 300000)
+    {
+        XX = 300000;
+    }
+    Else
+    {
+        XX = X;
+    }
+    control_while ?? - probably legacy function from Scratch 2.0;
+    cycles.frame += ( - XX);
+}
+
+Define setup.extra (warp=true)
+{
+    i = 0;
+    z1 = 1311112131111121231111212111112123111121211111212311112121111121111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111133312111323321113031211130302121100121213000212111012121310021;
+    List.DeleteAll(cpu.opbytes);
+    Repeat (256)
+    {
+        i += 1;
+        List.Add(cpu.opbytes, (0 + Operator.LetterOf(z1, i)));
+    }
+    List.DeleteAll(z.bin);
+    Repeat (32)
+    {
+        List.Add(z.bin, Operator.LetterOf("ABCDEFGHIJKLMNOPQRSTUVWXYZ1", (List.Length(z.bin) + 1)));
+    }
+    List.DeleteAll(cpu.opblocks);
+    Repeat (256)
+    {
+        List.Add(cpu.opblocks, (0 + List.IndexOf(z.bin, Operator.LetterOf("-JKLMMAVBDKLMMAVBJKLMMAWNDKLMMAWNJKLMMABNDKLMMABNJKLMMABNDKLMMABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAEEEEEEEEEEEEEEEEFFFFFFFFFFFFFFFFGGGGGGGGHHHHHHHHIIIIIIIIFFFFFFFFORPPQSETOOP1QQETORP-QSFTOOP-Q-FTXRX--SGTYUZ---HTXRXC-SITYUZC--FT", (List.Length(cpu.opblocks) + 1)))));
+    }
+    List.DeleteAll(z.bin);
+    List.DeleteAll(JIT.endblock);
+    z4 = 0;
+    Repeat (256)
+    {
+        z5 = cpu.opblocks[(z4 + 1)];
+        z3 = (0 + (((z5 > 13) And (z5 < 18)) Or ((z5 == 20) Or ((z4 == "0xE9") Or ((z4 == "0x10") Or (z4 == "0x76"))))));
+        List.Add(JIT.endblock, z3);
+        z4 += 1;
+    }
+    i = 1;
+    z1 = 000000000000000100100000000000100100001101101001100001001001002102102000000001101101003103103001100002002002004104104200101002102102005105105300102003003003006106106400103003103103007107107500000001002003004005006007008009010011012013014015016017018019020021022023024025026027028029030031032033034035036037038039040041042043044045046047048049050051052053600055056057058059060061062063;
+    z1 = Operator.Join(z1, "000001002003004005006007100101102103104105106107000001002003004005006007100101102103104105106107000001002003004005006007000001002003004005006007000001002003004005006007200201202203204205206207100000100000100000008000101000101700101000108001102001102---102001008002103200103---103---108003000002001------002008004000001000---------008005100003101000---003008006100100100001------208007");
+    List.DeleteAll(cpu.op1);
+    List.DeleteAll(cpu.op2);
+    Repeat (256)
+    {
+        List.Add(cpu.op1, (0 + Operator.LetterOf(z1, i)));
+        List.Add(cpu.op2, (0 + Operator.Join(Operator.LetterOf(z1, (i + 1)), Operator.LetterOf(z1, (i + 2)))));
+        i += 3;
+    }
+    List.DeleteAll(cpu.powersof2);
+    List.Add(cpu.powersof2, 1);
+    Repeat (16)
+    {
+        List.Add(cpu.powersof2, (2 * cpu.powersof2[last]));
+    }
+}
+
+Define setup.generateGBCpaletteLUT (warp=true)
+{
+    List.DeleteAll(ppu.GBCpalettesLUT);
+    z0 = 0;
+    Repeat (32)
+    {
+        z1 = 0;
+        Repeat (32)
+        {
+            z2 = 0;
+            Repeat (32)
+            {
+                Call color correct(z0)(z1)(z2);
+                List.Add(ppu.GBCpalettesLUT, (((Operator.Round(y2) * 65536) + (Operator.Round(y1) * 256)) + Operator.Round(y0)));
+                z2 += 1;
+            }
+            z1 += 1;
+        }
+        z0 += 1;
+    }
+}
+
+Define setup.getCartData (warp=true)
+{
+    cart.GBCMode = (0 + (.ROM[(0x143 + 1)] > 127));
+    z0 = .ROM[(0x147 + 1)];
+    If (z0 < 1)
+    {
+        .MBC = 0;
+    }
+    Else
+    {
+        If (z0 < 5)
+        {
+            .MBC = 1;
+        }
+        Else
+        {
+            If (z0 < "0x10")
+            {
+                .MBC = 2;
+            }
+            Else
+            {
+                If (z0 < "0x19")
+                {
+                    .MBC = 3;
+                }
+                Else
+                {
+                    If (z0 < "0x20")
+                    {
+                        .MBC = 5;
+                    }
+                    Else
+                    {
+                        .MBC = 5;
+                    }
+                }
+            }
+        }
+    }
+    z0 = .ROM[(0x148 + 1)];
+    mbc.rombanks = 2;
+    If (z0 == 1)
+    {
+        mbc.rombanks = 4;
+    }
+    Else
+    {
+        If (z0 == 2)
+        {
+            mbc.rombanks = 8;
+        }
+        Else
+        {
+            If (z0 == 3)
+            {
+                mbc.rombanks = 16;
+            }
+            Else
+            {
+                If (z0 == 4)
+                {
+                    mbc.rombanks = 32;
+                }
+                Else
+                {
+                    If (z0 == 5)
+                    {
+                        mbc.rombanks = 64;
+                    }
+                    Else
+                    {
+                        If (z0 == 6)
+                        {
+                            mbc.rombanks = 128;
+                        }
+                        Else
+                        {
+                            If (z0 == 7)
+                            {
+                                mbc.rombanks = 256;
+                            }
+                            Else
+                            {
+                                If (z0 == 8)
+                                {
+                                    mbc.rombanks = 512;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    z0 = .ROM[(0x149 + 1)];
+    mbc.rambanks = 0;
+    If (z0 == 2)
+    {
+        mbc.rambanks = 1;
+    }
+    Else
+    {
+        If (z0 == 3)
+        {
+            mbc.rambanks = 4;
+        }
+        Else
+        {
+            If (z0 == 4)
+            {
+                mbc.rambanks = 16;
+            }
+            Else
+            {
+                If (z0 == 5)
+                {
+                    mbc.rambanks = 8;
+                }
+                Else
+                {
+                }
+            }
+        }
+    }
+}
+
+Define setup.import_rom (warp=true)
+{
+    List.DeleteAll(.ROM);
+    i = 1;
+    control_while ?? - probably legacy function from Scratch 2.0;
+}
+
+Define setup.reset (warp=true)
+{
+    JIT.blocksizemax = 256;
+    mmu.rombank = 1;
+    mmu.vrambank = 0;
+    mmu.wrambank = 1;
+    mmu.srambank = 0;
+    tim.DIV = 0;
+    cycles.frame = 0;
+    cacheNext = 0;
+    frameSkipFraction = 0;
+    ppu.CGBDMAType = 0;
+    ppu.CGBDMAcount = 0;
+    ppu.newByteFlag = 1;
+    ppu.CGBDMAdest = 0;
+    ppu.CGBDMAsource = 0;
+    Call setup.import_rom;
+    Call setup.extra;
+    Call setup.getCartData;
+    List.DeleteAll(ppu.spritebuffer);
+    List.DeleteAll(ppu.spriteoverlay);
+    List.DeleteAll(.VRAM);
+    Repeat (0x4000)
+    {
+        List.Add(.VRAM, 0);
+    }
+    List.DeleteAll(.SRAM);
+    Repeat ((0x2000 * mbc.rambanks))
+    {
+        List.Add(.SRAM, 0);
+    }
+    List.DeleteAll(.WRAM);
+    Repeat (0x2000)
+    {
+        List.Add(.WRAM, 0);
+    }
+    If (cart.GBCMode == 1)
+    {
+        Repeat (0x6000)
+        {
+            List.Add(.WRAM, 0);
+        }
+    }
+    List.DeleteAll(.OAM);
+    Repeat (0xA0)
+    {
+        List.Add(.OAM, 0);
+    }
+    List.DeleteAll(.I/O);
+    List.DeleteAll(.HRAM);
+    Repeat (0x80)
+    {
+        List.Add(.I/O, 0);
+        List.Add(.HRAM, 0);
+    }
+    regs.PC = 256;
+    regs.SP = 65534;
+    JIT.cache = -1;
+    cpu.interruptSwitch = 0;
+    ppu.cachedcycles = 0;
+    ppu.linecycles = 0;
+    cpu.speed = 1;
+    ppu.cyclesincr = (4 / cpu.speed);
+    ppu.statcond2 = -1;
+    ppu.OAMdma# = 160;
+    ppu.pixelX = 0;
+    x1 = 0;
+    x2 = 0;
+    xf = 0;
+    cpu.HALT = 0;
+    APU.clock = 0;
+    +globalVol.L = 0;
+    +globalVol.R = 0;
+    +sound sweep dir = 0;
+    +sound sweep control = 0;
+    +sound sweep clock cycle = 0;
+    List.DeleteAll(cpu.regs);
+    List.Add(cpu.regs, 0);
+    List.Add(cpu.regs, 19);
+    List.Add(cpu.regs, 0);
+    List.Add(cpu.regs, 216);
+    List.Add(cpu.regs, 1);
+    List.Add(cpu.regs, 77);
+    List.Add(cpu.regs, 0);
+    If (cart.GBCMode == 1)
+    {
+        List.Add(cpu.regs, 17);
+    }
+    Else
+    {
+        List.Add(cpu.regs, 1);
+    }
+    List.DeleteAll(cpu.regF);
+    List.Add(cpu.regF, 1);
+    List.Add(cpu.regF, 0);
+    List.Add(cpu.regF, 1);
+    List.Add(cpu.regF, 1);
+    List.DeleteAll(ppu.LCDbuffer);
+    Repeat (23040)
+    {
+        List.Add(ppu.LCDbuffer, 0);
+    }
+    Call generate table(8);
+    Call BRT(8);
+    Call ppu.turnofftheLCD;
+    List.ReplaceItem(.I/O, 65, 145);
+    List.DeleteAll(ppu.DMGpalette);
+    If (Not ())
+    {
+        List.Add(ppu.DMGpalette, Operator.Join("0x", "c6d2a4"));
+        List.Add(ppu.DMGpalette, (0 + Operator.Join("0x", "8d986f")));
+        List.Add(ppu.DMGpalette, (0 + Operator.Join("0x", "4e553d")));
+        List.Add(ppu.DMGpalette, (0 + Operator.Join("0x", "201f20")));
+    }
+    Else
+    {
+        List.Add(ppu.DMGpalette, (3 * 5592405));
+        List.Add(ppu.DMGpalette, (2 * 5592405));
+        List.Add(ppu.DMGpalette, (1 * 5592405));
+        List.Add(ppu.DMGpalette, (0 * 5592405));
+    }
+    List.DeleteAll(ppu.paletteconvertor);
+    Repeat (12)
+    {
+        List.Add(ppu.paletteconvertor, 0);
+    }
+    List.DeleteAll(ppu.GBCpalettesLUT);
+    If (cart.GBCMode == 1)
+    {
+        Call setup.generateGBCpaletteLUT;
+        List.DeleteAll(ppu.PaletteRAM);
+        Repeat (128)
+        {
+            List.Add(ppu.PaletteRAM, 0);
+        }
+        List.DeleteAll(ppu.paletteconvertor);
+        Repeat (64)
+        {
+            List.Add(ppu.paletteconvertor, 0);
+        }
+    }
+    List.DeleteAll(+sound pitch);
+    List.DeleteAll(+sound channels active);
+    List.DeleteAll(+sound clones active);
+    List.DeleteAll(+sound volume);
+    List.DeleteAll(+sound duty cycle);
+    List.DeleteAll(+sound clone duty cycle);
+    List.DeleteAll(+sound envelope timer);
+    List.DeleteAll(+sound envelope clock);
+    List.DeleteAll(+sound length timer);
+    List.DeleteAll(+sound volume init);
+    Repeat (4)
+    {
+        List.Add(+sound pitch, 0);
+        List.Add(+sound channels active, 0);
+        List.Add(+sound clones active, 0);
+        List.Add(+sound volume, 0);
+        List.Add(+sound duty cycle, 0);
+        List.Add(+sound clone duty cycle, 0);
+        List.Add(+sound envelope timer, 0);
+        List.Add(+sound envelope clock, 0);
+        List.Add(+sound length timer, 0);
+        List.Add(+sound volume init, 0);
+    }
+    List.DeleteAll(_waveBuffer2);
+    Repeat (256)
+    {
+        List.Add(_waveBuffer2, 0);
+    }
+}
+
+Define ~ADD/ADC A (warp=true)
+{
+    Call cpu.readValue;
+    z3 = (cpu.regF[4] * (code parameters[(i + 2)] == 1));
+    z2 = ((cpu.regs[8] + mmu.return) + z3);
+    List.ReplaceItem(cpu.regF, 1, ( + ((z2 % 256) == 0)));
+    List.ReplaceItem(cpu.regF, 2, 0);
+    List.ReplaceItem(cpu.regF, 3, ( + ((((cpu.regs[8] % 16) + (mmu.return % 16)) + z3) > 15)));
+    List.ReplaceItem(cpu.regF, 4, ( + (z2 > 255)));
+    List.ReplaceItem(cpu.regs, 8, (z2 % 256));
+}
+
+Define ~ADD HL (warp=true)
+{
+    ppu.cachedcycles += (1 * ppu.cyclesincr);
+    z3 = code parameters[(i + 3)];
+    If (z3 == 3)
+    {
+        z2 = regs.SP;
+    }
+    Else
+    {
+        z2 = ((cpu.regs[((z3 * 2) + 1)] * 256) + cpu.regs[((z3 * 2) + 2)]);
+    }
+    z3 = (z.HLreg + z2);
+    List.ReplaceItem(cpu.regF, 2, 0);
+    List.ReplaceItem(cpu.regF, 3, ( + (((z.HLreg % 4096) + (z2 % 4096)) > 4095)));
+    List.ReplaceItem(cpu.regF, 4, ( + (z3 > 65535)));
+    List.ReplaceItem(cpu.regs, 5, (floor((z3 / 256)) % 256));
+    List.ReplaceItem(cpu.regs, 6, (z3 % 256));
+}
+
+Define ~AND A (warp=true)
+{
+    Call cpu.readValue;
+    List.ReplaceItem(cpu.regs, 8, cpu.AND[(((cpu.regs[8] * 256) + mmu.return) + 1)]);
+    List.ReplaceItem(cpu.regF, 1, ( + (cpu.regs[8] == 0)));
+    List.ReplaceItem(cpu.regF, 2, 0);
+    List.ReplaceItem(cpu.regF, 3, 1);
+    List.ReplaceItem(cpu.regF, 4, 0);
+}
+
+Define ~BIT OPS (warp=true)
+{
+    z1 = code parameters[(i + 4)];
+    If ((z1 % 8) == 6)
+    {
+        Call mmu.readbyte(z.HLreg);
+    }
+    Else
+    {
+        mmu.return = cpu.regs[((z1 % 8) + 1)];
+    }
+    z2 = 0;
+    If (z1 < 128)
+    {
+        If (z1 < 64)
+        {
+            If (z1 < 32)
+            {
+                If (z1 < 16)
+                {
+                    If (z1 < 8)
+                    {
+                        z2 = floor((mmu.return / 128));
+                        mmu.return = (((mmu.return * 2) + z2) % 256);
+                    }
+                    Else
+                    {
+                        z2 = (mmu.return % 2);
+                        mmu.return = (floor((mmu.return / 2)) + (z2 * 128));
+                    }
+                }
+                Else
+                {
+                    If (z1 < 24)
+                    {
+                        z2 = floor((mmu.return / 128));
+                        mmu.return = ((floor((mmu.return * 2)) + cpu.regF[4]) % 256);
+                    }
+                    Else
+                    {
+                        z2 = (mmu.return % 2);
+                        mmu.return = (floor((mmu.return / 2)) + (cpu.regF[4] * 128));
+                    }
+                }
+            }
+            Else
+            {
+                If (z1 < 48)
+                {
+                    If (z1 < 40)
+                    {
+                        z2 = floor((mmu.return / 128));
+                        mmu.return = ((mmu.return * 2) % 256);
+                    }
+                    Else
+                    {
+                        z2 = (mmu.return % 2);
+                        mmu.return = ((floor((mmu.return / 128)) * 128) + floor((mmu.return / 2)));
+                    }
+                }
+                Else
+                {
+                    If (z1 < 56)
+                    {
+                        mmu.return = (floor((mmu.return / 16)) + ((mmu.return % 16) * 16));
+                    }
+                    Else
+                    {
+                        z2 = (mmu.return % 2);
+                        mmu.return = floor((mmu.return / 2));
+                    }
+                }
+            }
+            List.ReplaceItem(cpu.regF, 1, ( + (mmu.return == 0)));
+            List.ReplaceItem(cpu.regF, 2, 0);
+            List.ReplaceItem(cpu.regF, 3, 0);
+            List.ReplaceItem(cpu.regF, 4, z2);
+        }
+        Else
+        {
+            List.ReplaceItem(cpu.regF, 1, (1 - (floor((mmu.return / cpu.powersof2[(floor(((z1 / 8) % 8)) + 1)])) % 2)));
+            List.ReplaceItem(cpu.regF, 2, 0);
+            List.ReplaceItem(cpu.regF, 3, 1);
+            Stop(this script);
+        }
+    }
+    Else
+    {
+        If (z1 < 192)
+        {
+            mmu.return = cpu.AND[(((mmu.return * 256) + (255 - cpu.powersof2[(1 + floor(((z1 / 8) % 8)))])) + 1)];
+        }
+        Else
+        {
+            mmu.return = cpu.OR[(((mmu.return * 256) + cpu.powersof2[(1 + floor(((z1 / 8) % 8)))]) + 1)];
+        }
+    }
+    If ((z1 % 8) == 6)
+    {
+        Call mmu.writebyte(z.HLreg)(mmu.return);
+    }
+    Else
+    {
+        List.ReplaceItem(cpu.regs, ((z1 % 8) + 1), mmu.return);
+    }
+}
+
+Define ~CALL u16 (warp=true)
+{
+    Call cpu.evalcondition;
+    If ((code parameters[(i + 2)] == 0) Or (cpu.condition == 1))
+    {
+        ppu.cachedcycles += (1 * ppu.cyclesincr);
+        Call mmu.writebyte((regs.SP - 1))((floor((regs.PC / 256)) % 256));
+        Call mmu.writebyte((regs.SP - 2))((regs.PC % 256));
+        regs.SP = ((regs.SP - 2) % 65536);
+        regs.PC = code parameters[(i + 4)];
+    }
+}
+
+Define ~DAA (warp=true)
+{
+    z3 = cpu.regs[8];
+    If cpu.regF[2]
+    {
+        z3 += ((-96 * cpu.regF[4]) + (-6 * cpu.regF[3]));
+    }
+    Else
+    {
+        If (cpu.regF[4] Or ((z3 % 256) > 153))
+        {
+            List.ReplaceItem(cpu.regF, 4, 1);
+            z3 += 96;
+        }
+        z3 += (6 * (cpu.regF[3] Or ((z3 % 16) > 9)));
+    }
+    List.ReplaceItem(cpu.regs, 8, (z3 % 256));
+    List.ReplaceItem(cpu.regF, 1, ( + (cpu.regs[8] == 0)));
+    List.ReplaceItem(cpu.regF, 3, 0);
+}
+
+Define ~HL transfers (warp=true)
+{
+    If (code parameters[(i + 2)] == 0)
+    {
+        regs.PC = z.HLreg;
+    }
+    Else
+    {
+        ppu.cachedcycles += (1 * ppu.cyclesincr);
+        regs.SP = z.HLreg;
+    }
+}
+
+Define ~INC/DEC r8 (warp=true)
+{
+    z3 = (1 - (code parameters[(i + 2)] * 2));
+    If (code parameters[(i + 3)] == 6)
+    {
+        Call mmu.readbyte(z.HLreg);
+    }
+    Else
+    {
+        mmu.return = cpu.regs[(code parameters[(i + 3)] + 1)];
+    }
+    List.ReplaceItem(cpu.regF, 1, ( + (((mmu.return + z3) % 256) == 0)));
+    List.ReplaceItem(cpu.regF, 2, code parameters[(i + 2)]);
+    List.ReplaceItem(cpu.regF, 3, ( + ((((mmu.return % 16) + (z3 % 16)) % 32) > 15)));
+    If cpu.regF[2]
+    {
+        List.ReplaceItem(cpu.regF, 3, (1 - cpu.regF[3]));
+    }
+    mmu.return = ((mmu.return + z3) % 256);
+    If (code parameters[(i + 3)] == 6)
+    {
+        Call mmu.writebyte(z.HLreg)(mmu.return);
+    }
+    Else
+    {
+        List.ReplaceItem(cpu.regs, (code parameters[(i + 3)] + 1), mmu.return);
+    }
+}
+
+Define ~INC/DEC r16 (warp=true)
+{
+    ppu.cachedcycles += (1 * ppu.cyclesincr);
+    z2 = code parameters[(i + 3)];
+    z3 = (1 - (code parameters[(i + 2)] * 2));
+    If (z2 == 3)
+    {
+        regs.SP = ((regs.SP + z3) % 65536);
+    }
+    Else
+    {
+        z4 = (cpu.regs[((z2 * 2) + 2)] + z3);
+        List.ReplaceItem(cpu.regs, ((z2 * 2) + 2), (z4 % 256));
+        List.ReplaceItem(cpu.regs, ((z2 * 2) + 1), ((cpu.regs[((z2 * 2) + 1)] + floor((z4 / 256))) % 256));
+    }
+}
+
+Define ~JP u16 (warp=true)
+{
+    Call cpu.evalcondition;
+    If ((code parameters[(i + 2)] == 0) Or (cpu.condition == 1))
+    {
+        ppu.cachedcycles += (1 * ppu.cyclesincr);
+        regs.PC = code parameters[(i + 4)];
+    }
+}
+
+Define ~JR i8 (warp=true)
+{
+    Call cpu.evalcondition;
+    If ((code parameters[(i + 2)] == 0) Or (cpu.condition == 1))
+    {
+        ppu.cachedcycles += (1 * ppu.cyclesincr);
+        regs.PC += (((code parameters[(i + 4)] * 2) % 256) - code parameters[(i + 4)]);
+        regs.PC = (regs.PC % 65536);
+    }
+}
+
+Define ~LDH A (warp=true)
+{
+    z2 = "0xFF00";
+    If (code parameters[(i + 3)] == 0)
+    {
+        z2 += code parameters[(i + 4)];
+    }
+    Else
+    {
+        z2 += cpu.regs[2];
+    }
+    If (code parameters[(i + 2)] == 0)
+    {
+        Call mmu.writebyte(z2)(cpu.regs[8]);
+    }
+    Else
+    {
+        Call mmu.readbyte(z2);
+        List.ReplaceItem(cpu.regs, 8, mmu.return);
+    }
+}
+
+Define ~LD ptr (warp=true)
+{
+    z2 = code parameters[(i + 3)];
+    If (z2 < 2)
+    {
+        If (z2 < 1)
+        {
+            mmu.addr = ((cpu.regs[1] * 256) + cpu.regs[2]);
+        }
+        Else
+        {
+            mmu.addr = ((cpu.regs[3] * 256) + cpu.regs[4]);
+        }
+        z3 = 0;
+    }
+    Else
+    {
+        mmu.addr = z.HLreg;
+        z3 = ((z2 == 2) - (z2 == 3));
+    }
+    If (code parameters[(i + 2)] == 0)
+    {
+        Call mmu.writebyte(mmu.addr)(cpu.regs[8]);
+    }
+    Else
+    {
+        Call mmu.readbyte(mmu.addr);
+        List.ReplaceItem(cpu.regs, 8, mmu.return);
+    }
+    If (Not ((z3 == 0)))
+    {
+        z.HLreg += z3;
+        List.ReplaceItem(cpu.regs, 5, (floor((z.HLreg / 256)) % 256));
+        List.ReplaceItem(cpu.regs, 6, (z.HLreg % 256));
+    }
+}
+
+Define ~LD r,r (warp=true)
+{
+    If (code parameters[(i + 2)] == 1)
+    {
+        If (code parameters[(i + 3)] == 6)
+        {
+            Call mmu.writebyte(z.HLreg)(code parameters[(i + 4)]);
+        }
+        Else
+        {
+            List.ReplaceItem(cpu.regs, (code parameters[(i + 3)] + 1), code parameters[(i + 4)]);
+        }
+    }
+    Else
+    {
+        z2 = code parameters[(i + 3)];
+        If ((z2 % 8) == 6)
+        {
+            Call mmu.readbyte(z.HLreg);
+        }
+        Else
+        {
+            mmu.return = cpu.regs[((z2 % 8) + 1)];
+        }
+        z2 = floor((z2 / 8));
+        If (z2 == 6)
+        {
+            Call mmu.writebyte(z.HLreg)(mmu.return);
+        }
+        Else
+        {
+            List.ReplaceItem(cpu.regs, (z2 + 1), mmu.return);
+        }
+    }
+}
+
+Define ~LD r16 (warp=true)
+{
+    z2 = code parameters[(i + 3)];
+    If (z2 == 3)
+    {
+        regs.SP = code parameters[(i + 4)];
+    }
+    Else
+    {
+        List.ReplaceItem(cpu.regs, ((z2 * 2) + 1), floor((code parameters[(i + 4)] / 256)));
+        List.ReplaceItem(cpu.regs, ((z2 * 2) + 2), (code parameters[(i + 4)] % 256));
+    }
+}
+
+Define ~LD [NNNN] (warp=true)
+{
+    z2 = code parameters[(i + 4)];
+    If (code parameters[(i + 2)] == 0)
+    {
+        Call mmu.writebyte(z2)(cpu.regs[8]);
+    }
+    Else
+    {
+        Call mmu.readbyte(z2);
+        List.ReplaceItem(cpu.regs, 8, mmu.return);
+    }
+}
+
+Define ~MISC (warp=true)
+{
+    z2 = code parameters[(i + 2)];
+    If (z2 < 4)
+    {
+        If (z2 < 2)
+        {
+            If (z2 < 1)
+            {
+                Call mmu.writebyte(code parameters[(i + 4)])((regs.SP % 256));
+                Call mmu.writebyte((code parameters[(i + 4)] + 1))(floor((regs.SP / 256)));
+            }
+            Else
+            {
+                Call ~STOP: the cursed instruction;
+            }
+        }
+        Else
+        {
+            If (z2 < 3)
+            {
+                Call ~DAA;
+            }
+            Else
+            {
+                List.ReplaceItem(cpu.regs, 8, (255 - cpu.regs[8]));
+                List.ReplaceItem(cpu.regF, 2, 1);
+                List.ReplaceItem(cpu.regF, 3, 1);
+            }
+        }
+    }
+    Else
+    {
+        If (z2 < 6)
+        {
+            List.ReplaceItem(cpu.regF, 2, 0);
+            List.ReplaceItem(cpu.regF, 3, 0);
+            If (z2 < 5)
+            {
+                List.ReplaceItem(cpu.regF, 4, 1);
+            }
+            Else
+            {
+                List.ReplaceItem(cpu.regF, 4, (1 - cpu.regF[4]));
+            }
+        }
+        Else
+        {
+            If (z2 < 7)
+            {
+                cpu.HALT = 1;
+            }
+        }
+    }
+}
+
+Define ~OR A (warp=true)
+{
+    Call cpu.readValue;
+    List.ReplaceItem(cpu.regs, 8, cpu.OR[(((cpu.regs[8] * 256) + mmu.return) + 1)]);
+    List.ReplaceItem(cpu.regF, 1, ( + (cpu.regs[8] == 0)));
+    List.ReplaceItem(cpu.regF, 2, 0);
+    List.ReplaceItem(cpu.regF, 3, 0);
+    List.ReplaceItem(cpu.regF, 4, 0);
+}
+
+Define ~POP r16 (warp=true)
+{
+    z2 = code parameters[(i + 3)];
+    regs.SP = ((regs.SP + 2) % 65536);
+    If (z2 == 3)
+    {
+        Call mmu.readbyte((regs.SP - 1));
+        List.ReplaceItem(cpu.regs, 8, mmu.return);
+        Call mmu.readbyte((regs.SP - 2));
+        List.ReplaceItem(cpu.regF, 1, (floor((mmu.return / 128)) % 2));
+        List.ReplaceItem(cpu.regF, 2, (floor((mmu.return / 64)) % 2));
+        List.ReplaceItem(cpu.regF, 3, (floor((mmu.return / 32)) % 2));
+        List.ReplaceItem(cpu.regF, 4, (floor((mmu.return / 16)) % 2));
+    }
+    Else
+    {
+        Call mmu.readbyte((regs.SP - 1));
+        List.ReplaceItem(cpu.regs, ((z2 * 2) + 1), mmu.return);
+        Call mmu.readbyte((regs.SP - 2));
+        List.ReplaceItem(cpu.regs, ((z2 * 2) + 2), mmu.return);
+    }
+}
+
+Define ~PUSH r16 (warp=true)
+{
+    z2 = code parameters[(i + 3)];
+    ppu.cachedcycles += (1 * ppu.cyclesincr);
+    If (z2 == 3)
+    {
+        Call mmu.writebyte((regs.SP - 1))(cpu.regs[8]);
+        Call mmu.writebyte((regs.SP - 2))((((cpu.regF[1] * 8) + ((cpu.regF[2] * 4) + ((cpu.regF[3] * 2) + cpu.regF[4]))) * 16));
+    }
+    Else
+    {
+        Call mmu.writebyte((regs.SP - 1))(cpu.regs[((z2 * 2) + 1)]);
+        Call mmu.writebyte((regs.SP - 2))(cpu.regs[((z2 * 2) + 2)]);
+    }
+    regs.SP = ((regs.SP - 2) % 65536);
+}
+
+Define ~RET (warp=true)
+{
+    Call cpu.evalcondition;
+    If (((code parameters[(i + 2)] == 0) Or (code parameters[(i + 2)] == 2)) Or (cpu.condition == 1))
+    {
+        ppu.cachedcycles += (((cpu.condition == 1) And (Not (((code parameters[(i + 2)] == 0) Or (code parameters[(i + 2)] == 2))))) * ppu.cyclesincr);
+        ppu.cachedcycles += (1 * ppu.cyclesincr);
+        regs.SP = ((regs.SP + 2) % 65536);
+        Call mmu.readbyte((regs.SP - 1));
+        regs.PC = (mmu.return * 256);
+        Call mmu.readbyte((regs.SP - 2));
+        regs.PC += mmu.return;
+        If (code parameters[(i + 2)] == 2)
+        {
+            cpu.interruptSwitch = 1;
+        }
+    }
+    Else
+    {
+        ppu.cachedcycles += (1 * ppu.cyclesincr);
+    }
+}
+
+Define ~RLA/RRA (warp=true)
+{
+    mmu.return = cpu.regs[8];
+    If (code parameters[(i + 3)] == 0)
+    {
+        z2 = floor((mmu.return / 128));
+        mmu.return = ((floor((mmu.return * 2)) + cpu.regF[4]) % 256);
+    }
+    Else
+    {
+        z2 = (mmu.return % 2);
+        mmu.return = (floor((mmu.return / 2)) + (cpu.regF[4] * 128));
+    }
+}
+
+Define ~RLCA/RRCA (warp=true)
+{
+    mmu.return = cpu.regs[8];
+    If (code parameters[(i + 3)] == 0)
+    {
+        z2 = floor((mmu.return / 128));
+        mmu.return = (((mmu.return * 2) + z2) % 256);
+    }
+    Else
+    {
+        z2 = (mmu.return % 2);
+        mmu.return = (floor((mmu.return / 2)) + (z2 * 128));
+    }
+}
+
+Define ~SP+i8 (warp=true)
+{
+    z2 = (((code parameters[(i + 4)] * 2) % 256) - code parameters[(i + 4)]);
+    List.ReplaceItem(cpu.regF, 1, 0);
+    List.ReplaceItem(cpu.regF, 2, 0);
+    List.ReplaceItem(cpu.regF, 3, ( + ((((regs.SP % 16) + (z2 % 16)) % 32) > 15)));
+    List.ReplaceItem(cpu.regF, 4, ( + ((((regs.SP % 256) + (z2 % 256)) % 512) > 255)));
+    z3 = ((regs.SP + z2) % 65536);
+    If (code parameters[(i + 2)] == 0)
+    {
+        ppu.cachedcycles += (2 * ppu.cyclesincr);
+        regs.SP = z3;
+    }
+    Else
+    {
+        ppu.cachedcycles += (1 * ppu.cyclesincr);
+        List.ReplaceItem(cpu.regs, 5, floor((z3 / 256)));
+        List.ReplaceItem(cpu.regs, 6, (z3 % 256));
+    }
+}
+
+Define ~STOP: the cursed instruction (warp=true)
+{
+    If (cart.GBCMode == 1)
+    {
+        Call .runAllCachedCycles;
+        If ((.I/O[78] % 2) == 1)
+        {
+            If (cpu.speed == 1)
+            {
+                cpu.speed = 2;
+            }
+            Else
+            {
+                cpu.speed = 1;
+            }
+            List.ReplaceItem(.I/O, 78, ((cpu.speed - 1) * 128));
+            ppu.cyclesincr = (4 / cpu.speed);
+        }
+    }
+}
+
+Define ~SUB/SBC/CP A (warp=true)
+{
+    Call cpu.readValue;
+    z3 = (cpu.regF[4] * (code parameters[(i + 2)] == 1));
+    z2 = ((cpu.regs[8] - mmu.return) - z3);
+    List.ReplaceItem(cpu.regF, 1, ( + ((z2 % 256) == 0)));
+    List.ReplaceItem(cpu.regF, 2, 1);
+    List.ReplaceItem(cpu.regF, 3, ( + (((((cpu.regs[8] % 16) - (mmu.return % 16)) - z3) % 32) > 15)));
+    List.ReplaceItem(cpu.regF, 4, ( + (z2 < 0)));
+    If (Not ((code parameters[(i + 2)] == 2)))
+    {
+        List.ReplaceItem(cpu.regs, 8, (z2 % 256));
+    }
+}
+
+Define ~XOR A (warp=true)
+{
+    Call cpu.readValue;
+    List.ReplaceItem(cpu.regs, 8, cpu.XOR[(((cpu.regs[8] * 256) + mmu.return) + 1)]);
+    List.ReplaceItem(cpu.regF, 1, ( + (cpu.regs[8] == 0)));
+    List.ReplaceItem(cpu.regF, 2, 0);
+    List.ReplaceItem(cpu.regF, 3, 0);
+    List.ReplaceItem(cpu.regF, 4, 0);
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+Call ​​log​​(code parameters[(i + 1)])
+
+If (cpu.HALT == 1)
+{
+}
+
+_frameskip2 = 0
+
+down arrow
+
+up arrow
+
+left arrow
+
+right arrow
+
+z12 = 0
+
+List.ReplaceItem(+sound envelope timer, z17, 0)
+
+Call ​​breakpoint​​
+
+right arrow
+
+right arrow
+
+right arrow
+
+
+//----- Costumes ------------------------------------------------------------------------------------------------------
+
+costume1.svg

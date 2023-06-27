@@ -4,10 +4,23 @@ WhenGreenFlagClicked()
 {
     Motion.GoToXY(0, 0);
     Looks.Hide();
+    Costume.GoToFrontBack(front);
 }
 
 
 //----- Broadcast received events -------------------------------------------------------------------------------------
+
+WhenBroadcastReceived(exit emulator)
+{
+    If (Theme Switch Flag == 1)
+    {
+        Wait Until (Theme Switch Flag == 0);
+        Looks.Hide();
+    }
+    Motion.GoToXY(0, 0);
+    Looks.Hide();
+    Costume.GoToFrontBack(front);
+}
 
 WhenBroadcastReceived(Launch EmulatorWaitd)
 {
@@ -18,14 +31,13 @@ WhenBroadcastReceived(Launch EmulatorWaitd)
         Control.Wait(0);
         Looks.ChangeEffectBy(GHOST, -10);
     }
-    Event.Broadcast("un-needed broadcast");
 }
 
 WhenBroadcastReceived(un-needed broadcast)
 {
     Repeat (10)
     {
-        Looks.ChangeEffectBy(GHOST, -10);
+        Looks.ChangeEffectBy(GHOST, 10);
     }
     Looks.Hide();
 }

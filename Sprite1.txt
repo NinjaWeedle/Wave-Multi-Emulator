@@ -191,28 +191,21 @@ WhenBroadcastReceived(GUI_Emulator_Select)
             Event.Broadcast("Launch Emulator");
             Sound.Play((2 + (2 * Menu Theme[7])));
             Event.BroadcastAndWait("Launch EmulatorWaitd");
-            Looks.SwitchBackdropTo(Black);
-            Event.Broadcast("Game Boy Advance");
+            Looks.SwitchBackdropTo(screen);
+            Event.Broadcast("start game");
         }
         If (MenuScroll == -1000)
         {
             Event.Broadcast("Launch Emulator");
             Sound.Play((2 + (2 * Menu Theme[7])));
             Event.BroadcastAndWait("Launch EmulatorWaitd");
-            Looks.SwitchBackdropTo(screen);
-            Event.Broadcast("start game");
+            Looks.SwitchBackdropTo(NES);
+            Event.BroadcastAndWait("init");
+            Event.BroadcastAndWait("un-needed broadcast");
+            Event.Broadcast("unpause");
+            coolnes_convert = 1;
         }
         If (MenuScroll == -1200)
-        {
-            Event.Broadcast("Launch Emulator");
-            Sound.Play((2 + (2 * Menu Theme[7])));
-            Event.BroadcastAndWait("Launch EmulatorWaitd");
-            Looks.SwitchBackdropTo(NES);
-            coolnes_convert = 1;
-            Event.BroadcastAndWait("init");
-            Event.Broadcast("unpause");
-        }
-        If (MenuScroll == -1400)
         {
             Event.Broadcast("Launch Emulator");
             Sound.Play((2 + (2 * Menu Theme[7])));
@@ -220,7 +213,7 @@ WhenBroadcastReceived(GUI_Emulator_Select)
             Looks.SwitchBackdropTo(BytePusher);
             Event.Broadcast("BytePusher");
         }
-        If (MenuScroll == -1600)
+        If (MenuScroll == -1400)
         {
             Event.Broadcast("Launch Emulator");
             Sound.Play((2 + (2 * Menu Theme[7])));
@@ -228,7 +221,7 @@ WhenBroadcastReceived(GUI_Emulator_Select)
             Looks.SwitchBackdropTo(HelloWorld);
             Event.Broadcast("HelloInter");
         }
-        If (MenuScroll == -1800)
+        If (MenuScroll == -1600)
         {
             Event.Broadcast("Launch Emulator");
             Sound.Play((2 + (2 * Menu Theme[7])));

@@ -7,25 +7,22 @@ _pitch = 0
 
 //----- Broadcast received events -------------------------------------------------------------------------------------
 
-WhenBroadcastReceived(Chip-8)
-{
-    Control.DeleteThisClone();
-}
-
 WhenBroadcastReceived(exit emulator)
 {
     Stop(other scripts in sprite);
     Motion.GoToXY(0, 0);
-    Looks.Show();
-    Looks.SetEffectTo(GHOST, 100);
-    Looks.SetSizeTo(100);
-    Looks.SwitchCostumeTo(costume1);
+    Looks.Hide();
     Control.DeleteThisClone();
 }
 
 WhenBroadcastReceived(remapwave8)
 {
     Call Draw Keys starting at(-67)(105) With(4) rows and(4) columns;
+}
+
+WhenBroadcastReceived(WAVE-8 reset)
+{
+    Control.DeleteThisClone();
 }
 
 WhenBroadcastReceived(WAVE-8_drawkeys)
@@ -43,12 +40,12 @@ Control.WhenIStartAsClone()
     {
         If (Sensing.MouseDown() And Sensing.TouchingObject(_mouse_))
         {
-            List.ReplaceItem(Mobile Keypad state, (Costume.GetNumberName(number) - ((Menu Theme[8] * 16) + 1)), 1);
+            List.ReplaceItem(Mobile Keypad state, (Costume.GetNumberName(number) - (Menu Theme[8] * 16)), 1);
             Looks.SetEffectTo(BRIGHTNESS, -20);
         }
         Else
         {
-            List.ReplaceItem(Mobile Keypad state, (Costume.GetNumberName(number) - ((Menu Theme[8] * 16) + 1)), 0);
+            List.ReplaceItem(Mobile Keypad state, (Costume.GetNumberName(number) - (Menu Theme[8] * 16)), 0);
             Looks.SetEffectTo(BRIGHTNESS, 0);
         }
     }
@@ -61,7 +58,7 @@ Define Draw Keys starting at(string Xstart)(string Ystart) With(string rows) row
 {
     Looks.Show();
     Looks.SetEffectTo(GHOST, (100 - (Menu Theme[8] * 100)));
-    Looks.SwitchCostumeTo(((Menu Theme[8] * 16) + 1));
+    Looks.SwitchCostumeTo((Menu Theme[8] * 16));
     Motion.GoToXY(Xstart, Ystart);
     List.DeleteAll(Mobile Keypad state);
     Repeat ((rows * columns))
@@ -81,6 +78,13 @@ Define Draw Keys starting at(string Xstart)(string Ystart) With(string rows) row
     }
     Looks.Hide();
 }
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+16
+
+Looks.Show()
 
 
 //----- Costumes ------------------------------------------------------------------------------------------------------
@@ -114,7 +118,6 @@ Define Draw Keys starting at(string Xstart)(string Ystart) With(string rows) row
 a.png
 b.png
 c.png
-costume1.svg
 d.png
 e.png
 f.png

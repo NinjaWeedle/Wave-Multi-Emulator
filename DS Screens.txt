@@ -4,8 +4,8 @@ arm7.read_return = 0
 arm9.read_return = 0
 core.byte_return = 0
 render.dummy = 0
-x = 100
-y = 0
+x = 256
+y = 192
 
 
 
@@ -294,8 +294,3 @@ Define goto pixel at(string x)(string y) on screen(string screen) (warp=true)
 //----- Costumes ------------------------------------------------------------------------------------------------------
 
 costume1.svg
-
-
-//----- Sounds --------------------------------------------------------------------------------------------------------
-
-pop.wav

@@ -70,7 +70,7 @@ WhenBroadcastReceived(exit emulator)
     Looks.Hide();
     Control.Wait(1.5);
     Looks.SwitchCostumeTo(0import);
-    Repeat (11)
+    Repeat (10)
     {
         Control.CreateCloneOf(_myself_);
         Looks.NextCostume();
@@ -97,10 +97,10 @@ Control.WhenIStartAsClone()
     Looks.SetSizeTo(52);
     Forever
     {
-        Wait Until Sensing.TouchingObject(Sprite3);
+        Wait Until (abs(Motion.XPosition()) < 74);
         Looks.SetSizeTo(55);
         Velocity = 5;
-        Wait Until (Not (Sensing.TouchingObject(Sprite3)));
+        Wait Until (74 < abs(Motion.XPosition()));
         Looks.SetSizeTo(98);
         Velocity = -5;
     }
@@ -110,14 +110,14 @@ Control.WhenIStartAsClone()
 {
     Looks.SetEffectTo(GHOST, 100);
     Looks.Show();
-    Motion.GoToXY((MenuScroll + ((Costume.GetNumberName(number) - 2) * 200)), (((Menu Theme[3] * 50) + ((cos(my variable) * 2) * ((Menu Theme[7] == 0) * Sensing.TouchingObject(Sprite3)))) - 230));
+    Motion.GoToXY((MenuScroll + ((Costume.GetNumberName(number) - 2) * 200)), (((Menu Theme[3] * 50) + ((cos(my variable) * 2) * ((Menu Theme[7] == 0) * (abs(Motion.XPosition()) < 74)))) - 230));
     Repeat ((11 * (1 + is compiled?)))
     {
         Looks.ChangeEffectBy(GHOST, (-5 * (2 - is compiled?)));
     }
     Forever
     {
-        Motion.GoToXY((MenuScroll + ((Costume.GetNumberName(number) - 2) * 200)), (((Menu Theme[3] * 50) + ((cos(my variable) * 2) * ((Menu Theme[7] == 0) * Sensing.TouchingObject(Sprite3)))) - 230));
+        Motion.GoToXY((MenuScroll + ((Costume.GetNumberName(number) - 2) * 200)), (((Menu Theme[3] * 50) + ((cos(my variable) * 2) * ((Menu Theme[7] == 0) * (abs(Motion.XPosition()) < 74)))) - 230));
         S = Looks.Size();
         Looks.SetSizeTo(50);
         If Sensing.TouchingObject(_edge_)
@@ -162,7 +162,6 @@ Control.WhenIStartAsClone()
 1W8.svg
 2DS.svg
 2GB.svg
-2GBA.svg
 2N64.svg
 2NES.svg
 2UHWEI.svg

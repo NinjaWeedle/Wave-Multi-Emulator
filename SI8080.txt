@@ -1,22 +1,51 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
-8080.cycles = 2007
+8080.cycles = 16683
 8080.RAM mirror = 65536
-8080.readreturn = 0
+8080.readreturn = 0x02
 8080.shift register offset = 0
+FPS = 333.34631771755
+i = 8
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
 _flags = { 
-    0
-    0
+    1
+    1
     1
     0
-    1
     0
-    1
     0
+    0
+    0
+}
+
+
+//----- Sprite clicked events -----------------------------------------------------------------------------------------
+
+WhenThisSpriteClicked()
+{
+    Sound.Play(13);
+    If (Costume.GetNumberName(number) == 2)
+    {
+        _PC = 0;
+        8080.screenrotation = 0;
+        8080.mode = 0;
+        Stop(this script);
+    }
+    If (Costume.GetNumberName(number) == 3)
+    {
+        _PC = 256;
+        8080.mode = 1;
+        Stop(this script);
+    }
+    Sensing.Ask("Where should the ROM be loaded in memory?");
+    _PC = Sensing.Answer();
+    Sensing.Ask("How should the screen be oriented? (0=Vertical, 1=Horizontal)");
+    8080.screenrotation = (Sensing.Answer() % 2);
+    Sensing.Ask("What mode should be used? (0=Space Invaders, 1=CP/M HLE)");
+    8080.mode = (Sensing.Answer() % 2);
 }
 
 
@@ -25,32 +54,30 @@ _flags = {
 WhenBroadcastReceived(8080)
 {
     Call initialize;
-    Looks.Say("");
-    Forever
-    {
-        Call Step CPU(16666);
-        Call Interrupt(1);
-        Call Step CPU(16666);
-        Call Interrupt(2);
-        If (8080.mode == 0)
-        {
-            Call render.sideways;
-        }
-    }
+}
+
+WhenBroadcastReceived(clonekiller)
+{
+    Looks.Hide();
+    Control.DeleteThisClone();
 }
 
 WhenBroadcastReceived(exit emulator)
 {
     Stop(other scripts in sprite);
+    Looks.Hide();
+    Looks.SetSizeTo(100);
     Variable.Hide(_PC);
     List.Hide(_registers);
     Variable.Hide(8080.cycles);
     List.Hide(_memory);
     Variable.Hide(_SP);
     Variable.Hide(8080.InterruptFlag);
+    Variable.Hide(FPS);
     List.DeleteAll(logzz);
     List.Hide(_flags);
     List.Hide(logzz);
+    Control.DeleteThisClone();
 }
 
 WhenBroadcastReceived(Project not saving fix)
@@ -59,7 +86,113 @@ WhenBroadcastReceived(Project not saving fix)
 }
 
 
+//----- Start as clone ------------------------------------------------------------------------------------------------
+
+Control.WhenIStartAsClone()
+{
+    Forever
+    {
+        If Sensing.TouchingObject(_mouse_)
+        {
+            If (Costume.GetNumberName(number) == 2)
+            {
+                Looks.Say("Starting Address = 0x0, Mode = 0 (screen)");
+            }
+            If (Costume.GetNumberName(number) == 3)
+            {
+                Looks.Say("Starting Address = 0x100, Mode = 1 (terminal)");
+            }
+        }
+        Else
+        {
+            Looks.SetSizeTo(100);
+            Looks.Say("");
+        }
+    }
+}
+
+
 //----- Custom blocks -------------------------------------------------------------------------------------------------
+
+Define 8080.boot (warp=false)
+{
+    8080.cycles = _PC;
+    _SP = 356;
+    8080.InterruptFlag = 0;
+    8080.lastout = 420;
+    List.DeleteAll(_registers);
+    Repeat (9)
+    {
+        List.Add(_registers, 0);
+    }
+    List.DeleteAll(_flags);
+    Repeat (8)
+    {
+        List.Add(_flags, 0);
+    }
+    List.ReplaceItem(_flags, 2, 1);
+    List.DeleteAll(_memory);
+    Repeat (65536)
+    {
+        List.Add(_memory, 0);
+    }
+    List.DeleteAll(_memorydirtyaddresses);
+    List.DeleteAll(_memorydirtyflags);
+    List.DeleteAll(_memorylastdrawndisplay);
+    Repeat (7168)
+    {
+        List.Add(_memorydirtyflags, 0);
+        List.Add(_memorylastdrawndisplay, -1);
+    }
+    8080.RAM mirror = 65536;
+    List.DeleteAll(_colours);
+    List.Add(_colours, "0x00000000");
+    List.Add(_colours, "0xFFFFFF");
+    List.Add(_colours, "0xFF0000");
+    List.Add(_colours, "0x00FF00");
+    If (8080.mode == 1)
+    {
+        List.ReplaceItem(_memory, 8, "0xC9");
+    }
+    8080.shift register offset = 0;
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
+    Repeat ((List.Length(_rom) + ))
+    {
+        List.ReplaceItem(_memory, (8080.cycles + 1), _rom[(control_get_counter ?? - probably legacy function from Scratch 2.0 + 1)]);
+        8080.cycles += 1;
+        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+    }
+    List.DeleteAll(logzz);
+    Variable.Show(FPS);
+    Looks.SwitchBackdropTo(Black);
+    Looks.Say("");
+    Sound.StopAllSounds();
+    Forever
+    {
+        Call 8080.frame;
+    }
+}
+
+Define 8080.frame (warp=true)
+{
+    frame = Sensing.DaysSince2000();
+    Call Step CPU(16667);
+    Call Interrupt(1);
+    Call Step CPU(16667);
+    Call Interrupt(2);
+    If (8080.mode == 0)
+    {
+        If (8080.screenrotation == 0)
+        {
+            Call render.vertical;
+        }
+        Else
+        {
+            Call render.horizontal;
+        }
+    }
+    FPS = (1 / ((Sensing.DaysSince2000() - frame) * 86400));
+}
 
 Define ADC(string register) (warp=true)
 {
@@ -83,11 +216,11 @@ Define ADC(string register) (warp=true)
         8080.cycles += 7;
     }
     r.1 = (_registers[8] + (8080.readreturn + _flags[1]));
-    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 5, (((_registers[8] % 16) + ((8080.readreturn + _flags[1]) % 16)) > 15));
-    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
-    List.ReplaceItem(_flags, 8, (((r.1 % 256) > 127) + ));
+    List.ReplaceItem(_flags, 1, Operator.Round((r.1 > 255)));
+    Call parity flag(bin_table[((r.1 % 256) + 1)]);
+    List.ReplaceItem(_flags, 5, Operator.Round((((_registers[8] % 16) + ((8080.readreturn + _flags[1]) % 16)) > 15)));
+    List.ReplaceItem(_flags, 7, Operator.Round(((r.1 % 256) == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round(((r.1 % 256) > 127)));
     List.ReplaceItem(_registers, 8, (r.1 % 256));
 }
 
@@ -113,11 +246,11 @@ Define ADD(string register) (warp=true)
         8080.cycles += 7;
     }
     r.1 = (_registers[8] + 8080.readreturn);
-    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 5, ((((_registers[8] % 16) + (8080.readreturn % 16)) > 15) + ));
-    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
-    List.ReplaceItem(_flags, 8, (((r.1 % 256) > 127) + ));
+    List.ReplaceItem(_flags, 1, Operator.Round((r.1 > 255)));
+    Call parity flag(bin_table[((r.1 % 256) + 1)]);
+    List.ReplaceItem(_flags, 5, Operator.Round((((8080.readreturn % 16) + (_registers[8] % 16)) > 15)));
+    List.ReplaceItem(_flags, 7, Operator.Round(((r.1 % 256) == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round(((r.1 % 256) > 127)));
     List.ReplaceItem(_registers, 8, (r.1 % 256));
 }
 
@@ -144,10 +277,10 @@ Define ANA(string register) (warp=true)
     }
     r.1 = and_table[(((_registers[8] * 256) + 8080.readreturn) + 1)];
     List.ReplaceItem(_flags, 1, 0);
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 5, (((or_table[(((_registers[8] * 256) + 8080.readreturn) + 1)] % 8) > 0) + ));
-    List.ReplaceItem(_flags, 7, ((r.1 == 0) + ));
-    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    Call parity flag(bin_table[(r.1 + 1)]);
+    List.ReplaceItem(_flags, 5, Operator.Round(((or_table[(((_registers[8] * 256) + 8080.readreturn) + 1)] % 9) > 0)));
+    List.ReplaceItem(_flags, 7, Operator.Round((r.1 == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round((r.1 > 127)));
     List.ReplaceItem(_registers, 8, r.1);
 }
 
@@ -168,7 +301,13 @@ Define CALL(bool condition) (warp=true)
 
 Define CMP(string register) (warp=true)
 {
-    If (-1 < register)
+    If (-1 == register)
+    {
+        Call Read byte(_PC)("");
+        _PC += 1;
+        8080.cycles += 7;
+    }
+    Else
     {
         If (register == 6)
         {
@@ -181,36 +320,32 @@ Define CMP(string register) (warp=true)
             8080.cycles += 4;
         }
     }
-    Else
-    {
-        Call Read byte(_PC)("");
-        _PC += 1;
-        8080.cycles += 7;
-    }
-    r.1 = ((_registers[8] - 8080.readreturn) % 65536);
-    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 5, ((((_registers[8] % 16) - (8080.readreturn % 16)) < 0) + 0));
-    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
-    List.ReplaceItem(_flags, 8, (((r.1 % 256) > 127) + ));
+    8080.readreturn = (256 - 8080.readreturn);
+    r.1 = (_registers[8] + 8080.readreturn);
+    List.ReplaceItem(_flags, 1, Operator.Round((256 > r.1)));
+    Call parity flag(bin_table[((r.1 % 256) + 1)]);
+    List.ReplaceItem(_flags, 5, Operator.Round((((_registers[8] % 16) + (8080.readreturn % 16)) > 15)));
+    List.ReplaceItem(_flags, 7, Operator.Round(((r.1 % 256) == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round(((r.1 % 256) > 127)));
 }
 
 Define DAA (warp=true)
 {
-    r.1 = _registers[8];
-    If (((r.1 % 16) > 9) Or (_flags[5] == 1))
+    r.1 = 0;
+    If (((_registers[8] % 16) > 9) Or (_flags[5] == 1))
     {
-        r.1 = ((r.1 + 6) % 256);
+        r.1 += 6;
     }
-    List.ReplaceItem(_flags, 5, (((_registers[8] % 16) > 9) + ));
-    If ((floor((r.1 / 16)) > 9) Or (_flags[1] == 1))
+    List.ReplaceItem(_flags, 5, Operator.Round(((_registers[8] % 16) > 9)));
+    If (((floor((_registers[8] / 16)) > 9) Or (_flags[1] == 1)) Or ((floor((_registers[8] / 16)) > 8) And ((_registers[8] % 16) > 9)))
     {
-        r.1 = (r.1 + 6);
+        r.1 += 96;
     }
-    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
-    List.ReplaceItem(_flags, 8, (((r.1 % 256) > 127) + ));
+    r.1 += _registers[8];
+    List.ReplaceItem(_flags, 1, Operator.Round((r.1 > 255)));
+    Call parity flag(bin_table[((r.1 % 256) + 1)]);
+    List.ReplaceItem(_flags, 7, Operator.Round(((r.1 % 256) == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round(((r.1 % 256) > 127)));
     List.ReplaceItem(_registers, 8, (r.1 % 256));
     8080.cycles += 4;
 }
@@ -218,17 +353,17 @@ Define DAA (warp=true)
 Define DAD(string regpair) (warp=true)
 {
     r.1 = (((_registers[regpair] * 256) + _registers[(regpair + 1)]) + ((_registers[5] * 256) + _registers[6]));
-    List.ReplaceItem(_flags, 1, ((r.1 > 65535) + ));
+    List.ReplaceItem(_flags, 1, Operator.Round((r.1 > 65535)));
     List.ReplaceItem(_registers, 5, floor(((r.1 % 65536) / 256)));
-    List.ReplaceItem(_registers, 6, ((r.1 % 65536) % 256));
+    List.ReplaceItem(_registers, 6, (r.1 % 256));
     8080.cycles += 10;
 }
 
 Define DAD SP (warp=true)
 {
-    r.1 = ((_SP + ((_registers[5] * 256) + _registers[6])) % 65536);
-    List.ReplaceItem(_flags, 1, ((r.1 > 65535) + ));
-    List.ReplaceItem(_registers, 5, floor((r.1 / 256)));
+    r.1 = (_SP + ((_registers[5] * 256) + _registers[6]));
+    List.ReplaceItem(_flags, 1, Operator.Round((r.1 > 65535)));
+    List.ReplaceItem(_registers, 5, floor(((r.1 % 65536) / 256)));
     List.ReplaceItem(_registers, 6, (r.1 % 256));
     8080.cycles += 10;
 }
@@ -242,61 +377,28 @@ Define IN (warp=true)
     8080.cycles += 10;
 }
 
-Define initialize (warp=true)
+Define initialize (warp=false)
 {
     Pen.Clear();
     Pen.Clear();
-    _SP = 61440;
-    8080.InterruptFlag = 0;
     Pen.SetPenSizeTo(1);
-    List.DeleteAll(_registers);
-    Repeat (9)
+    8080.mode = 99;
+    Looks.SwitchCostumeTo(SI);
+    List.DeleteAll(8080.Terminal);
+    Looks.Show();
+    Motion.GoToXY(-141, 64);
+    Repeat (2)
     {
-        List.Add(_registers, 0);
+        Control.CreateCloneOf(_myself_);
+        Looks.NextCostume();
+        Motion.ChangeYBy(-50);
     }
-    List.DeleteAll(_flags);
-    Repeat (8)
-    {
-        List.Add(_flags, 0);
-    }
-    List.ReplaceItem(_flags, 2, 1);
-    List.DeleteAll(_memory);
-    Repeat (65536)
-    {
-        List.Add(_memory, 0);
-    }
-    List.DeleteAll(_colours);
-    List.Add(_colours, 0);
-    Sensing.Ask("Where should the ROM be loaded in memory?");
-    8080.cycles = Sensing.Answer();
-    _PC = Sensing.Answer();
-    Sensing.Ask("What mode should be used? (0=Space Invaders, 1=CP/M HLE)");
-    8080.mode = Operator.Round(Sensing.Answer());
-    If (8080.mode == 0)
-    {
-        8080.RAM mirror = "0x4000";
-    }
-    Else
-    {
-        8080.RAM mirror = 65536;
-        List.ReplaceItem(_memory, 8, "0xC9");
-    }
-    8080.shift register offset = 0;
-    control_clear_counter ?? - probably legacy function from Scratch 2.0;
-    Repeat ((List.Length(_rom) + ))
-    {
-        List.ReplaceItem(_memory, (8080.cycles + 1), _rom[(control_get_counter ?? - probably legacy function from Scratch 2.0 + 1)]);
-        8080.cycles += 1;
-        control_incr_counter ?? - probably legacy function from Scratch 2.0;
-    }
-    8080.cycles = 0;
-    Variable.Show(_PC);
-    List.Show(_registers);
-    Variable.Show(_SP);
-    Variable.Show(8080.InterruptFlag);
-    List.Show(_memory);
-    List.Show(_flags);
-    List.DeleteAll(logzz);
+    Looks.SwitchCostumeTo(Manual);
+    Event.BroadcastAndWait("un-needed broadcast");
+    Wait Until (8080.mode < 99);
+    Stop(other scripts in sprite);
+    Event.BroadcastAndWait("clonekiller");
+    Call 8080.boot;
 }
 
 Define INR/DCR(string register)(string amount) (warp=true)
@@ -312,17 +414,17 @@ Define INR/DCR(string register)(string amount) (warp=true)
         8080.cycles += 5;
     }
     r.1 = ((8080.readreturn + amount) % 65536);
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
+    Call parity flag(bin_table[((r.1 % 256) + 1)]);
     If (amount == -1)
     {
-        List.ReplaceItem(_flags, 5, ((Not ((((8080.readreturn - 1) % 16) == 15))) + 0));
+        List.ReplaceItem(_flags, 5, Operator.Round((Not ((((8080.readreturn - 1) % 16) == 15)))));
     }
     Else
     {
-        List.ReplaceItem(_flags, 5, (((r.1 % 16) == 0) + 0));
+        List.ReplaceItem(_flags, 5, Operator.Round(((r.1 % 16) == 0)));
     }
-    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
-    List.ReplaceItem(_flags, 8, (((r.1 % 256) > 127) + ));
+    List.ReplaceItem(_flags, 7, Operator.Round(((r.1 % 256) == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round(((r.1 % 256) > 127)));
     If (register == 6)
     {
         Call Write byte(((_registers[5] * 256) + _registers[6]))((r.1 % 256));
@@ -335,9 +437,13 @@ Define INR/DCR(string register)(string amount) (warp=true)
 
 Define Interrupt(string interrupt #) (warp=true)
 {
-    If (8080.InterruptFlag == 1)
+    If (8080.mode == 0)
     {
-        Call RST(interrupt #);
+        If (8080.InterruptFlag == 1)
+        {
+            Call RST(interrupt #);
+        }
+        8080.InterruptFlag = 0;
     }
 }
 
@@ -346,7 +452,7 @@ Define INX/DCX(string regpair)(string amount) (warp=true)
     r.1 = ((((_registers[regpair] * 256) + _registers[(regpair + 1)]) + amount) % 65536);
     List.ReplaceItem(_registers, regpair, floor((r.1 / 256)));
     List.ReplaceItem(_registers, (regpair + 1), (r.1 % 256));
-    8080.cycles += 6;
+    8080.cycles += 5;
 }
 
 Define JMP(bool condition) (warp=true)
@@ -367,7 +473,7 @@ Define LDA (warp=true)
 {
     Call Read byte(_PC)(1);
     Call Read byte(8080.readreturn)("");
-    List.ReplaceItem(_registers, 8, 8080.readreturn);
+    List.ReplaceItem(_registers, 8, (8080.readreturn % 256));
     8080.cycles += 13;
     _PC += 2;
 }
@@ -413,19 +519,16 @@ Define MOV(string op) (warp=true)
 {
     If ((op % 8) == 6)
     {
-        List.Add(logzz, "MOV M to reg");
         Call MOV RAM to reg((((floor(((op + 64) / 16)) - 4) * 2) + (((op + 64) % 16) == 14)));
     }
     Else
     {
         If (floor((op / 8)) == 6)
         {
-            List.Add(logzz, "MOV reg to M");
             Call MOV reg((op % 8)) to RAM at address in regpair(5);
         }
         Else
         {
-            List.Add(logzz, "MOV reg to reg");
             Call MOV reg((op % 8)) to reg(floor((op / 8)));
         }
     }
@@ -433,7 +536,6 @@ Define MOV(string op) (warp=true)
 
 Define MOV RAM to reg(string register) (warp=true)
 {
-    List.Add(logzz, Operator.Join("RAM to reg ", Operator.Join((register + 1), " initiated")));
     Call Read byte(((_registers[5] * 256) + _registers[6]))("");
     List.ReplaceItem(_registers, (register + 1), 8080.readreturn);
     8080.cycles += 7;
@@ -453,7 +555,7 @@ Define MOV reg(string origin) to reg(string destination) (warp=true)
 
 Define MVI(string register) (warp=true)
 {
-    Call Read byte(_PC)(0);
+    Call Read byte(_PC)("");
     If (register == 6)
     {
         Call Write byte(((_registers[5] * 256) + _registers[6]))(8080.readreturn);
@@ -463,8 +565,8 @@ Define MVI(string register) (warp=true)
     {
         List.ReplaceItem(_registers, (register + 1), 8080.readreturn);
     }
-    8080.cycles += 7;
     _PC += 1;
+    8080.cycles += 7;
 }
 
 Define opcode(string op1) (warp=true)
@@ -732,7 +834,7 @@ Define opcode(string op1) (warp=true)
                     Call MVI(5);
                     Stop(this script);
                 }
-                List.ReplaceItem(_registers, 8, xor_table[(65281 + _registers[8])]);
+                List.ReplaceItem(_registers, 8, (255 - _registers[8]));
                 8080.cycles += 4;
             }
         }
@@ -824,7 +926,7 @@ Define opcode(string op1) (warp=true)
                 }
             }
         }
-        List.ReplaceItem(_flags, 1, ((_flags[1] == 0) + ));
+        List.ReplaceItem(_flags, 1, Operator.Round((_flags[1] == 0)));
         8080.cycles += 4;
         Stop(this script);
     }
@@ -1273,9 +1375,9 @@ Define ORA(string register) (warp=true)
     r.1 = or_table[(((_registers[8] * 256) + 8080.readreturn) + 1)];
     List.ReplaceItem(_flags, 1, 0);
     List.ReplaceItem(_flags, 5, 0);
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 7, ((r.1 == 0) + ));
-    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    Call parity flag(bin_table[(r.1 + 1)]);
+    List.ReplaceItem(_flags, 7, Operator.Round((r.1 == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round((r.1 > 127)));
     List.ReplaceItem(_registers, 8, r.1);
 }
 
@@ -1298,30 +1400,81 @@ Define Output to device #(string device) (warp=true)
         }
         If (device == 3)
         {
+            If (Not (((_registers[8] % 16) == 8080.lastout)))
+            {
+                8080.lastout = (_registers[8] % 16);
+                If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 5) == 1)
+                {
+                    Sound.Play(3);
+                }
+                If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 6) == 1)
+                {
+                    Sound.Play(2);
+                }
+                If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 7) == 1)
+                {
+                    Sound.Play(1);
+                }
+                If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 8) == 1)
+                {
+                    Sound.Play(0);
+                }
+            }
             Stop(this script);
         }
         If (device == 4)
         {
-            List.ReplaceItem(_registers, 9, ((_registers[8] * 256) + (floor((_registers[9] / 256)) % 256)));
+            List.ReplaceItem(_registers, 9, ((_registers[8] * 256) + floor((_registers[9] / 256))));
             Stop(this script);
         }
         If (device == 5)
         {
+            If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 8) == 1)
+            {
+                Sound.Play(4);
+            }
+            If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 7) == 1)
+            {
+                Sound.Play(5);
+            }
+            If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 6) == 1)
+            {
+                Sound.Play(6);
+            }
+            If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 5) == 1)
+            {
+                Sound.Play(7);
+            }
+            If (Operator.LetterOf(bin_table[(_registers[8] + 1)], 4) == 1)
+            {
+                Sound.Play(8);
+            }
             Stop(this script);
         }
         If (device == 6)
         {
             Stop(this script);
         }
-        Looks.Say(Operator.Join("Invalid OUT device ID # ", device));
-        Wait Until Sensing.MouseDown();
-        Stop(all);
     }
+    List.Show(logzz);
+    Stop(all);
+}
+
+Define parity flag(string binary) (warp=true)
+{
+    r.7 = 0;
+    control_clear_counter ?? - probably legacy function from Scratch 2.0;
+    Repeat (8)
+    {
+        control_incr_counter ?? - probably legacy function from Scratch 2.0;
+        r.7 += Operator.LetterOf(binary, control_get_counter ?? - probably legacy function from Scratch 2.0);
+    }
+    List.ReplaceItem(_flags, 3, (((r.7 % 2) + 1) % 2));
 }
 
 Define PCHL (warp=true)
 {
-    _PC = (((_registers[5] * 256) + _registers[6]) + 1);
+    _PC = ((_registers[5] * 256) + _registers[6]);
     8080.cycles += 5;
 }
 
@@ -1337,41 +1490,55 @@ Define POP(string register) (warp=true)
 
 Define POP PSW (warp=true)
 {
-    _SP += 2;
-    Call Read byte((_SP - 1))("");
+    Call Read byte((_SP + 1))("");
     List.ReplaceItem(_registers, 8, 8080.readreturn);
-    Call Read byte((_SP - 2))("");
+    Call Read byte(_SP)("");
+    _SP += 2;
     control_clear_counter ?? - probably legacy function from Scratch 2.0;
     Repeat (8)
     {
         control_incr_counter ?? - probably legacy function from Scratch 2.0;
-        List.ReplaceItem(_flags, control_get_counter ?? - probably legacy function from Scratch 2.0, Operator.LetterOf(bin_table[(8080.readreturn + 1)], control_get_counter ?? - probably legacy function from Scratch 2.0));
+        List.ReplaceItem(_flags, (9 - control_get_counter ?? - probably legacy function from Scratch 2.0), Operator.LetterOf(bin_table[(8080.readreturn + 1)], control_get_counter ?? - probably legacy function from Scratch 2.0));
     }
+    List.ReplaceItem(_flags, 2, 1);
+    List.ReplaceItem(_flags, 4, 0);
+    List.ReplaceItem(_flags, 6, 0);
     8080.cycles += 10;
 }
 
 Define PUSH(string register) (warp=true)
 {
-    Call Write byte((_SP - 1))(_registers[register]);
-    Call Write byte((_SP - 2))(_registers[(register + 1)]);
     _SP += -2;
+    Call Write byte(_SP)(_registers[(register + 1)]);
+    Call Write byte((_SP + 1))(_registers[register]);
     8080.cycles += 11;
 }
 
 Define PUSH PSW (warp=true)
 {
-    Call Write byte((_SP - 1))(_registers[8]);
-    Call Write byte((_SP - 2))((Operator.Join("0b", _flags) + ));
     _SP += -2;
+    Call Write byte((_SP + 1))(_registers[8]);
+    Call Write byte(_SP)(Operator.Round(Operator.Join("0b", Operator.Join(Operator.Join(Operator.Join(_flags[8], _flags[7]), Operator.Join(0, _flags[5])), Operator.Join(Operator.Join(0, _flags[3]), Operator.Join(1, _flags[1]))))));
     8080.cycles += 11;
 }
 
 Define Read byte(string address)(string extrabytes) (warp=true)
 {
-    8080.readreturn = _memory[((address % 8080.RAM mirror) + 1)];
-    If (1 == extrabytes)
+    If ((16383 < address) And (8080.mode == 0))
     {
-        8080.readreturn += (_memory[((address % 8080.RAM mirror) + 2)] * 256);
+        8080.readreturn = _memory[(address - 8191)];
+        If (1 == extrabytes)
+        {
+            8080.readreturn += (_memory[(address - 8190)] * 256);
+        }
+    }
+    Else
+    {
+        8080.readreturn = _memory[((address % 65536) + 1)];
+        If (1 == extrabytes)
+        {
+            8080.readreturn += (_memory[((address % 65536) + 2)] * 256);
+        }
     }
 }
 
@@ -1379,57 +1546,100 @@ Define Read from device #(string device) (warp=true)
 {
     If (8080.mode == 0)
     {
+        If (device == 0)
+        {
+            8080.readreturn = 112;
+            Stop(this script);
+        }
         If (device == 1)
         {
-            8080.readreturn = (Operator.Join("0b", Operator.Join(Operator.Join(Operator.Join(0, (Sensing.KeyPressed(controls.SI8080[2]) + )), Operator.Join((Sensing.KeyPressed(controls.SI8080[3]) + ), 0)), Operator.Join(Operator.Join((Sensing.KeyPressed(controls.SI8080[4]) + ), (Sensing.KeyPressed(controls.SI8080[5]) + )), Operator.Join((Sensing.KeyPressed(controls.SI8080[6]) + ), 0)))) + );
+            8080.readreturn = Operator.Round(Operator.Join("0b0", Operator.Join(Operator.Join(Operator.Round(Sensing.KeyPressed(controls.SI8080[6])), Operator.Join(Operator.Round(Sensing.KeyPressed(controls.SI8080[5])), Operator.Round(Sensing.KeyPressed(controls.SI8080[4])))), Operator.Join(Operator.Join(0, Operator.Round(Sensing.KeyPressed(controls.SI8080[3]))), Operator.Join(Operator.Round(Sensing.KeyPressed(controls.SI8080[2])), Operator.Round(Sensing.KeyPressed(controls.SI8080[1])))))));
             Stop(this script);
         }
         If (device == 2)
         {
-            8080.readreturn = (Operator.Join("0b", Operator.Join(Operator.Join(Operator.Join(1, 1), Operator.Join(0, 1)), Operator.Join(Operator.Join((Sensing.KeyPressed(controls.SI8080[7]) + ), (Sensing.KeyPressed(controls.SI8080[8]) + )), Operator.Join((Sensing.KeyPressed(controls.SI8080[9]) + ), ((Not (Sensing.KeyPressed(controls.SI8080[1]))) + ))))) + );
+            8080.readreturn = Operator.Round(Operator.Join("0b0", Operator.Join(Operator.Join(Operator.Join(Operator.Round(Sensing.KeyPressed(controls.SI8080[9])), Operator.Round(Sensing.KeyPressed(controls.SI8080[8]))), Operator.Round(Sensing.KeyPressed(controls.SI8080[7]))), 0000)));
             Stop(this script);
         }
         If (device == 3)
         {
-            8080.readreturn = (floor((_registers[9] / floor(10 ^((log(2) * 8080.shift register offset))))) % 256);
+            List.Add(logzz, Operator.Join("IN device ID # ", device));
+            8080.readreturn = floor((((_registers[9] * e ^((ln(2) * 8080.shift register offset))) % 65536) / 256));
             Stop(this script);
         }
-        Looks.Say(Operator.Join("Invalid IN device ID # ", device));
-        Wait Until Sensing.MouseDown();
-        Stop(all);
+    }
+    List.Add(logzz, Operator.Join("Invalid IN device ID # ", device));
+    List.Show(logzz);
+    Stop(all);
+}
+
+Define render.horizontal (warp=true)
+{
+    Repeat (List.Length(_memorydirtyaddresses))
+    {
+        r.0 = _memorydirtyaddresses[last];
+        List.DeleteItem(_memorydirtyaddresses, last);
+        List.ReplaceItem(_memorydirtyflags, (r.0 + 1), 0);
+        r.1 = _memory[(r.0 + 9217)];
+        If (Not ((r.1 == _memorylastdrawndisplay[(r.0 + 1)])))
+        {
+            List.ReplaceItem(_memorylastdrawndisplay, (r.0 + 1), r.1);
+            Motion.GoToXY((((r.0 % 32) * 8) - 130), (100 - floor((r.0 / 32))));
+            r.2 = bin_table[(r.1 + 1)];
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 8) + 1)]);
+            Pen.Down();
+            Motion.ChangeXBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 7) + 1)]);
+            Motion.ChangeXBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 6) + 1)]);
+            Motion.ChangeXBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 5) + 1)]);
+            Motion.ChangeXBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 4) + 1)]);
+            Motion.ChangeXBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 3) + 1)]);
+            Motion.ChangeXBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 2) + 1)]);
+            Motion.ChangeXBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 1) + 1)]);
+            Motion.ChangeXBy(1);
+            Pen.Clear();
+        }
     }
 }
 
-Define render.sideways (warp=true)
+Define render.vertical (warp=true)
 {
-    Motion.SetX(-130);
-    r.0 = 9216;
-    Repeat (224)
+    Repeat (List.Length(_memorydirtyaddresses))
     {
-        List.DeleteAll(_scanline);
-        Repeat (32)
+        r.0 = _memorydirtyaddresses[last];
+        List.DeleteItem(_memorydirtyaddresses, last);
+        List.ReplaceItem(_memorydirtyflags, (r.0 + 1), 0);
+        r.1 = _memory[(r.0 + 9217)];
+        If (Not ((r.1 == _memorylastdrawndisplay[(r.0 + 1)])))
         {
-            r.0 += 1;
-            r.2 = bin_table[(_memory[r.0] + 1)];
-            control_clear_counter ?? - probably legacy function from Scratch 2.0;
-            Repeat (8)
-            {
-                control_incr_counter ?? - probably legacy function from Scratch 2.0;
-                List.Add(_scanline, Operator.LetterOf(r.2, control_get_counter ?? - probably legacy function from Scratch 2.0));
-            }
-        }
-        Motion.SetY(-150);
-        r.2 = 1;
-        Pen.SetPenColorToColor(_colours[(_scanline[r.2] + 1)]);
-        Pen.Down();
-        Repeat (256)
-        {
-            r.2 += 1;
+            List.ReplaceItem(_memorylastdrawndisplay, (r.0 + 1), r.1);
+            Motion.GoToXY((floor((r.0 / 32)) - 130), (((r.0 % 32) * 8) - 150));
+            r.2 = bin_table[(r.1 + 1)];
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 8) + 1)]);
+            Pen.Down();
             Motion.ChangeYBy(1);
-            Pen.SetPenColorToColor(_colours[(_scanline[r.2] + 1)]);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 7) + 1)]);
+            Motion.ChangeYBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 6) + 1)]);
+            Motion.ChangeYBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 5) + 1)]);
+            Motion.ChangeYBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 4) + 1)]);
+            Motion.ChangeYBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 3) + 1)]);
+            Motion.ChangeYBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 2) + 1)]);
+            Motion.ChangeYBy(1);
+            Pen.SetPenColorToColor(_colours[(Operator.LetterOf(r.2, 1) + 1)]);
+            Pen.Down();
+            Pen.Clear();
         }
-        Pen.Clear();
-        Motion.ChangeXBy(1);
     }
 }
 
@@ -1462,7 +1672,7 @@ Define RLC/RAL(bool using carry) (warp=true)
             }
         }
     }
-    List.ReplaceItem(_flags, 1, ( + (_registers[8] > 127)));
+    List.ReplaceItem(_flags, 1, Operator.Round((_registers[8] > 127)));
     List.ReplaceItem(_registers, 8, (r.0 % 256));
     8080.cycles += 4;
 }
@@ -1472,7 +1682,7 @@ Define RRC/RAR(bool using carry) (warp=true)
     r.0 = ((floor((_registers[8] / 2)) + ((_registers[8] % 2) * 128)) % 256);
     If using carry
     {
-        If (Not ((((r.0 > 127) + ) == _flags[1])))
+        If (Not (((r.0 > 127) == _flags[1])))
         {
             If (r.0 > 127)
             {
@@ -1491,10 +1701,10 @@ Define RRC/RAR(bool using carry) (warp=true)
 
 Define RST(string address) (warp=true)
 {
-    _PC = (address * 8);
     _SP += -2;
     Call Write byte(_SP)((_PC % 256));
     Call Write byte((_SP + 1))(floor((_PC / 256)));
+    _PC = (address * 8);
     8080.cycles += 11;
 }
 
@@ -1519,13 +1729,19 @@ Define SBB(string register) (warp=true)
         _PC += 1;
         8080.cycles += 7;
     }
-    r.1 = ((_registers[8] - (8080.readreturn + _flags[1])) % 65536);
-    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 5, ((((_registers[8] % 16) - ((8080.readreturn + _flags[1]) % 16)) < 0) + 0));
-    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
-    List.ReplaceItem(_flags, 8, (((r.1 % 256) > 127) + ));
+    r.1 = (_registers[8] + (256 - (8080.readreturn + _flags[1])));
+    List.ReplaceItem(_flags, 1, Operator.Round((256 > r.1)));
+    Call parity flag(bin_table[((r.1 % 256) + 1)]);
+    List.ReplaceItem(_flags, 5, Operator.Round((((_registers[8] % 16) + ((256 - (8080.readreturn + _flags[1])) % 16)) > 15)));
+    List.ReplaceItem(_flags, 7, Operator.Round(((r.1 % 256) == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round(((r.1 % 256) > 127)));
     List.ReplaceItem(_registers, 8, (r.1 % 256));
+}
+
+Define Set FPS (warp=true)
+{
+    FPS = (1 / ((Sensing.DaysSince2000() - frame) * 86400));
+    frame = Sensing.DaysSince2000();
 }
 
 Define SHLD (warp=true)
@@ -1551,11 +1767,11 @@ Define STA (warp=true)
     _PC += 2;
 }
 
-Define Step CPU(string cycles) (warp=false)
+Define Step CPU(string cycles) (warp=true)
 {
+    8080.cycles = 0;
     Repeat Until ((8080.cycles == cycles) Or (cycles < 8080.cycles))
     {
-        List.Add(logzz, Operator.Join(_memory[(_PC + 1)], Operator.Join(Operator.Join(" PC: ", _PC), Operator.Join(" Regs: ", _registers))));
         Call opcode(_memory[(_PC + 1)]);
         If (8080.mode == 1)
         {
@@ -1572,7 +1788,6 @@ Define Step CPU(string cycles) (warp=false)
             }
         }
     }
-    8080.cycles = 0;
 }
 
 Define SUB(string register) (warp=true)
@@ -1596,12 +1811,13 @@ Define SUB(string register) (warp=true)
         _PC += 1;
         8080.cycles += 7;
     }
-    r.1 = ((_registers[8] - 8080.readreturn) % 65536);
-    List.ReplaceItem(_flags, 1, ((r.1 > 255) + ));
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 5, ((((_registers[8] % 16) - (8080.readreturn % 16)) < 0) + 0));
-    List.ReplaceItem(_flags, 7, (((r.1 % 256) == 0) + ));
-    List.ReplaceItem(_flags, 8, (((r.1 % 256) > 127) + ));
+    8080.readreturn = (256 - 8080.readreturn);
+    r.1 = (_registers[8] + 8080.readreturn);
+    List.ReplaceItem(_flags, 1, Operator.Round((256 > r.1)));
+    Call parity flag(bin_table[((r.1 % 256) + 1)]);
+    List.ReplaceItem(_flags, 5, Operator.Round((((_registers[8] % 16) + (8080.readreturn % 16)) > 15)));
+    List.ReplaceItem(_flags, 7, Operator.Round(((r.1 % 256) == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round(((r.1 % 256) > 127)));
     List.ReplaceItem(_registers, 8, (r.1 % 256));
 }
 
@@ -1609,14 +1825,22 @@ Define Write byte(string address)(string byte) (warp=true)
 {
     If (8080.mode == 0)
     {
-        If ((address % 8080.RAM mirror) < "0x2000")
+        If ((8191 < address) And (address < 16384))
         {
-            List.ReplaceItem(_memory, ((address % 8080.RAM mirror) + 1), byte);
+            If (address > 9215)
+            {
+                If (_memorydirtyflags[(address - 9215)] == 0)
+                {
+                    List.ReplaceItem(_memorydirtyflags, (address - 9215), 1);
+                    List.Add(_memorydirtyaddresses, (address - 9216));
+                }
+            }
+            List.ReplaceItem(_memory, (address + 1), byte);
         }
     }
     Else
     {
-        List.ReplaceItem(_memory, ((address % 8080.RAM mirror) + 1), byte);
+        List.ReplaceItem(_memory, (address + 1), byte);
     }
 }
 
@@ -1655,9 +1879,9 @@ Define XRA(string register) (warp=true)
     r.1 = xor_table[(((_registers[8] * 256) + 8080.readreturn) + 1)];
     List.ReplaceItem(_flags, 1, 0);
     List.ReplaceItem(_flags, 5, 0);
-    List.ReplaceItem(_flags, 3, (((r.1 % 2) + 1) % 2));
-    List.ReplaceItem(_flags, 7, ((r.1 == 0) + ));
-    List.ReplaceItem(_flags, 8, ((r.1 > 127) + ));
+    Call parity flag(bin_table[(r.1 + 1)]);
+    List.ReplaceItem(_flags, 7, Operator.Round((r.1 == 0)));
+    List.ReplaceItem(_flags, 8, Operator.Round((r.1 > 127)));
     List.ReplaceItem(_registers, 8, r.1);
 }
 
@@ -1675,14 +1899,24 @@ Define XTHL (warp=true)
 
 //----- Orphaned blocks -----------------------------------------------------------------------------------------------
 
-List.ReplaceItem(_flags, 5, ((((_registers[8] % 16) + (8080.readreturn % 16)) > 15) + ))
+r.7 = Operator.Join(Operator.LetterOf("0123456789ABCDEF", ((floor((_PC / 4096)) % 16) + 1)), Operator.Join(Operator.LetterOf("0123456789ABCDEF", ((floor((_PC / 256)) % 16) + 1)), Operator.Join(Operator.LetterOf("0123456789ABCDEF", ((floor((_PC / 16)) % 16) + 1)), Operator.LetterOf("0123456789ABCDEF", ((_PC % 16) + 1)))))
 
-Call Step CPU(1)
+List.ReplaceItem(_flags, 5, Operator.Round(((((_registers[8] % 16) + (8080.readreturn % 16)) % 17) > 0)))
+
+Motion.SetY(100)
+
+Motion.SetX(-130)
+
+Repeat (60)
+
 
 
 //----- Costumes ------------------------------------------------------------------------------------------------------
 
-costume1.svg
+blank.svg
+CPM.svg
+Manual.svg
+SI.svg
 
 
 //----- Sounds --------------------------------------------------------------------------------------------------------

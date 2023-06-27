@@ -1,8 +1,8 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
-arm7.pc = 597949
+arm7.pc = 1867301
 arm7.read_return = 0x00000000
-arm9.pc = 597952
+arm9.pc = 1867306
 arm9.read_return = 0x00000000
 core.byte_return = 31
 core.condition_test = false
@@ -83,6 +83,7 @@ WhenBroadcastReceived(Project not saving fix)
 
 WhenBroadcastReceived(start game)
 {
+    Event.BroadcastAndWait("un-needed broadcast");
     Variable.Show(rom.title);
     Call core.reset_memory;
     arm7.pc = 1;
@@ -2030,8 +2031,3 @@ Looks.Say("[ARM7] Data Processing")
 //----- Costumes ------------------------------------------------------------------------------------------------------
 
 costume1.svg
-
-
-//----- Sounds --------------------------------------------------------------------------------------------------------
-
-pop.wav

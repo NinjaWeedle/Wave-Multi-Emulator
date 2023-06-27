@@ -11,48 +11,66 @@ If you are looking for information on the HyperWaveCHIP-64 extension for CHIP-8,
 
 Changelog:
 
+**V1.0.X**
+
+
+1.0.1: 
+- rrGBC: Updated to rrGBC v0.11.
+- WAVE-8: enabled collision counting for SCHIP+HPS mode.
+
+1.0.0: 
+- General: New screen fade transition added, slightly sped up initial table generation, removed references to DualGB.
+- WAVE-8: Fixed Clipping, added wrapping/clipping toggle, added HyperWAVEChip-64 1.1 support, made SCHIP+HPS mode more accurate with better half pixel scrolling support and Vsync in lores mode.
+- DualGB: Replaced DualGB with rrgbc V0.10.
+- REGBA: Removed GBA emulator.
+- SI8080: Fixed countless CPU bugs, added new mode selection menu, added CP/M version function, added FPS counter, added partial refresh display, added space invaders audio support, fixed terminal formatting.
+- Cool NES: minor optimizations.
+- Bytepusher: sped up import and execution processes with custom blocks.
+
+
 **V0.9.X:**
 
-V0.9.13: 
+
+0.9.13: 
 Moved bitwise table generator from DualGB to UHWEI, changed table generation message screen, added compatibility notice to GBA emulator backdrop.
 
-V0.9.12: 
+0.9.12: 
 - WAVE-8: fixed SF2091! fix to actually fix SF2091!.  SI8080: fixed MOV RAM to reg, added more info to debug logs, which now appear upon CP/M jump errors. AC flag and DAA support have now been added.
 
-V0.9.11: 
+0.9.11: 
 - DualGB: added support for hex input with commas and 0x. 
 - SI8080: made fixes to terminal output.
 
-V0.9.10: 
+0.9.10: 
 - SI8080: Added debug log function, fixed PUSH/POP PSW, added jump to 0 check.
 
-V0.9.9: 
+0.9.9: 
 - SI8080: Remappable controls support added, made MOV instruction fixes, added Space Invaders shift register.
 
-V0.9.8: SI8080: Added interrupt and Input support to SI8080, Space Invaders now boots.
+0.9.8: SI8080: Added interrupt and Input support to SI8080, Space Invaders now boots.
 
-V0.9.7: Some SI8080 framework updates.
+0.9.7: Some SI8080 framework updates.
 
-V0.9.6: 
+0.9.6: 
 - WAVE-8: Added clipping support and a new VIP compatibility mode that adds the VF Reset and VBlank quirks.
 - SI8080: Started work on DAA and interrupts.
 
-V0.9.5: Removed SFE++.  Made SI8080 now use the font renderer from DualGB instead, added some debug info, and fixed some issues.
+0.9.5: Removed SFE++.  Made SI8080 now use the font renderer from DualGB instead, added some debug info, and fixed some issues.
 
-V0.9.4: 
+0.9.4: 
 - WAVE-8: Added partial screen refreshes, Replaced the Legacy renderer with a faster single-pass version of the scanline renderer called "Classic".
 
-V0.9.3: Fixed DualGB not displaying game titles correctly, added @-Rex-'s SFE++ for CP/M Terminal
+0.9.3: Fixed DualGB not displaying game titles correctly, added @-Rex-'s SFE++ for CP/M Terminal
 - WAVE-8: Rotate ops fixed 
 - DualGB: Updated table generation to include binary table
 - SI8080: Added CP/M call support, added every remaining op except IN, OUT, and DAA
 
-V0.9.2: Added DAD ops, updated size warning
+0.9.2: Added DAD ops, updated size warning
 
-V0.9.1: Added a size limit warning to the ROM importer
+0.9.1: Added a size limit warning to the ROM importer
  - SI8080: tons of ops added, added option for split and combined roms, added option to point where the rom should be placed in memory
 
-V0.9: 
+0.9: 
 - General: Regen bitwise tables only upon initial project start, added control remapping options for GB, NES, and CHIP-8, moved randomized theme function to “Import Theme” (now triggered by typing "random"), added 640x480 support, added increased color options for themes, removed Goddess A.
 - WAVE-8: use lookup tables for bitwise operations, fixed fx0a, fixed sprite transparencies in MegaChip, changed default palette to greyscale instead of CGA0, removed PC display, prevent Megachip mode from being untoggled, fixed audio not playing when buffer is not updated, and fixed VF flag in shifts being set based on VX instead of VY in VIP shift mode.
 - DualGB: Audio quality improvements, RLE counter removed.
@@ -62,33 +80,33 @@ V0.9:
 **V0.8.X:**
 
 
-V0.8.7: Fix LY=LYC check in DualGB
+0.8.7: Fix LY=LYC check in DualGB
 
-V0.8.6: Add row 256 wrapping behavior to MegaChip
+0.8.6: Add row 256 wrapping behavior to MegaChip
 
-V0.8.5: MegaChip: Fix 256-dimension sprites not rendering, fix transparencies and collisions, add 09NN
+0.8.5: MegaChip: Fix 256-dimension sprites not rendering, fix transparencies and collisions, add 09NN
 
-V0.8.4: Add mostly functional MegaChip support (No audio, transparencies, or sprite blending)
+0.8.4: Add mostly functional MegaChip support (No audio, transparencies, or sprite blending)
 
-V0.8.3: Have VF be set after shifting in 8XY6 & 8XYE instead of before; fixes Danm8ku
+0.8.3: Have VF be set after shifting in 8XY6 & 8XYE instead of before; fixes Danm8ku
 
-V0.8.2: Fixed an issue where the HPS flag wasn't reset upon resetting Wave-8
+0.8.2: Fixed an issue where the HPS flag wasn't reset upon resetting Wave-8
 
-V0.8: Implemented a new rom importer system. Updated DualGB to the latest build. Updated CoolNES to 2.4. Added CLS V-blank behavior to WAVE-8's MegaChip mode.
+0.8: Implemented a new rom importer system. Updated DualGB to the latest build. Updated CoolNES to 2.4. Added CLS V-blank behavior to WAVE-8's MegaChip mode.
 
 
 **V0.7.X:**
 
 
-V0.7.9: Fixed a variety of audio issues with Chip-8 that caused audio to not play in any CHIP-8/SCHIP games, and also added debug info to the pause menu.
+0.7.9: Fixed a variety of audio issues with Chip-8 that caused audio to not play in any CHIP-8/SCHIP games, and also added debug info to the pause menu.
 
-V0.7.8: Add very early Mega-Chip support.
+0.7.8: Add very early Mega-Chip support.
 
-V0.7.7: Fix hi-res CHIP8 games taking forever to load.
+0.7.7: Fix hi-res CHIP8 games taking forever to load.
 
-V0.7.6: Add Boot-128 support, Fix bitshifts not setting VF correctly in CHIP-8
+0.7.6: Add Boot-128 support, Fix bitshifts not setting VF correctly in CHIP-8
 
-V0.7.5: Update DualGB to Early GBC build.
+0.7.5: Update DualGB to Early GBC build.
 
 0.7.4: Major GUI overhaul, add BBC micro:bit integration. CHIP8: Change 00F0 to 00E1. Goddess A: Minor updates to CPU structure. GBA: ROM importer fixed.
 

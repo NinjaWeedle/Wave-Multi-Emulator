@@ -1,21 +1,69 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
--chnumber = 4
--pitchnumber = 4
--soundnumber = 2
--z = 0
++channel Cycle = 0
++channel ID = 3
++is clone? = 0
+i = 0
+loop = 4
+menu0exit = 0
+return = 155.6236834377
 
 
 
 //----- Broadcast received events -------------------------------------------------------------------------------------
 
-WhenBroadcastReceived(create sound)
+WhenBroadcastReceived(+audioEngineUpdateAll)
 {
-    Call generate;
+    If (+is clone? == 0)
+    {
+        Call check audio clones;
+    }
+    Else
+    {
+        If (+channel ID == 4)
+        {
+            Call convert pitch to MIDI note((524288 / +sound pitch[+channel ID]));
+        }
+        Else
+        {
+            Call convert pitch to MIDI note((131072 / (2048 - +sound pitch[+channel ID])));
+        }
+        Sound.SetEffectTo(PITCH, ((return - 69) * 10));
+    }
 }
 
-WhenBroadcastReceived(prune)
+WhenBroadcastReceived(+audioEngineUpdateAll)
 {
+    If (+is clone? == 0)
+    {
+    }
+    Else
+    {
+        If (+sound duty cycle[+channel ID] == +channel Cycle)
+        {
+            Sound.SetVolumeTo(((+sound volume[+channel ID] * .5) * +globalVol.R));
+        }
+        Else
+        {
+            Sound.SetVolumeTo(0);
+        }
+    }
+}
+
+WhenBroadcastReceived(+turnoffaudio)
+{
+    Sound.SetVolumeTo(0);
+}
+
+WhenBroadcastReceived(exit emulator)
+{
+    +is clone? = 0;
+    Control.DeleteThisClone();
+}
+
+WhenBroadcastReceived(reset emulator)
+{
+    +is clone? = 0;
     Control.DeleteThisClone();
 }
 
@@ -26,63 +74,17 @@ Control.WhenIStartAsClone()
 {
     Forever
     {
-        If (Sound.Volume() > 0)
+        If (+channel ID == 1)
         {
-            Sound.PlayUntilDone(Operator.Join(Operator.Join(soundnames[-chnumber], -soundnumber), -pitchnumber));
+            Sound.PlayUntilDone(Operator.Join("P", Operator.Join(+channel Cycle, 0)));
         }
-    }
-}
-
-Control.WhenIStartAsClone()
-{
-    Forever
-    {
-        If (voice[-chnumber] == -soundnumber)
+        If (+channel ID == 2)
         {
-            -z = pitches[-chnumber];
-            If (-z > -1)
-            {
-                -z = (Operator.Round(((-z - 69) / 12)) + 2);
-                -z = ((-z * (-z > 0)) - ((-z - 3) * (-z > 3)));
-                If (-z == -pitchnumber)
-                {
-                    Sound.SetVolumeTo((volume[-chnumber] * (20 / 16)));
-                }
-                Else
-                {
-                    Sound.SetVolumeTo(0);
-                }
-            }
-            Else
-            {
-                Sound.SetVolumeTo(0);
-            }
+            Sound.PlayUntilDone(Operator.Join("P", Operator.Join(+channel Cycle, 1)));
         }
-        Else
+        If (+channel ID == 4)
         {
-            Sound.SetVolumeTo(0);
-        }
-    }
-}
-
-Control.WhenIStartAsClone()
-{
-    Forever
-    {
-        If (Sound.Volume() > 0)
-        {
-            Sound.SetEffectTo(PITCH, (((pitches[-chnumber] - 69) + ((2 - -pitchnumber) * 12)) * 10));
-        }
-    }
-}
-
-Control.WhenIStartAsClone()
-{
-    Forever
-    {
-        If (Sound.Volume() > 0)
-        {
-            Sound.SetEffectTo(PAN, (100 * +AUDIO ENGINE pan[-chnumber]));
+            Sound.PlayUntilDone(Operator.Join("N", Operator.Join(+channel Cycle, 0)));
         }
     }
 }
@@ -90,54 +92,30 @@ Control.WhenIStartAsClone()
 
 //----- Custom blocks -------------------------------------------------------------------------------------------------
 
-Define generate (warp=true)
+Define check audio clones (warp=true)
 {
-    -chnumber = 0;
-    List.DeleteAll(pitches);
-    List.DeleteAll(voice);
-    List.DeleteAll(volume);
-    List.DeleteAll(+AUDIO ENGINE pan);
-    List.DeleteAll(soundnames);
-    List.Add(soundnames, "p0");
-    List.Add(soundnames, "p1");
-    List.Add(soundnames, "");
-    List.Add(soundnames, "no");
-    Sound.SetVolumeTo(0);
-    Repeat (List.Length(soundnames))
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+}
+
+Define clone sound channel (warp=true)
+{
+    +is clone? = 1;
+    Control.CreateCloneOf(_myself_);
+    +is clone? = 0;
+}
+
+Define convert pitch to MIDI note(string p) (warp=true)
+{
+    return = ((12 * (ln((p / 440)) / ln(2))) + 69);
+}
+
+Define fast (warp=true)
+{
+    +channel Cycle = 0;
+    Repeat (Operator.LetterOf(4402, loop))
     {
-        -chnumber += 1;
-        -pitchnumber = 0;
-        Repeat (4)
-        {
-            -soundnumber = 0;
-            If (-chnumber == 3)
-            {
-            }
-            Else
-            {
-                If (-chnumber == 4)
-                {
-                    Repeat (2)
-                    {
-                        Control.CreateCloneOf(_myself_);
-                        -soundnumber += 1;
-                    }
-                }
-                Else
-                {
-                    Repeat (4)
-                    {
-                        Control.CreateCloneOf(_myself_);
-                        -soundnumber += 1;
-                    }
-                }
-            }
-            -pitchnumber += 1;
-        }
-        List.Add(pitches, -1);
-        List.Add(voice, 0);
-        List.Add(volume, 0);
-        List.Add(+AUDIO ENGINE pan, 0);
+        Call clone sound channel;
+        +channel Cycle += 1;
     }
 }
 
@@ -149,43 +127,13 @@ costume1.svg
 
 //----- Sounds --------------------------------------------------------------------------------------------------------
 
-no00.wav
-no01.wav
-no02.wav
-no03.wav
-no10.wav
-no11.wav
-no12.wav
-no13.wav
-p000.wav
-p001.wav
-p002.wav
-p003.wav
-p010.wav
-p011.wav
-p012.wav
-p013.wav
-p020.wav
-p021.wav
-p022.wav
-p023.wav
-p030.wav
-p031.wav
-p032.wav
-p033.wav
-p100.wav
-p101.wav
-p102.wav
-p103.wav
-p110.wav
-p111.wav
-p112.wav
-p113.wav
-p120.wav
-p121.wav
-p122.wav
-p123.wav
-p130.wav
-p131.wav
-p132.wav
-p133.wav
+N00.wav
+N10.wav
+P00.wav
+P01.wav
+P10.wav
+P11.wav
+P20.wav
+P21.wav
+P30.wav
+P31.wav

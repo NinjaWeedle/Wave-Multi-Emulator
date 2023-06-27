@@ -98,7 +98,7 @@ Define render(string timer)(string height) (warp=true)
     Pen.Clear();
     Pen.SetPenColorToColor(#6cb7ff);
     Pen.SetPenTo(transparency, 30);
-    Pen.ChangePenBy(color, (Operator.Round(Operator.Join("0x", Operator.Join(Menu Theme[5], Menu Theme[6]))) / 2));
+    Pen.ChangePenBy(color, (Operator.Join("0x", Operator.Join(Menu Theme[5], Menu Theme[6])) / 2));
     Motion.SetX((stage width / -2));
     Repeat (stage width)
     {

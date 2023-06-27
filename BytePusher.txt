@@ -1,5 +1,49 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
+*OAMDMA# = 0
+*OAMDMAS = 0
+,c = 0
+,joypad = 0
+-keyRandom = 0
+-LCDC = 0
+-LCDS = 0
+-LY = 0
+-LYC = 0
+-LYmask = 0
+-scx = 0
+-SCXMOD8 = 0
+-STATUS = 0
+-windowWasDrawn? = 0
+-WLY = 0
+-wx = 0
+.DIV2 = 0
+.DIVCYCLES = 0
+.DMAenable = 0
+.DMAend = 0
+.DMAlength = 0
+.DMAstart = 0
+.DMAtype = 0
+.GBC? = 0
+.HDMAenable = 0
+.IME = 0
+.instr = 0
+.instrID = 0
+.Mpri = 0
+.soundEnable = 0
+.SPEED = 0
+.Spri = 0
+.spriteattributes = 0
+.spriteCpal = 0
+.spritesize = 0
+.TAC1 = 0
+.TAC2 = 0
+.TACFLAG = 0
+.tileB = 0
+.timenable = 0
+.vbank = 0
+.windowflag = 0
+@PAL = 0
+@PIX = 0
 a = 256
 arm7.pc = 0
 arm7.read_return = 0
@@ -51,10 +95,22 @@ core.read_return = 0
 core.rotate_return = 0
 core.shift_return = 0
 CPF = 0
+fftlast = 0
 flags.met = 0
-i = 33554432
-j = 4
-k = 00000000
+FPS = 0
+g = 0
+Game Boy: _HALT = 0
+Game Boy: _PC = 0
+Game Boy: _SP = 0
+h = 0
+i = 0
+i = 54696
+j = 65536
+k = 0
+k = 0
+l = 0
+loop = 0
+m = 0
 n = 10
 op.opcode = 0
 op.pos = 0
@@ -63,23 +119,84 @@ p = 0
 program.done = 0
 read.return = 0
 read.single.return = 0
+render = 0
 scanX = 0
 scanY = 0
 SF2091! fix = 0
 storage.byte = 0
+T1 = 0
+T2 = 0
+T3 = 0
+T4 = 0
+T4.1 = 0
+T4.2 = 0
+T5 = 0
+T6 = 0
+T7 = 0
+T8 = 0
+T9 = 0
+T10 = 0
+T11 = 0
+target frames = 0
 tile_mode = 0
+time1 = 0
+time2 = 0
+v = 0
 VIP jumps = 0
+x = 0
+z = 0
+_A = 0
+_B = 0
+_current bank = 0
+_frames = 0
+_frameskip = 0
 _id = 0
+_IEindex = 0
+_IFindex = 0
+_INTRdest = 0
+_lineCyc = 0
+_MBCnumber = 0
 _pitch = 0
+_PIXEL# = 0
+_R = 0
+_RE = 0
+_rom size = 0
+_S = 0
+_SIZE = 0
+_STATcond1 = 0
+_STATcond2 = 0
+_T = 0
+_X = 0
+_XSHIFT = 0
+_YSHIFT = 0
+_Z = 0
 
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+$A = { }
+$B = { }
+$C = { }
+*OAMidx = { }
+*OAMx = { }
+*OAMy = { }
+*palette = { }
+.addr2ptr = { }
+.AND = { }
+.OR = { }
+.pointerStart = { }
+.ptr = { }
+.ptr index = { }
+.vals = { }
+.XOR = { }
+2^x = { }
 arm7.registers = { }
 arm9.flags = { }
 arm9.registers = { }
+bin = { }
 Boot-128 = { }
 bytepusher = { }
+byteStack = { }
 c = { 
     aewq321x
     vfr4czds
@@ -90,6 +207,8 @@ chip8.registers = { }
 chip8.screen = { }
 chip8.screen2 = { }
 chip8.stack = { }
+dat = { }
+Flag bits = { }
 p = { 
     51
     102
@@ -351,36 +470,28 @@ p = {
 schip8.font = { }
 schip8.RPL = { }
 t = { }
+_cartridge stuff = { }
+_DMGPALETTE = { }
+_GBCPALETTELOOKUP = { }
+_instrIDs = { }
+_instrParam = { }
+_PALETTE RAM = { }
+_pix = { }
+_RAM = { }
+_REGISTERS = { }
+_ROM = { }
+_soundregs = { }
 
 
 //----- Broadcast received events -------------------------------------------------------------------------------------
 
 WhenBroadcastReceived(BytePusher)
 {
-    List.DeleteAll(bytepusher);
-    i = 33554432;
-    Repeat ((16777216 - List.Length(_rom)))
-    {
-        List.Add(_rom, 0);
-    }
-    Repeat (65536)
-    {
-        List.Add(bytepusher, "");
-        i += 1;
-    }
+    Call init;
+    Event.BroadcastAndWait("un-needed broadcast");
     Forever
     {
-        control_for_each ?? - probably legacy function from Scratch 2.0;
-        i = ((_rom[3] * 65536) + ((_rom[4] * 256) + _rom[5]));
-        Repeat (65536)
-        {
-            List.DeleteAll(t);
-            p = 0;
-            control_for_each ?? - probably legacy function from Scratch 2.0;
-            List.ReplaceItem(_rom, (t[2] + 1), _rom[(t[1] + 1)]);
-            i = t[3];
-        }
-        j = 0;
+        Call CPU;
         Call Draw bp;
     }
 }
@@ -406,9 +517,39 @@ WhenBroadcastReceived(Project not saving fix)
 
 //----- Custom blocks -------------------------------------------------------------------------------------------------
 
+Define CPU (warp=true)
+{
+    control_for_each ?? - probably legacy function from Scratch 2.0;
+    i = ((_rom[3] * 65536) + ((_rom[4] * 256) + _rom[5]));
+    Repeat (65536)
+    {
+        List.DeleteAll(t);
+        p = 0;
+        control_for_each ?? - probably legacy function from Scratch 2.0;
+        List.ReplaceItem(_rom, (t[2] + 1), _rom[(t[1] + 1)]);
+        i = t[3];
+    }
+    j = 0;
+}
+
 Define Draw bp (warp=true)
 {
     control_for_each ?? - probably legacy function from Scratch 2.0;
+}
+
+Define init (warp=true)
+{
+    List.DeleteAll(bytepusher);
+    i = 33554432;
+    Repeat ((16777216 - List.Length(_rom)))
+    {
+        List.Add(_rom, 0);
+    }
+    Repeat (65536)
+    {
+        List.Add(bytepusher, "");
+        i += 1;
+    }
 }
 
 

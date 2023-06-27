@@ -37,12 +37,12 @@ chip8.spritewidth = 0
 chip8m.collisioncolor = 0
 flags.met = 0
 import.ascii =  !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~▒∠ā∇√∫Σ▶π	∂≤≥≠α→←↓↑γδεηθλρστωΔΠΩ■∞ ¡¢£¤¥¦§¨©ª«¬
-import.binary = 000000
+import.binary = 000110100000100000011101
 import.char = 68
 import.dummy = 1
 import.percent = 0
-import.read_return = 163
-import.rom_length = 10537
+import.read_return = 167
+import.rom_length = 942038
 import.status = 5
 load = 
 op.opcode = 0
@@ -81,7 +81,6 @@ load = {
     0
     0
 }
-Load ROMs: _rom = { }
 mappers = { 
     0
     1
@@ -188,9 +187,6 @@ WhenBroadcastReceived(get_controls)
             }
             If (Romimportflag == -1000)
             {
-            }
-            If (Romimportflag == -1200)
-            {
                 Looks.SwitchCostumeTo(d);
                 List.Show(controls.NES);
                 Sound.Play(423930__mudkip2016__correct2);
@@ -216,7 +212,7 @@ WhenBroadcastReceived(get_controls)
                     }
                 }
             }
-            If (Romimportflag == -1800)
+            If (Romimportflag == -1600)
             {
                 Looks.SwitchCostumeTo(e);
                 List.Show(controls.SI8080);
@@ -269,16 +265,6 @@ WhenBroadcastReceived(get_rom)
         {
             If (Romimportflag == -800)
             {
-                Looks.SwitchCostumeTo(C);
-                Sensing.Ask("");
-                If (Not ((Sensing.Answer() == "")))
-                {
-                    Call convert_b64(Sensing.Answer());
-                    Sound.Play(423930__mudkip2016__correct2);
-                }
-            }
-            If (Romimportflag == -1000)
-            {
                 Looks.SwitchCostumeTo(B);
                 Sensing.Ask("");
                 If (Not ((Sensing.Answer() == "")))
@@ -287,7 +273,7 @@ WhenBroadcastReceived(get_rom)
                     Sound.Play(423930__mudkip2016__correct2);
                 }
             }
-            If (Romimportflag == -1200)
+            If (Romimportflag == -1000)
             {
                 Looks.SwitchCostumeTo(D);
                 Sensing.Ask("");
@@ -313,7 +299,7 @@ WhenBroadcastReceived(get_rom)
                     }
                 }
             }
-            If ((Romimportflag == -400) Or (Romimportflag == -1400))
+            If ((Romimportflag == -400) Or (Romimportflag == -1200))
             {
                 Looks.SwitchCostumeTo(T);
                 Sensing.Ask("");
@@ -329,7 +315,7 @@ WhenBroadcastReceived(get_rom)
                     }
                 }
             }
-            If (Romimportflag == -1800)
+            If (Romimportflag == -1600)
             {
                 Looks.SwitchCostumeTo(g);
                 Sensing.Ask("");
@@ -365,6 +351,11 @@ WhenBroadcastReceived(get_rom)
     Romimportflag = 0;
 }
 
+WhenBroadcastReceived(Load_base64)
+{
+    Call convert_b64(_ROM);
+}
+
 WhenBroadcastReceived(Load_Prebuilt_game)
 {
     Call import_rom(_ROM)(0);
@@ -378,11 +369,10 @@ Define convert_b64(string code) (warp=true)
     Looks.SwitchCostumeTo(H);
     import.binary = "";
     import.char = 1;
-    import.status = "(1/2) Converting to binary... (0%)";
-    Variable.Show(import.status);
+    List.Add(MainHello, "(1/2) Converting to binary... (0%)");
     Repeat (Variable.Length(code))
     {
-        import.status = Operator.Join("(1/2) Converting to binary... (", Operator.Join(floor((100 * (import.char / Variable.Length(code)))), "%)"));
+        List.ReplaceItem(MainHello, last, Operator.Join("(1/2) Converting to binary... (", Operator.Join(floor((100 * (import.char / Variable.Length(code)))), "%)")));
         Looks.SwitchCostumeTo(Operator.LetterOf(code, import.char));
         If ((floor(((Costume.GetNumberName(number) - 1) / 32)) % 2) == 0)
         {
@@ -434,16 +424,17 @@ Define convert_b64(string code) (warp=true)
         }
         import.char += 1;
     }
-    List.DeleteAll(PAKROM);
+    List.DeleteAll(_rom);
     import.char = 1;
-    import.status = "(2/2) Importing rom... (0%)";
+    List.Add(MainHello, "(2/2) Importing rom... (0%)");
+    import.status = "";
     Repeat ((Variable.Length(import.binary) / 8))
     {
-        import.status = Operator.Join("(2/2) Importing rom... (", Operator.Join(floor((100 * (import.char / Variable.Length(import.binary)))), "%)"));
-        List.Add(PAKROM, ((((128 * Operator.LetterOf(import.binary, import.char)) + (64 * Operator.LetterOf(import.binary, (import.char + 1)))) + ((32 * Operator.LetterOf(import.binary, (import.char + 2))) + (16 * Operator.LetterOf(import.binary, (import.char + 3))))) + (((8 * Operator.LetterOf(import.binary, (import.char + 4))) + (4 * Operator.LetterOf(import.binary, (import.char + 5)))) + ((2 * Operator.LetterOf(import.binary, (import.char + 6))) + Operator.LetterOf(import.binary, (import.char + 7))))));
+        List.ReplaceItem(MainHello, last, Operator.Join("(2/2) Importing rom... (", Operator.Join(floor((100 * (import.char / Variable.Length(import.binary)))), "%)")));
+        List.Add(_rom, ((((128 * Operator.LetterOf(import.binary, import.char)) + (64 * Operator.LetterOf(import.binary, (import.char + 1)))) + ((32 * Operator.LetterOf(import.binary, (import.char + 2))) + (16 * Operator.LetterOf(import.binary, (import.char + 3))))) + (((8 * Operator.LetterOf(import.binary, (import.char + 4))) + (4 * Operator.LetterOf(import.binary, (import.char + 5)))) + ((2 * Operator.LetterOf(import.binary, (import.char + 6))) + Operator.LetterOf(import.binary, (import.char + 7))))));
         import.char += 8;
     }
-    Variable.Hide(import.status);
+    List.Add(MainHello, "Import complete.");
 }
 
 Define import_rom(string rom)(string flag) (warp=true)
@@ -511,41 +502,6 @@ Define import_rom(string rom)(string flag) (warp=true)
                 Call read byte(import.char);
                 rom.title = Operator.Join(rom.title, Operator.LetterOf(import.ascii, (import.read_return - 31)));
                 import.char += 1;
-            }
-        }
-    }
-    If (flag == 2)
-    {
-        If (import.status == 1)
-        {
-            Repeat Until ("0x7FF" < List.Length(_rom))
-            {
-                List.Add(_rom, 0);
-                import.rom_length += 1;
-            }
-        }
-        If (import.status == 2)
-        {
-            Repeat Until ("0xFFF" < List.Length(_rom))
-            {
-                List.Add(_rom, 0);
-                import.rom_length += 1;
-            }
-        }
-        If (import.status == 3)
-        {
-            Repeat Until ("0x17FF" < List.Length(_rom))
-            {
-                List.Add(_rom, 0);
-                import.rom_length += 1;
-            }
-        }
-        If (import.status == 4)
-        {
-            Repeat Until ("0x1FFF" < List.Length(_rom))
-            {
-                List.Add(_rom, 0);
-                import.rom_length += 1;
             }
         }
     }
@@ -661,7 +617,7 @@ Define load rom (warp=true)
             import.char = 1;
             Repeat ((Variable.Length(Sensing.Answer()) / 24))
             {
-                List.Add(_rom, ( + Operator.Join("0x", Operator.Join(Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 2)), Operator.LetterOf(Sensing.Answer(), (import.char + 3))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 8)), Operator.LetterOf(Sensing.Answer(), (import.char + 9)))), Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 14)), Operator.LetterOf(Sensing.Answer(), (import.char + 15))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 20)), Operator.LetterOf(Sensing.Answer(), (import.char + 21))))))));
+                List.Add(_rom, Operator.Round(Operator.Join("0x", Operator.Join(Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 2)), Operator.LetterOf(Sensing.Answer(), (import.char + 3))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 8)), Operator.LetterOf(Sensing.Answer(), (import.char + 9)))), Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 14)), Operator.LetterOf(Sensing.Answer(), (import.char + 15))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 20)), Operator.LetterOf(Sensing.Answer(), (import.char + 21))))))));
                 import.status = Operator.Join("Importing ROM as list... ", Operator.Join((Operator.Round((1000 * (import.char / Variable.Length(Sensing.Answer())))) / 10), "%"));
                 import.char += 24;
             }
@@ -671,7 +627,7 @@ Define load rom (warp=true)
             import.char = 1;
             Repeat ((Variable.Length(Sensing.Answer()) / 8))
             {
-                List.Add(_rom, ( + Operator.Join("0x", Operator.Join(Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), import.char), Operator.LetterOf(Sensing.Answer(), (import.char + 1))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 2)), Operator.LetterOf(Sensing.Answer(), (import.char + 3)))), Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 4)), Operator.LetterOf(Sensing.Answer(), (import.char + 5))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 6)), Operator.LetterOf(Sensing.Answer(), (import.char + 7))))))));
+                List.Add(_rom, Operator.Round(Operator.Join("0x", Operator.Join(Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), import.char), Operator.LetterOf(Sensing.Answer(), (import.char + 1))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 2)), Operator.LetterOf(Sensing.Answer(), (import.char + 3)))), Operator.Join(Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 4)), Operator.LetterOf(Sensing.Answer(), (import.char + 5))), Operator.Join(Operator.LetterOf(Sensing.Answer(), (import.char + 6)), Operator.LetterOf(Sensing.Answer(), (import.char + 7))))))));
                 import.status = Operator.Join("Importing ROM as list... ", Operator.Join((Operator.Round((1000 * (import.char / Variable.Length(Sensing.Answer())))) / 10), "%"));
                 import.char += 8;
             }
@@ -731,6 +687,20 @@ Define load rom (warp=true)
 Define read byte(string addr) (warp=true)
 {
     import.read_return = floor(((_rom[(floor((addr / 4)) + 1)] / Operator.Round(e ^((5.545177444479562 * (3 - (addr % 4)))))) % 256));
+}
+
+
+//----- Orphaned blocks -----------------------------------------------------------------------------------------------
+
+If (Romimportflag == -3000)
+{
+    Looks.SwitchCostumeTo(C);
+    Sensing.Ask("");
+    If (Not ((Sensing.Answer() == "")))
+    {
+        Call convert_b64(Sensing.Answer());
+        Sound.Play(423930__mudkip2016__correct2);
+    }
 }
 
 

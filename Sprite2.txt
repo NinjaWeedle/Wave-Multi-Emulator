@@ -1,10 +1,21 @@
 //----- Variables -----------------------------------------------------------------------------------------------------
 
+arm7.pc = 0
+arm7.read_return = 0
+arm9.pc = 0
+arm9.read_return = 0
+bg_mode = 0
 c8.Load/Save_Quirk = 0
 c8.Shift_quirk = 0
+c8.Wrap_mode = 0
 c8scrnsize = 0
+calc.char = 0
+calc.return = 0
+calc.temp = 0
+calc.temp2 = 0
 chip8.audio toggle = 0
 chip8.audio_buffer = 0
+chip8.blendmode = 0
 chip8.delay_timer = 0
 chip8.drawflag = 0
 chip8.drawmode = 0
@@ -15,6 +26,7 @@ chip8.dummy2 = 0
 chip8.dummy3 = 0
 chip8.dummy4 = 0
 chip8.dummy5 = 0
+chip8.fx0aflag = 0
 chip8.HPSFlag = 0
 chip8.I = 0
 chip8.pc = 0
@@ -26,8 +38,31 @@ chip8.screenwidth = 0
 chip8.sound_timer = 0
 chip8.spritewidth = 0
 chip8m.collisioncolor = 0
+core.byte_return = 0
+core.condition_test = 0
+core.dummy = 0
+core.dummy2 = 0
+core.dummy_op = 0
+core.instruction_format = 0
+core.little_endian = 0
+core.op.dummy = 0
+core.op.dummy2 = 0
+core.read_return = 0
+core.rotate_return = 0
+core.shift_return = 0
 CPF = 0
+flags.met = 0
+op.opcode = 0
+op.pos = 0
+op.temp = 0
+program.done = 0
+read.return = 0
+read.single.return = 0
+scanX = 0
+scanY = 0
 SF2091! fix = 0
+storage.byte = 0
+tile_mode = 0
 VIP jumps = 0
 _id = 0
 _pitch = 0
@@ -35,6 +70,9 @@ _pitch = 0
 
 //----- Lists ---------------------------------------------------------------------------------------------------------
 
+arm7.registers = { }
+arm9.flags = { }
+arm9.registers = { }
 Boot-128 = { }
 chip8.keyboard = { }
 chip8.memory = { }
@@ -57,9 +95,9 @@ WhenThisSpriteClicked()
     }
     If ((MenuScroll > 200) Or (Not (((MenuScroll % 100) == 0))))
     {
-        MenuScroll = -1800;
+        MenuScroll = -1600;
     }
-    If ((-1800 > MenuScroll) Or (Not (((MenuScroll % 100) == 0))))
+    If ((-1600 > MenuScroll) Or (Not (((MenuScroll % 100) == 0))))
     {
         MenuScroll = 200;
     }
